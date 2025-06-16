@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Institution Details</title>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+  <style>
+    body { font-family: Arial; margin: 40px; }
+    form { max-width: 500px; margin: auto; }
+    label, select, input { display: block; margin-bottom: 15px; width: 100%; }
+    button { padding: 10px 20px; }
+  </style>
+</head>
+<body>
+  <h2>Institutions Form</h2>
+  <form id="institutionForm">
+    <label for="date">Date</label>
+    <input type="date" id="date" required>
+
+    <label for="knecCode">KNEC Code</label>
+      <select id="category" required>
+      <option value="">--Select Category--</option>
+        <option value="Ongoing Reg">Ongoing Reg</option>
+        <option value="09203401">09203401</option>
+        <option value="09203402">09203402</option>
+        <option value="09203403">09203403</option>
+        <option value="09203404">09203404</option>
+        <option value="09203405">09203405</option>
+        <option value="09203406">09203406</option>
+        <option value="09203407">09203407</option>
+        <option value="09203408">09203408</option>
+        <option value="09203409">09203409</option>
+        <option value="09203410">09203410</option>
+        <option value="09203411">09203411</option>
+        <option value="09203412">09203412</option>
+        <option value="09203413">09203413</option>
+        <option value="09203414">09203414</option>
+        <option value="09203415">09203415</option>
+        <option value="09203416">09203416</option>
+        <option value="09203417">09203417</option>
+        <option value="09203418">09203418</option>
+        <option value="09203419">09203419</option>
+        <option value="09203420">09203420</option>
+        <option value="09203422">09203422</option>
+        <option value="09203423">09203423</option>
+        <option value="09203424">09203424</option>
+        <option value="09203426">09203426</option>
+        <option value="09203427">09203427</option>
+        <option value="09203428">09203428</option>
+        <option value="09203429">09203429</option>
+        <option value="09203430">09203430</option>
+        <option value="09203431">09203431</option>
+        <option value="09203432">09203432</option>
+        <option value="09203433">09203433</option>
+        <option value="09203434">09203434</option>
+        <option value="09203436">09203436</option>
+        <option value="09203437">09203437</option>
+        <option value="09203438">09203438</option>
+        <option value="09203439">09203439</option>
+        <option value="09203440">09203440</option>
+        <option value="09203441">09203441</option>
+        <option value="09203442">09203442</option>
+        <option value="09203443">09203443</option>
+    </select>
+
+    <label for="institution">Institution Name</label>
+    <input type="text" id="institution" required>
+
+    <label for="category">Category</label>
+    <select id="category" required>
+      <option value="">--Select Category--</option>
+      <option value="National">National</option>
+      <option value="Extra-County">Extra-County</option>
+      <option value="County">County</option>
+      <option value="Sub-County">Sub-County</option>
+    </select>
+
+    <label for="zone">Zone</label>
+    <select id="zone" required>
+      <option value="">--Select Zone--</option>
+      <option value="Gakoigo">Gakoigo</option>
+      <option value="Inoi">Inoi</option>
+      <option value="Mutira">Mutira</option>
+    </select>
+
+    <label for="type">Type</label>
+    <select id="type" required>
+      <option value="">--Select Type--</option>
+      <option value="Public">Public</option>
+      <option value="Private">Private</option>
+    </select>
+
+    <button type="submit">Submit</button>
+    <button type="button" onclick="goNext()">Next</button>
+  </form>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+      databaseURL: "https://YOUR_PROJECT_ID.firebaseio.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT_ID.appspot.com",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    document.getElementById('institutionForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const data = {
+        date: document.getElementById('date').value,
+        knecCode: document.getElementById('knecCode').value,
+        institution: document.getElementById('institution').value,
+        category: document.getElementById('category').value,
+        zone: document.getElementById('zone').value,
+        type: document.getElementById('type').value
+      };
+      db.ref("institutions").push(data)
+        .then(() => {
+          alert("Institution data submitted successfully!");
+        })
+        .catch((error) => {
+          console.error("Error writing to database:", error);
+        });
+    });
+
+    function goNext() {
+      window.location.href = "nextform.html"; // Replace with your next form's filename
+    }
+  </script>
+</body>
+</html>
+<!--   </script> -->
