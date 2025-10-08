@@ -1,153 +1,195 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Institution Details</title>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Institutions Form</title>
   <style>
-    body { font-family: Arial; margin: 40px; }
-    form { max-width: 500px; margin: auto; }
-    label, select, input { display: block; margin-bottom: 15px; width: 100%; }
-    button { padding: 10px 20px; }
+    body {
+      background: url('background.jpg') no-repeat center center fixed;
+      background-size: cover;
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      color: #fff;
+    }
+    .navbar {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: rgba(0, 0, 0, 0.6);
+      padding: 10px 0;
+    }
+    .navbar a {
+      color: white;
+      text-decoration: none;
+      margin: 0 15px;
+      padding: 6px 10px;
+      border-radius: 6px;
+      transition: all 0.3s ease;
+    }
+    .navbar a:hover,
+    .navbar a.active {
+      background-color: #00c3ff;
+      box-shadow: 0 0 15px #00c3ff;
+    }
+    .container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 90vh;
+    }
+    .form-card {
+      background: rgba(0, 0, 0, 0.75);
+      padding: 40px;
+      border-radius: 15px;
+      width: 420px;
+      box-shadow: 0 0 25px rgba(0, 195, 255, 0.6);
+    }
+    .form-card h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #00c3ff;
+    }
+    label {
+      display: block;
+      margin-top: 10px;
+    }
+    input,
+    select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border: none;
+      border-radius: 5px;
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+    }
+    input::placeholder {
+      color: #ccc;
+    }
+    select option {
+      color: black;
+    }
+    button {
+      width: 100%;
+      margin-top: 20px;
+      padding: 12px;
+      border: none;
+      border-radius: 5px;
+      background: #00c3ff;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    button:hover {
+      background: #0086b3;
+      box-shadow: 0 0 15px #00c3ff;
+    }
   </style>
 </head>
 <body>
-  <h2>Institutions Form</h2>
-  <form id="institutionForm">
-    <label for="date">Date</label>
-    <input type="date" id="date" required>
 
-    <label for="knecCode">KNEC Code</label>
-      <select id="category" required>
-      <option value="">--Select Category--</option>
-        <option value="Ongoing Reg">Ongoing Reg</option>
-        <option value="09203401">09203401</option>
-        <option value="09203402">09203402</option>
-        <option value="09203403">09203403</option>
-        <option value="09203404">09203404</option>
-        <option value="09203405">09203405</option>
-        <option value="09203406">09203406</option>
-        <option value="09203407">09203407</option>
-        <option value="09203408">09203408</option>
-        <option value="09203409">09203409</option>
-        <option value="09203410">09203410</option>
-        <option value="09203411">09203411</option>
-        <option value="09203412">09203412</option>
-        <option value="09203413">09203413</option>
-        <option value="09203414">09203414</option>
-        <option value="09203415">09203415</option>
-        <option value="09203416">09203416</option>
-        <option value="09203417">09203417</option>
-        <option value="09203418">09203418</option>
-        <option value="09203419">09203419</option>
-        <option value="09203420">09203420</option>
-        <option value="09203422">09203422</option>
-        <option value="09203423">09203423</option>
-        <option value="09203424">09203424</option>
-        <option value="09203426">09203426</option>
-        <option value="09203427">09203427</option>
-        <option value="09203428">09203428</option>
-        <option value="09203429">09203429</option>
-        <option value="09203430">09203430</option>
-        <option value="09203431">09203431</option>
-        <option value="09203432">09203432</option>
-        <option value="09203433">09203433</option>
-        <option value="09203434">09203434</option>
-        <option value="09203436">09203436</option>
-        <option value="09203437">09203437</option>
-        <option value="09203438">09203438</option>
-        <option value="09203439">09203439</option>
-        <option value="09203440">09203440</option>
-        <option value="09203441">09203441</option>
-        <option value="09203442">09203442</option>
-        <option value="09203443">09203443</option>
-    </select>
+  <div class="navbar">
+    <a href="index.html">Home</a>
+    <a href="institutions.html" class="active">Institutions</a>
+    <a href="overall.html">Overall</a>
+    <a href="gender.html">Gender Performance</a>
+    <a href="subjects.html">Subjects</a>
+    <a href="analytics.html">Analytics Dashboard</a>
+  </div>
 
-    <label for="institution">Institution Name</label>
-    <select id ="institution" required>
-      <option value="">--Select Category--</option>
-      <option value="KERUGOYA BOYS">KERUGOYA BOYS</option>
-      <option value="KERUGOYA GIRLS">KERUGOYA GIRLS</option>
-      <option value="KAMUIRU BOYS">KAMUIRU BOYS</option>
-      <option value="NGARU GIRLS">NGARU GIRLS</option>
-      <option value="MUTIRA GIRLS">MUTIRA GIRLS</option>
-      <option value="GATWE MIXED">GATWE MIXED</option>
-      <option value="ST. AGNES GIRLS,  KIRANJA">ST. AGNES GIRLS,KIRANJA</option>
-      <option value="KARIA BOYS">KARIA BOYS</option>
-      <option value="KAGUMO GIRLS ">KAGUMO GIRLS</option>
-      <option value="ST. JOHNS THAITA">ST. JOHNS THAITA </option>
-      <option value="MUTUMA TRINITY">MUTUMA TRINITY</option>
-      <option value="ST. JAMES KIARITHA">ST. JAMES KIARITHA</option>
-      <option value="KIANDIERI">KIANDIERI</option>
-      <option value="KIAMAINA">KIAMAINA</option>
-      <option value="KARAINI MIXED">KARAINI MIXED</option>
-      
-      
+  <div class="container">
+    <div class="form-card">
+      <h2>Institution Details</h2>
+      <form id="institutionForm">
+        <label>Date:</label>
+        <input type="date"id="date"required/>
 
-    <label for="category">Category</label>
-    <select id="category" required>
-      <option value="National">National</option>
-      <option value="Extra-County">Extra-County</option>
-      <option value="County">County</option>
-      <option value="Sub-County">Sub-County</option>
-    </select>
+        <label>KNEC Code:</label>
+        <input type="text" id="knecCode" placeholder="i.e. 09203402" required/>
 
-    <label for="zone">Zone</label>
-    <select id="zone" required>
-      <option value="">--Select Zone--</option>
-      <option value="Gakoigo">Gakoigo</option>
-      <option value="Inoi">Inoi</option>
-      <option value="Mutira">Mutira</option>
-    </select>
 
-    <label for="type">Type</label>
-    <select id="type" required>
-      <option value="">--Select Type--</option>
-      <option value="Public">Public</option>
-      <option value="Private">Private</option>
-    </select>
+        <label>Institution Name:</label>
+        <input type="text" id="institution" placeholder="i.e. Kerugoya Boys"required/>
 
-    <button type="submit">Submit</button>
-    <button type="button" onclick="goNext()">Next</button>
-  </form>
+        </select>
 
-  <script>
+        <label>Category:</label>
+        <select id="category"required>
+          <option value="">-- Select Category --</option>
+          <option value="SUB-COUNTY">SUB-COUNTY</option>
+          <option value="COUNTY">COUNTY</option>
+          <option value="EXTRA-COUNTY">EXTRA-COUNTY</option>
+          <option value="NATIONAL">NATIONAL</option>
+        </select>
+
+        <label>Zone:</label>
+        <select id="zone" required>
+          <option value="">-- Select Zone --</option>
+          <option value="INOI">INOI</option>
+          <option value="MUTIRA">MUTIRA</option>
+          <option value="GAKOIGO">GAKOIGO</option>
+        </select>
+
+        <label>Type:</label>
+        <select id="type" required>
+          <option value="">-- Select Type --</option>
+          <option value="Public">PUBLIC</option>
+          <option value="Private">PRIVATE</option>
+        </select>
+
+        <button type="submit">Submit & Continue</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Firebase SDK -->
+  <script type="module">
+    // Import Firebase SDKs
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+    // ✅ Your Firebase configuration
     const firebaseConfig = {
-      apiKey: "YOUR_API_KEY",
-      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-      databaseURL: "https://YOUR_PROJECT_ID.firebaseio.com",
-      projectId: "YOUR_PROJECT_ID",
-      storageBucket: "YOUR_PROJECT_ID.appspot.com",
-      messagingSenderId: "YOUR_SENDER_ID",
-      appId: "YOUR_APP_ID"
+   apiKey: "AIzaSyBjwM3I1afnA1hKeuhC4FndPC00suUiKHQ",
+  authDomain: "effective40-64d24.firebaseapp.com",
+  databaseURL: "https://effective40-64d24-default-rtdb.firebaseio.com",
+  projectId: "effective40-64d24",
+  storageBucket: "effective40-64d24.firebasestorage.app",
+  messagingSenderId: "99811191192",
+  appId: "1:99811191192:web:096d9fb7d2958b875523ed",
+  measurementId: "G-JVNFJ8JY53"
     };
 
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
 
-    document.getElementById('institutionForm').addEventListener('submit', function(e) {
+    // Form submission
+    document.getElementById("institutionForm").addEventListener("submit", async (e) => {
       e.preventDefault();
-      const data = {
-        date: document.getElementById('date').value,
-        knecCode: document.getElementById('knecCode').value,
-        institution: document.getElementById('institution').value,
-        category: document.getElementById('category').value,
-        zone: document.getElementById('zone').value,
-        type: document.getElementById('type').value
-      };
-      db.ref("institutions").push(data)
-        .then(() => {
-          alert("Institution data submitted successfully!");
-        })
-        .catch((error) => {
-          console.error("Error writing to database:", error);
-        });
-    });
 
-    function goNext() {
-      window.location.href = "nextform.html"; // Replace with your next form's filename
-    }
+      const institutionData = {
+        date: document.getElementById("date").value,
+        knecCode: document.getElementById("knecCode").value,
+        institution: document.getElementById("institution").value,
+        category: document.getElementById("category").value,
+        zone: document.getElementById("zone").value,
+        type: document.getElementById("type").value,
+      };
+
+      try {
+        const newRef = push(ref(db, "institutions"));
+        await set(newRef, institutionData);
+        alert("Institution data submitted successfully!");
+        window.location.href = "overall.html";
+      } catch (error) {
+        console.error("Error saving data:", error);
+        alert("Failed to save data. Check console for details.");
+      }
+    });
   </script>
 </body>
 </html>
-<!--   </script> -->

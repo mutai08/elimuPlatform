@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Overall Performance — Effective 40</title>
+
+  <!-- Boxicons -->
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+
+  <style>
+    /* Basic reset & font */
+    *{box-sizing:border-box; margin:0; padding:0}
+    html,body{height:100%}
+    body{
+      font-family: "Poppins", sans-serif;
+      background: url('background.jpg') center/cover no-repeat fixed;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      color:#fff;
+    }
+
+    /* NAV */
+    nav{
+      width:100%;
+      position:fixed;
+      top:0;
+      left:0;
+      z-index:200;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding:14px 28px;
+      background: rgba(0,0,0,0.65);
+      backdrop-filter: blur(6px);
+      box-shadow: 0 4px 18px rgba(0,0,0,0.4);
+    }
+    .nav-left{font-weight:700; font-size:20px; color:#fff; text-shadow: 0 0 6px rgba(255,255,255,0.06)}
+    .nav-links{display:flex; gap:18px; align-items:center}
+    .nav-links a{
+      color:#fff; text-decoration:none; font-weight:500; padding:6px 10px; border-radius:6px;
+      transition: all .22s ease;
+    }
+    .nav-links a:hover, .nav-links a.active{
+      color:#ff9800; text-shadow: 0 0 10px #ff9800; background: rgba(255,255,255,0.03)
+    }
+    .nav-right{display:flex; gap:12px; align-items:center}
+    .btn-logout{
+      background:#ff9800; color:#fff; border:none; padding:8px 12px; border-radius:8px; cursor:pointer; font-weight:600;
+    }
+    .btn-logout:hover{transform:translateY(-1px)}
+
+    /* Centered card */
+    .page-wrap{width:100%; display:flex; justify-content:center; padding:120px 18px 40px}
+    .card{
+      width:100%; max-width:980px;
+      background: linear-gradient(180deg, rgba(0,0,0,0.65), rgba(0,0,0,0.6));
+      border-radius:14px;
+      padding:26px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.6), 0 0 18px rgba(255,152,0,0.06) inset;
+      backdrop-filter: blur(8px);
+      color:#fff;
+    }
+
+    .card-header{display:flex; justify-content:space-between; align-items:center; gap:20px; margin-bottom:18px}
+    .card-header h1{font-size:20px; font-weight:700; color:#ffcf9b;}
+    .card-sub{font-size:13px; color:#ddd}
+
+    /* Layout: left column = school info, right column = grades & calculations */
+    .grid{
+      display:grid;
+      grid-template-columns: 1fr 1.25fr;
+      gap:20px;
+    }
+
+    /* left column: institution details */
+    .panel{
+      background: rgba(255,255,255,0.02);
+      padding:16px;
+      border-radius:10px;
+      border:1px solid rgba(255,255,255,0.04);
+    }
+    .field{margin-bottom:12px}
+    .field label{display:block; font-size:13px; color:#ffdca8; margin-bottom:6px}
+    .field input{
+      width:100%; padding:10px 12px; border-radius:8px; border:none;
+      background: rgba(255,255,255,0.07); color:#fff; font-size:14px;
+    }
+    .field input[disabled]{opacity:0.9; color:#ddd; background: rgba(255,255,255,0.03)}
+
+    /* right column: grade grid + calculation area */
+    .grades{
+      display:flex; flex-direction:column; gap:14px;
+    }
+
+    .grade-grid{
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap:10px;
+      background: rgba(255,255,255,0.02);
+      padding:12px;
+      border-radius:10px;
+      border:1px solid rgba(255,255,255,0.03);
+    }
+    .grade-item{
+      display:flex; flex-direction:column; gap:6px;
+    }
+    .grade-item label{font-size:13px; color:#ffdca8}
+    .grade-item input{
+      padding:10px; border-radius:8px; border:none; background: rgba(255,255,255,0.07); color:#fff;
+      text-align:center;
+    }
+
+    .calc-panel{
+      display:flex; gap:12px; margin-top:6px; flex-wrap:wrap;
+      background: rgba(255,255,255,0.02); padding:12px; border-radius:10px; border:1px solid rgba(255,255,255,0.03);
+    }
+    .calc-item{flex:1; min-width:180px; padding:10px; border-radius:8px; background: rgba(0,0,0,0.35); text-align:center}
+    .calc-item .label{font-size:13px; color:#ffdca8; margin-bottom:6px}
+    .calc-item .value{font-size:20px; font-weight:700; color:#fff; margin-top:6px}
+
+    .previous-means{display:flex; gap:10px; margin-top:10px; flex-wrap:wrap}
+    .prev-item{flex:1; min-width:120px}
+    .prev-item input{width:100%; padding:8px; border-radius:8px; background: rgba(255,255,255,0.07); border:none; color:#fff}
+
+    .submit-row{display:flex; justify-content:flex-end; margin-top:16px}
+    .btn-submit{
+      background:#ff9800; color:#000; border:none; padding:12px 18px; border-radius:10px; font-weight:700; cursor:pointer;
+    }
+    .btn-submit:hover{transform:scale(1.02)}
+
+    /* small screens */
+    @media (max-width:900px){
+      .grid{grid-template-columns: 1fr; }
+      .card{padding:18px}
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <div class="nav-left">Effective 40</div>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="institutions.html">Institutions</a>
+      <a href="gender.html">Gender</a>
+      <a href="subjects.html">Subjects</a>
+      <a href="analytics.html">Analytics Dashboard</a>
+    </div>
+    <div class="nav-right">
+      <button class="btn-logout" id="logoutBtn">Logout</button>
+    </div>
+  </nav>
+
+  <div class="page-wrap">
+    <div class="card" role="main" aria-labelledby="pageTitle">
+      <div class="card-header">
+        <div>
+          <h1 id="pageTitle">Overall Performance Entry</h1>
+          <div class="card-sub">Enter Overall Candidate's Grade Distribution — Points, Current Mean Score and Trend are calculated automatically!</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-size:13px;color:#ffdca8">Year</div>
+          <div style="font-weight:700;font-size:18px" id="currentYear"></div>
+        </div>
+      </div>
+
+      <div class="grid">
+        <!-- left: institution meta -->
+        <div class="panel">
+          <div class="field">
+            <label>KNEC Code</label>
+            <input id="knecField" type="text" disabled placeholder="KNEC Code (auto)"/>
+          </div>
+          <div class="field">
+            <label>Institution Name</label>
+            <input id="instField" type="text" disabled placeholder="Institution (auto)"/>
+          </div>
+
+          <div class="field">
+            <label>Candidates Entry (Total candidates)</label>
+            <input id="entryField" type="number" min="0" value="0" />
+          </div>
+
+          <div style="margin-top:14px">
+            <div style="font-size:13px;color:#ffdca8;margin-bottom:8px">Previous Mean Scores (enter last 3 years)</div>
+            <div class="previous-means">
+              <div class="prev-item">
+                <input id="meanYr3" placeholder="Mean (3 yrs ago)" type="number" step="0.0001" />
+              </div>
+              <div class="prev-item">
+                <input id="meanYr2" placeholder="Mean (2 yrs ago)" type="number" step="0.0001" />
+              </div>
+              <div class="prev-item">
+                <input id="meanYr1" placeholder="Mean (last year)" type="number" step="0.0001" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- right: grades and calculations -->
+        <div class="grades">
+          <div style="font-size:13px;color:#ffdca8; margin-bottom:8px">Grade Distribution (enter counts)</div>
+          <div class="grade-grid" id="gradeGrid">
+            <!-- We'll list grade items in the script or statically: -->
+            <div class="grade-item"><label>A</label><input type="number" min="0" id="gA" value="0"></div>
+            <div class="grade-item"><label>A-</label><input type="number" min="0" id="gAminus" value="0"></div>
+            <div class="grade-item"><label>B+</label><input type="number" min="0" id="gBplus" value="0"></div>
+
+            <div class="grade-item"><label>B</label><input type="number" min="0" id="gB" value="0"></div>
+            <div class="grade-item"><label>B-</label><input type="number" min="0" id="gBminus" value="0"></div>
+            <div class="grade-item"><label>C+</label><input type="number" min="0" id="gCplus" value="0"></div>
+
+            <div class="grade-item"><label>C</label><input type="number" min="0" id="gC" value="0"></div>
+            <div class="grade-item"><label>C-</label><input type="number" min="0" id="gCminus" value="0"></div>
+            <div class="grade-item"><label>D+</label><input type="number" min="0" id="gDplus" value="0"></div>
+
+            <div class="grade-item"><label>D</label><input type="number" min="0" id="gD" value="0"></div>
+            <div class="grade-item"><label>D-</label><input type="number" min="0" id="gDminus" value="0"></div>
+            <div class="grade-item"><label>E</label><input type="number" min="0" id="gE" value="0"></div>
+
+            <div class="grade-item"><label>X</label><input type="number" min="0" id="gX" value="0"></div>
+            <div class="grade-item"><label>Y</label><input type="number" min="0" id="gY" value="0"></div>
+            <div class="grade-item"><label>Z</label><input type="number" min="0" id="gZ" value="0"></div>
+          </div>
+
+          <div class="calc-panel" aria-live="polite">
+            <div class="calc-item">
+              <div class="label">Total Points</div>
+              <div class="value" id="totalPoints">0</div>
+            </div>
+
+            <div class="calc-item">
+              <div class="label">Current Mean Score</div>
+              <div class="value" id="currentMean">0.00</div>
+            </div>
+
+            <div class="calc-item">
+              <div class="label">Last Year Mean</div>
+              <div class="value" id="lastYearMean">0.00</div>
+            </div>
+
+            <div class="calc-item">
+              <div class="label">Deviation (Current - Last)</div>
+              <div class="value" id="deviation">0.00</div>
+            </div>
+
+            <div class="calc-item">
+              <div class="label">Mean Grade</div>
+              <div class="value" id="meanGrade">E</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="submit-row">
+        <button class="btn-submit" id="saveBtn">Save & Continue</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Firebase compat (easier to use in plain HTML) -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+
+  <script>
+    // your firebase config (as provided)
+    const firebaseConfig = {
+      apiKey: "AIzaSyBjwM3I1afnA1hKeuhC4FndPC00suUiKHQ",
+      authDomain: "effective40-64d24.firebaseapp.com",
+      databaseURL: "https://effective40-64d24-default-rtdb.firebaseio.com",
+      projectId: "effective40-64d24",
+      storageBucket: "effective40-64d24.firebasestorage.app",
+      messagingSenderId: "99811191192",
+      appId: "1:99811191192:web:096d9fb7d2958b875523ed",
+      measurementId: "G-JVNFJ8JY53"
+    };
+    // init
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    const auth = firebase.auth();
+
+    // convenience
+    const ids = ['gA','gAminus','gBplus','gB','gBminus','gCplus','gC','gCminus','gDplus','gD','gDminus','gE','gX','gY','gZ'];
+    const weightMap = {
+      gA:12, gAminus:11, gBplus:10, gB:9, gBminus:8, gCplus:7, gC:6, gCminus:5, gDplus:4, gD:3, gDminus:2, gE:1,
+      gX:0, gY:0, gZ:0
+    };
+
+    // set current year label
+    document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+    // autofill KNEC & Institution from localStorage (if present)
+    const knecStored = localStorage.getItem('knec') || localStorage.getItem('KNEC') || '';
+    const instStored = localStorage.getItem('institution') || localStorage.getItem('institutionName') || '';
+    document.getElementById('knecField').value = knecStored;
+    document.getElementById('instField').value = instStored;
+
+    // helper: parse int safely
+    function toInt(v){ v = parseInt(v); return Number.isFinite(v) ? v : 0; }
+    function toFloat(v){ v = parseFloat(v); return Number.isFinite(v) ? v : 0; }
+
+    // calculate totals and update UI
+    function recalcAll(){
+      // total points
+      let totalPts = 0;
+      let totalCandidatesFromGrades = 0;
+      ids.forEach(id => {
+        const el = document.getElementById(id);
+        if(!el) return;
+        const val = toInt(el.value);
+        totalCandidatesFromGrades += val;
+        const w = weightMap[id] || 0;
+        totalPts += val * w;
+      });
+
+      // entry value (user may type)
+      const entry = toInt(document.getElementById('entryField').value);
+
+      // display total points
+      document.getElementById('totalPoints').textContent = totalPts;
+
+      // compute current mean score = totalPts / entry (guard entry>0)
+      let currMean = entry > 0 ? (totalPts / entry) : 0;
+      // round to 2 decimals
+      document.getElementById('currentMean').textContent = currMean.toFixed(2);
+
+      // last year mean (most recent of provided previous means -> meanYr1)
+      const lastYear = toFloat(document.getElementById('meanYr1').value);
+      document.getElementById('lastYearMean').textContent = lastYear.toFixed(2);
+
+      // deviation calc
+      const deviation = currMean - lastYear;
+      document.getElementById('deviation').textContent = deviation.toFixed(2);
+
+      // Mean Grade mapping using current mean (U in your formula)
+      const U = currMean;
+      let grade = 'E';
+      if (U >= 11.5) grade = 'A';
+      else if (U >= 10.5) grade = 'A-';
+      else if (U >= 9.5) grade = 'B+';
+      else if (U >= 8.5) grade = 'B';
+      else if (U >= 7.5) grade = 'B-';
+      else if (U >= 6.5) grade = 'C+';
+      else if (U >= 5.5) grade = 'C';
+      else if (U >= 4.5) grade = 'C-';
+      else if (U >= 3.5) grade = 'D+';
+      else if (U >= 2.5) grade = 'D';
+      else if (U >= 1.5) grade = 'D-';
+      else grade = 'E';
+
+      document.getElementById('meanGrade').textContent = grade;
+    }
+
+    // attach event listeners to inputs to recalc live
+    document.querySelectorAll('input[type="number"], input[type="text"], select').forEach(el=>{
+      el.addEventListener('input', ()=> recalcAll());
+    });
+
+    // initial calc
+    recalcAll();
+
+    // Save data to Firebase when user clicks Save
+    document.getElementById('saveBtn').addEventListener('click', async (e) => {
+      e.preventDefault();
+      // gather data
+      const entry = toInt(document.getElementById('entryField').value);
+      if (entry <= 0){
+        alert('Please enter a valid Candidates Entry (> 0).');
+        return;
+      }
+
+      const gradeCounts = {};
+      ids.forEach(id => { gradeCounts[id] = toInt(document.getElementById(id).value); });
+
+      const totalPts = Number(document.getElementById('totalPoints').textContent);
+      const currentMean = parseFloat(document.getElementById('currentMean').textContent);
+      const lastYearMean = toFloat(document.getElementById('meanYr1').value);
+      const deviation = parseFloat(document.getElementById('deviation').textContent);
+      const meanGrade = document.getElementById('meanGrade').textContent;
+
+      const payload = {
+        knec: document.getElementById('knecField').value || null,
+        institution: document.getElementById('instField').value || null,
+        entry: entry,
+        grades: {
+          A: gradeCounts.gA,
+          Aminus: gradeCounts.gAminus,
+          Bplus: gradeCounts.gBplus,
+          B: gradeCounts.gB,
+          Bminus: gradeCounts.gBminus,
+          Cplus: gradeCounts.gCplus,
+          C: gradeCounts.gC,
+          Cminus: gradeCounts.gCminus,
+          Dplus: gradeCounts.gDplus,
+          D: gradeCounts.gD,
+          Dminus: gradeCounts.gDminus,
+          E: gradeCounts.gE,
+          X: gradeCounts.gX,
+          Y: gradeCounts.gY,
+          Z: gradeCounts.gZ
+        },
+        totalPoints: totalPts,
+        currentMean: Number(currentMean.toFixed(2)),
+        previousMeans: {
+          threeYearsAgo: toFloat(document.getElementById('meanYr3').value),
+          twoYearsAgo: toFloat(document.getElementById('meanYr2').value),
+          lastYear: lastYearMean
+        },
+        deviationFromLastYear: Number(deviation.toFixed(2)),
+        meanGrade: meanGrade,
+        year: new Date().getFullYear(),
+        createdAt: new Date().toISOString()
+      };
+
+      try {
+        // push to /overallPerformance
+        const newRef = firebase.database().ref('overallPerformance').push();
+        await newRef.set(payload);
+        // also store knec & institution to localStorage so next forms get them
+        if (payload.knec) localStorage.setItem('knec', payload.knec);
+        if (payload.institution) localStorage.setItem('institution', payload.institution);
+
+        alert('Overall performance saved successfully.');
+        // redirect to gender.html (next page)
+        window.location.href = 'gender.html';
+      } catch(err){
+        console.error('save error', err);
+        alert('Failed to save data: ' + (err && err.message ? err.message : err));
+      }
+    });
+
+    // Logout handling (if you use auth)
+    document.getElementById('logoutBtn').addEventListener('click', async () => {
+      try {
+        await auth.signOut();
+      } catch(e){
+        // ignore if not using auth or already signed out
+      } finally {
+        window.location.href = 'index.html';
+      }
+    });
+
+  </script>
+</body>
+</html>
