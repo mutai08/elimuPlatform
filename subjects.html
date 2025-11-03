@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Subjects Performance — Effective 40</title>
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+  <style>
+    body {
+      font-family: "Poppins", sans-serif;
+      background: url('background.jpg') center/cover no-repeat fixed;
+      margin: 0;
+      color: #fff;
+    }
+    nav {
+      width: 100%;
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 200;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 28px;
+      background: rgba(0, 0, 0, 0.65);
+      backdrop-filter: blur(6px);
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.4);
+    }
+    .nav-left { font-weight: 700; font-size: 20px; color: #fff; }
+    .nav-links { display: flex; gap: 18px; align-items: center; }
+    .nav-links a {
+      color: #fff; text-decoration: none; font-weight: 500;
+      padding: 6px 10px; border-radius: 6px; transition: .22s;
+    }
+    .nav-links a:hover, .nav-links a.active {
+      color: #ff9800; text-shadow: 0 0 10px #ff9800;
+      background: rgba(255, 255, 255, 0.03);
+    }
+    .btn-logout {
+      background: #ff9800; color: #fff; border: none;
+      padding: 8px 12px; border-radius: 8px; cursor: pointer;
+      font-weight: 600;
+    }
+    .btn-logout:hover { transform: translateY(-1px); }
+    .page-wrap { display: flex; flex-direction: column; align-items: center; padding: 120px 18px 40px; }
+    .card {
+      width: 100%; max-width: 980px; background: rgba(0, 0, 0, 0.65);
+      border-radius: 14px; padding: 26px; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+    }
+    .subject-title {
+      text-align: center; color: #ffcf9b; margin-bottom: 20px; font-size: 22px;
+    }
+    .means-row {
+      display: flex; gap: 12px; justify-content: center; margin-bottom: 20px; flex-wrap: wrap;
+    }
+    .means-row input {
+      padding: 8px; border-radius: 8px; border: none; width: 100px;
+      text-align: center; background: rgba(255, 255, 255, 0.07); color: #fff;
+    }
+    .means-row label { font-size: 13px; color: #ffdca8; display: block; text-align: center; }
+    .grade-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
+      background: rgba(255, 255, 255, 0.02); padding: 12px; border-radius: 10px;
+    }
+    .grade-item { display: flex; flex-direction: column; gap: 6px; }
+    .grade-item label { font-size: 13px; color: #ffdca8; }
+    .grade-item input {
+      padding: 10px; border-radius: 8px; border: none;
+      background: rgba(255, 255, 255, 0.07); color: #fff; text-align: center;
+    }
+    .calc-panel {
+      display: flex; gap: 12px; margin-top: 10px; flex-wrap: wrap;
+      background: rgba(255, 255, 255, 0.02); padding: 12px; border-radius: 10px;
+    }
+    .calc-item {
+      flex: 1; min-width: 180px; padding: 10px; border-radius: 8px;
+      background: rgba(0, 0, 0, 0.35); text-align: center;
+    }
+    .calc-item .label { font-size: 13px; color: #ffdca8; }
+    .calc-item .value { font-size: 20px; font-weight: 700; color: #fff; margin-top: 6px; }
+    .btn-row { text-align: right; margin-top: 18px; }
+    .btn-submit {
+      background: #ff9800; color: #000; border: none; padding: 12px 18px;
+      border-radius: 10px; font-weight: 700; cursor: pointer;
+    }
+    .btn-submit:hover { transform: scale(1.02); }
+    @media(max-width:900px) {
+      .card{padding:18px}
+      .grade-grid{grid-template-columns:repeat(2,1fr)}
+    }
+  </style>
+</head>
+
+<body>
+  <nav>
+    <div class="nav-left">Effective 40</div>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="institutions.html">Institutions</a>
+      <a href="boys.html">Boys</a>
+      <a href="girls.html">Girls</a>
+      <a href="subjects.html" class="active">Subjects</a>
+      <a href="analytics.html">Analytics</a>
+    </div>
+    <button class="btn-logout" id="logoutBtn">Logout</button>
+  </nav>
+
+  <div class="page-wrap">
+    <div class="card">
+      <h1 class="subject-title" id="subjectTitle">Subject: English</h1>
+
+      <div class="means-row">
+        <div><label>2024 Mean</label><input type="number" id="mean2024" value="0" step="0.0001"></div>
+        <div><label>2023 Mean</label><input type="number" id="mean2023" value="0" step="0.0001"></div>
+        <div><label>2022 Mean</label><input type="number" id="mean2022" value="0" step="0.0001"></div>
+      </div>
+
+      <div class="grade-grid" id="gradeInputs"></div>
+
+      <div class="calc-panel">
+        <div class="calc-item"><div class="label">Total Points</div><div class="value" id="totalPoints">0</div></div>
+        <div class="calc-item"><div class="label">Current Mean</div><div class="value" id="currentMean">0.0000</div></div>
+        <div class="calc-item"><div class="label">Deviation (vs 2024)</div><div class="value" id="deviation">0.0000</div></div>
+        <div class="calc-item"><div class="label">Mean Grade</div><div class="value" id="meanGrade">E</div></div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn-submit" id="prevBtn">Previous</button>
+        <button class="btn-submit" id="nextBtn">Next</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+
+  <script>
+    // Firebase Config
+    const firebaseConfig = {
+      apiKey: "AIzaSyBjwM3I1afnA1hKeuhC4FndPC00suUiKHQ",
+      authDomain: "effective40-64d24.firebaseapp.com",
+      databaseURL: "https://effective40-64d24-default-rtdb.firebaseio.com",
+      projectId: "effective40-64d24",
+      storageBucket: "effective40-64d24.firebasestorage.app",
+      messagingSenderId: "99811191192",
+      appId: "1:99811191192:web:096d9fb7d2958b875523ed"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    const subjects = ["English","Kiswahili","Mathematics","Biology","Physics","Chemistry","History","Geography","C.R.E","Agriculture","Business Studies","Computer Studies","Home Science","Music","Drawing & Design","Art & Design","French"];
+    let currentIndex = 0;
+
+    const gradeMap = {A:12, 'A-':11, 'B+':10, B:9, 'B-':8, 'C+':7, C:6, 'C-':5, 'D+':4, D:3, 'D-':2, E:1, X:0, Y:0, Z:0};
+
+    function loadSubjectForm(){
+      const subj = subjects[currentIndex];
+      document.getElementById('subjectTitle').textContent = `Subject: ${subj}`;
+      const grid = document.getElementById('gradeInputs');
+      grid.innerHTML = '';
+      Object.keys(gradeMap).forEach(g=>{
+        const div=document.createElement('div');
+        div.className='grade-item';
+        div.innerHTML=`<label>${g}</label><input type="number" id="${g}" value="0" min="0">`;
+        grid.appendChild(div);
+      });
+      document.querySelectorAll('#gradeInputs input').forEach(el=>el.addEventListener('input',calc));
+      calc();
+    }
+
+    function calc(){
+      let totalPts=0,totalCand=0;
+      Object.entries(gradeMap).forEach(([g,val])=>{
+        const count=Number(document.getElementById(g).value)||0;
+        totalPts+=count*val;
+        if(val>0) totalCand+=count;
+      });
+      const currMean=totalCand>0?(totalPts/totalCand):0;
+      document.getElementById('totalPoints').textContent=totalPts;
+      document.getElementById('currentMean').textContent=currMean.toFixed(4);
+      const lastYearMean = Number(document.getElementById('mean2024').value) || 0;
+      const deviation = currMean - lastYearMean;
+      document.getElementById('deviation').textContent = deviation.toFixed(4);
+      const meanGrade = Object.entries(gradeMap).find(([k,v])=>currMean>=v-0.5)?.[0]||'E';
+      document.getElementById('meanGrade').textContent=meanGrade;
+    }
+
+    async function saveSubject(){
+      const subj = subjects[currentIndex];
+      const data = {
+        subject: subj,
+        previousMeans: {
+          mean2024: Number(document.getElementById('mean2024').value)||0,
+          mean2023: Number(document.getElementById('mean2023').value)||0,
+          mean2022: Number(document.getElementById('mean2022').value)||0
+        },
+        grades: {},
+        totalPoints: Number(document.getElementById('totalPoints').textContent),
+        mean: Number(document.getElementById('currentMean').textContent),
+        deviation: Number(document.getElementById('deviation').textContent),
+        meanGrade: document.getElementById('meanGrade').textContent,
+        createdAt: new Date().toISOString()
+      };
+      Object.keys(gradeMap).forEach(g=>{
+        data.grades[g] = Number(document.getElementById(g).value)||0;
+      });
+      await db.ref('subjectsPerformance').push(data);
+    }
+
+    document.getElementById('nextBtn').addEventListener('click', async ()=>{
+      await saveSubject();
+      if(currentIndex < subjects.length-1){
+        currentIndex++;
+        loadSubjectForm();
+      } else {
+        alert('All subjects submitted successfully!');
+        window.location.href = 'analytics.html';
+      }
+    });
+
+    document.getElementById('prevBtn').addEventListener('click', ()=>{
+      if(currentIndex > 0){
+        currentIndex--;
+        loadSubjectForm();
+      }
+    });
+
+    document.querySelectorAll('#mean2024,#mean2023,#mean2022').forEach(el=>el.addEventListener('input',calc));
+    loadSubjectForm();
+  </script>
+</body>
+</html>

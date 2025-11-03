@@ -55,6 +55,10 @@
       background: rgba(255,255,255,0.2);
       color: white;
     }
+    input:focus, select:focus {
+      outline: 2px solid #00c3ff;
+      box-shadow: 0 0 10px #00c3ff;
+    }
     button {
       width: 100%;
       margin-top: 20px;
@@ -74,11 +78,13 @@
 </head>
 <body>
   <div class="navbar">
-    <a href="index.html" id="homeBtn">Home</a>
+    <a href="index.html">Home</a>
     <a href="institutions.html" class="active">Institutions</a>
     <a href="overall.html">Overall</a>
-    <a href="gender.html">Gender</a>
+    <a href="boys.html">Boys</a>
+    <a href="girls.html">Girls</a>
     <a href="subjects.html">Subjects</a>
+    <a href="analytics.html">Analytics</a>
   </div>
 
   <div class="container">
@@ -89,10 +95,12 @@
         <input type="date" id="date" required />
 
         <label>KNEC Code:</label>
-        <input type="text" id="knecCode" placeholder="e.g. 09203402" required />
+        <input list="knecList" id="knecCode" placeholder="Select or type KNEC code" required />
+        <datalist id="knecList"></datalist>
 
         <label>Institution Name:</label>
-        <input type="text" id="institution" placeholder="e.g. Kerugoya Boys" required />
+        <input list="institutionList" id="institution" placeholder="Select or type Institution" required />
+        <datalist id="institutionList"></datalist>
 
         <label>Category:</label>
         <select id="category" required>
@@ -133,7 +141,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+    import { getDatabase, ref, get, push, set } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyBjwM3I1afnA1hKeuhC4FndPC00suUiKHQ",
@@ -149,6 +157,43 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
+    let institutionsData = {};
+
+    // Load existing schools into datalist
+    async function loadInstitutions() {
+      const snapshot = await get(ref(db, "institutions"));
+      if (snapshot.exists()) {
+        institutionsData = snapshot.val();
+        const institutionList = document.getElementById("institutionList");
+        const knecList = document.getElementById("knecList");
+
+        Object.values(institutionsData).forEach((school) => {
+          const instOption = document.createElement("option");
+          instOption.value = school.institution;
+          institutionList.appendChild(instOption);
+
+          const knecOption = document.createElement("option");
+          knecOption.value = school.knecCode;
+          knecList.appendChild(knecOption);
+        });
+      }
+    }
+    loadInstitutions();
+
+    // Auto-fill institution when KNEC is selected
+    document.getElementById("knecCode").addEventListener("input", () => {
+      const knecValue = document.getElementById("knecCode").value.trim();
+      const school = Object.values(institutionsData).find(s => s.knecCode === knecValue);
+      if (school) {
+        document.getElementById("institution").value = school.institution;
+        document.getElementById("category").value = school.category;
+        document.getElementById("zone").value = school.zone;
+        document.getElementById("type").value = school.type;
+        document.getElementById("schoolType").value = school.schoolType;
+      }
+    });
+
+    // Save data to Firebase
     document.getElementById("institutionForm").addEventListener("submit", async (e) => {
       e.preventDefault();
       const data = {
@@ -161,16 +206,12 @@
         schoolType: schoolType.value
       };
 
-      // save to firebase
       await set(push(ref(db, "institutions")), data);
-
-      // store to localStorage for other pages
       localStorage.setItem("currentInstitution", JSON.stringify(data));
 
-      alert("Institution Saved!");
+      alert("Institution saved successfully!");
       window.location.href = "overall.html";
     });
   </script>
 </body>
 </html>
-

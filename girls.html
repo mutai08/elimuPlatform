@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Overall Performance — Effective 40</title>
+  <title>Girls Performance — Effective 40</title>
 
   <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
   <style>
@@ -46,6 +46,8 @@
     .prev-item input{width:100%;padding:8px;border-radius:8px;background:rgba(255,255,255,0.07);border:none;color:#fff}
     .btn-submit{background:#ff9800;color:#000;border:none;padding:12px 18px;border-radius:10px;font-weight:700;cursor:pointer;}
     .btn-submit:hover{transform:scale(1.02)}
+    .btn-back{background:#ccc;color:#000;border:none;padding:12px 18px;border-radius:10px;font-weight:700;cursor:pointer;margin-right:10px;}
+    .btn-back:hover{transform:scale(1.02)}
     @media(max-width:900px){.grid{grid-template-columns:1fr}.card{padding:18px}}
   </style>
 </head>
@@ -56,23 +58,24 @@
   <div class="nav-links">
     <a href="index.html">Home</a>
     <a href="institutions.html">Institutions</a>
-    <a href="boys.html">Boys Performance</a>
-    <a href="girls.html">Girls Performance</a>  
+    <a href="overall.html">Overall</a>
+    <a href="girls.html" class="active">Girls Performance</a>
     <a href="subjects.html">Subjects</a>
-    <a href="analytics.html">Analytics Dashboard</a>
+    <a href="analytics.html">Analytics</a>
   </div>
   <button class="btn-logout" id="logoutBtn">Logout</button>
 </nav>
 
 <div class="page-wrap">
   <div class="card">
-    <h1 style="color:#ffcf9b">Overall Performance Entry</h1>
-    <p style="font-size:13px;color:#ddd;margin-bottom:20px">Enter the grade distribution and previous means. Calculations are automatic.</p>
+    <h1 style="color:#ffcf9b">Girls’ Performance Entry</h1>
+    <p style="font-size:13px;color:#ddd;margin-bottom:20px">Enter grade distribution for girls. You may input 0 where applicable.</p>
+
     <div class="grid">
       <div class="panel">
         <div class="field"><label>KNEC Code</label><input id="knecField" type="text" disabled /></div>
         <div class="field"><label>Institution</label><input id="instField" type="text" disabled /></div>
-        <div class="field"><label>Candidates Entry (Auto)</label><input id="entryField" type="number" value="0" disabled/></div>
+        <div class="field"><label>Candidates (Girls)</label><input id="entryField" type="number" value="0" disabled/></div>
         <div><label>Previous Means (3 years)</label>
           <div class="previous-means">
             <div class="prev-item"><input id="meanYr3" placeholder="3 yrs ago" type="number" step="0.0001"></div>
@@ -83,34 +86,21 @@
       </div>
 
       <div>
-        <div class="grade-grid">
-          <div class="grade-item"><label>A</label><input type="number" id="gA" value="0"></div>
-          <div class="grade-item"><label>A-</label><input type="number" id="gAminus" value="0"></div>
-          <div class="grade-item"><label>B+</label><input type="number" id="gBplus" value="0"></div>
-          <div class="grade-item"><label>B</label><input type="number" id="gB" value="0"></div>
-          <div class="grade-item"><label>B-</label><input type="number" id="gBminus" value="0"></div>
-          <div class="grade-item"><label>C+</label><input type="number" id="gCplus" value="0"></div>
-          <div class="grade-item"><label>C</label><input type="number" id="gC" value="0"></div>
-          <div class="grade-item"><label>C-</label><input type="number" id="gCminus" value="0"></div>
-          <div class="grade-item"><label>D+</label><input type="number" id="gDplus" value="0"></div>
-          <div class="grade-item"><label>D</label><input type="number" id="gD" value="0"></div>
-          <div class="grade-item"><label>D-</label><input type="number" id="gDminus" value="0"></div>
-          <div class="grade-item"><label>E</label><input type="number" id="gE" value="0"></div>
-          <div class="grade-item"><label>X</label><input type="number" id="gX" value="0"></div>
-          <div class="grade-item"><label>Y</label><input type="number" id="gY" value="0"></div>
-          <div class="grade-item"><label>Z</label><input type="number" id="gZ" value="0"></div>
+        <div class="grade-grid" id="gradesGrid">
+          <!-- Grade Fields will load here -->
         </div>
 
         <div class="calc-panel">
           <div class="calc-item"><div class="label">Total Points</div><div class="value" id="totalPoints">0</div></div>
           <div class="calc-item"><div class="label">Current Mean</div><div class="value" id="currentMean">0.0000</div></div>
-          <div class="calc-item"><div class="label">Last Year Mean</div><div class="value" id="lastYearMean">0.0000</div></div>
           <div class="calc-item"><div class="label">Deviation</div><div class="value" id="deviation">0.0000</div></div>
           <div class="calc-item"><div class="label">Mean Grade</div><div class="value" id="meanGrade">E</div></div>
         </div>
       </div>
     </div>
+
     <div class="submit-row" style="text-align:right;margin-top:16px">
+      <button class="btn-back" id="backBtn">← Back to Boys</button>
       <button class="btn-submit" id="saveBtn">Save & Continue</button>
     </div>
   </div>
@@ -121,6 +111,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 
 <script>
+// Firebase setup
 const firebaseConfig = {
   apiKey: "AIzaSyBjwM3I1afnA1hKeuhC4FndPC00suUiKHQ",
   authDomain: "effective40-64d24.firebaseapp.com",
@@ -128,105 +119,94 @@ const firebaseConfig = {
   projectId: "effective40-64d24",
   storageBucket: "effective40-64d24.firebasestorage.app",
   messagingSenderId: "99811191192",
-  appId: "1:99811191192:web:096d9fb7d2958b875523ed",
-  measurementId: "G-JVNFJ8JY53"
+  appId: "1:99811191192:web:096d9fb7d2958b875523ed"
 };
-
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 const auth = firebase.auth();
 
-// Field references
-const ids = ['gA','gAminus','gBplus','gB','gBminus','gCplus','gC','gCminus','gDplus','gD','gDminus','gE','gX','gY','gZ'];
-const weightMap = {gA:12,gAminus:11,gBplus:10,gB:9,gBminus:8,gCplus:7,gC:6,gCminus:5,gDplus:4,gD:3,gDminus:2,gE:1,gX:0,gY:0,gZ:0};
+// Grades setup
+const grades = ["A","A-","B+","B","B-","C+","C","C-","D+","D","D-","E","X","Y","Z"];
+const grid = document.getElementById("gradesGrid");
+grades.forEach(g=>{
+  const div=document.createElement("div");
+  div.className="grade-item";
+  div.innerHTML=`<label>${g}</label><input type="number" id="g${g.replace('+','plus').replace('-','minus')}" value="0" min="0">`;
+  grid.appendChild(div);
+});
 
-// Auto-fill institution and knec
+// Grade weights
+const weightMap = {A:12,"Aminus":11,"Bplus":10,B:9,"Bminus":8,"Cplus":7,C:6,"Cminus":5,"Dplus":4,D:3,"Dminus":2,E:1,X:0,Y:0,Z:0};
+
+// Autofill institution details
 document.getElementById('instField').value = localStorage.getItem('institution') || '';
 document.getElementById('knecField').value = localStorage.getItem('knec') || '';
 
-// Helper to parse numbers
 function num(v){const n=parseFloat(v);return isNaN(n)?0:n;}
 
-// Recalculate all stats
 function recalc(){
-  let totalPts=0;
-  let totalCand=0;
-
-  ids.forEach(id=>{
+  let totalPts=0, totalCand=0;
+  grades.forEach(g=>{
+    const id="g"+g.replace('+','plus').replace('-','minus');
     const val=num(document.getElementById(id).value);
-    if(['gA','gAminus','gBplus','gB','gBminus','gCplus','gC','gCminus','gDplus','gD','gDminus','gE'].includes(id)){
-      totalCand+=val;
-    }
-    totalPts += val*(weightMap[id]||0);
+    if(["X","Y","Z"].includes(g)===false) totalCand+=val;
+    totalPts += val*(weightMap[g.replace('+','plus').replace('-','minus')]||0);
   });
+  document.getElementById('entryField').value = totalCand;
+  const mean = totalCand>0?(totalPts/totalCand):0;
+  const dev = mean - num(document.getElementById('meanYr1').value);
+  document.getElementById('totalPoints').textContent=totalPts;
+  document.getElementById('currentMean').textContent=mean.toFixed(4);
+  document.getElementById('deviation').textContent=dev.toFixed(4);
 
-  document.getElementById('entryField').value = totalCand; // auto-sum candidates
-
-  const entry = totalCand;
-  const currMean = entry>0?(totalPts/entry):0;
-  const lastYr = num(document.getElementById('meanYr1').value);
-  const deviation = currMean - lastYr;
-
-  document.getElementById('totalPoints').textContent = totalPts;
-  document.getElementById('currentMean').textContent = currMean.toFixed(4);
-  document.getElementById('lastYearMean').textContent = lastYr.toFixed(4);
-  document.getElementById('deviation').textContent = deviation.toFixed(4);
-
-  const U = currMean;
   let grade='E';
-  if(U>=11.5)grade='A';
-  else if(U>=10.5)grade='A-';
-  else if(U>=9.5)grade='B+';
-  else if(U>=8.5)grade='B';
-  else if(U>=7.5)grade='B-';
-  else if(U>=6.5)grade='C+';
-  else if(U>=5.5)grade='C';
-  else if(U>=4.5)grade='C-';
-  else if(U>=3.5)grade='D+';
-  else if(U>=2.5)grade='D';
-  else if(U>=1.5)grade='D-';
-  document.getElementById('meanGrade').textContent = grade;
+  if(mean>=11.5)grade='A';
+  else if(mean>=10.5)grade='A-';
+  else if(mean>=9.5)grade='B+';
+  else if(mean>=8.5)grade='B';
+  else if(mean>=7.5)grade='B-';
+  else if(mean>=6.5)grade='C+';
+  else if(mean>=5.5)grade='C';
+  else if(mean>=4.5)grade='C-';
+  else if(mean>=3.5)grade='D+';
+  else if(mean>=2.5)grade='D';
+  else if(mean>=1.5)grade='D-';
+  document.getElementById('meanGrade').textContent=grade;
 }
+document.querySelectorAll('input[type="number"]').forEach(i=>i.addEventListener('input',recalc));
 
-document.querySelectorAll('input[type="number"]').forEach(el=>el.addEventListener('input',recalc));
-
-document.getElementById('saveBtn').addEventListener('click', async ()=>{
+document.getElementById('saveBtn').addEventListener('click',async()=>{
   const knec=document.getElementById('knecField').value;
   const inst=document.getElementById('instField').value;
   const entry=num(document.getElementById('entryField').value);
-  if(entry<=0){alert('Enter valid Candidates Entry.');return;}
-
-  const totalPts=num(document.getElementById('totalPoints').textContent);
-  const currentMean=num(document.getElementById('currentMean').textContent);
-  const lastYearMean=num(document.getElementById('lastYearMean').textContent);
-  const deviation=num(document.getElementById('deviation').textContent);
-  const meanGrade=document.getElementById('meanGrade').textContent;
 
   const payload={
-    knec, institution:inst, entry,
-    totalPoints:totalPts,
-    currentMean:Number(currentMean.toFixed(4)),
+    knec,institution:inst,entry,
+    totalPoints:num(document.getElementById('totalPoints').textContent),
+    currentMean:num(document.getElementById('currentMean').textContent),
+    deviation:num(document.getElementById('deviation').textContent),
+    meanGrade:document.getElementById('meanGrade').textContent,
     previousMeans:{
-      threeYearsAgo:Number(num(document.getElementById('meanYr3').value).toFixed(4)),
-      twoYearsAgo:Number(num(document.getElementById('meanYr2').value).toFixed(4)),
-      lastYear:Number(lastYearMean.toFixed(4))
+      threeYearsAgo:num(document.getElementById('meanYr3').value),
+      twoYearsAgo:num(document.getElementById('meanYr2').value),
+      lastYear:num(document.getElementById('meanYr1').value)
     },
-    deviationFromLastYear:Number(deviation.toFixed(4)),
-    meanGrade,
-    grades:Object.fromEntries(ids.map(id=>[id,num(document.getElementById(id).value)])),
+    grades:Object.fromEntries(grades.map(g=>["g"+g.replace('+','plus').replace('-','minus'),num(document.getElementById("g"+g.replace('+','plus').replace('-','minus')).value)])),
     year:new Date().getFullYear(),
     createdAt:new Date().toISOString()
   };
 
   try{
-    await db.ref('overallPerformance').push(payload);
-    alert('Saved successfully!');
-    window.location.href='boys.html';
-  }catch(e){alert('Error saving: '+e.message);}
+    await db.ref("girlsPerformance").push(payload);
+    alert("Girls’ performance saved successfully!");
+    window.location.href="subjects.html";
+  }catch(e){alert("Error: "+e.message);}
 });
 
-document.getElementById('logoutBtn').addEventListener('click',()=>{
-  auth.signOut().then(()=>location.href='index.html');
+// Back and Logout actions
+document.getElementById("backBtn").addEventListener("click",()=>window.location.href="boys.html");
+document.getElementById("logoutBtn").addEventListener("click",()=>{
+  auth.signOut().then(()=>location.href="index.html");
 });
 </script>
 </body>
