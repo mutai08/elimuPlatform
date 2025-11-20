@@ -12,6 +12,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 </head>
+
 <body>
   <div class="wrapper">
     <nav class="nav">
@@ -21,11 +22,6 @@
       <div class="nav-menu" id="navMenu">
         <ul>
           <li><a href="index.html" class="link active">Home</a></li>
-          <li><a href="#" class="link">Institutions</a></li>
-          <li><a href="#" class="link">Overall</a></li>
-          <li><a href="#" class="link">Gender </a></li>
-          <li><a href="#" class="link">Subjects</a></li>
-          <li><a href="#" class="link">Analytics Dashboard</a></li>
         </ul>
       </div>
       <div class="nav-button">
@@ -39,59 +35,71 @@
 
     <!-- Form box -->
     <div class="form-box">
-      <!-- Login form -->
+
+      <!-- LOGIN -->
       <div class="login-container" id="login">
         <div class="top">
           <span>Don't have an account? <a href="#" onclick="register()">Sign Up</a></span>
           <header>Login</header>
         </div>
+
         <div class="input-box">
           <input type="email" id="loginEmail" class="input-field" placeholder="Email" required>
           <i class="bx bx-user"></i>
         </div>
+
         <div class="input-box">
           <input type="password" id="loginPassword" class="input-field" placeholder="Password" required>
           <i class="bx bx-lock-alt"></i>
         </div>
+
         <div id="loginMessage" style="color:red; font-size: 14px;"></div>
+
         <div class="input-box">
           <input type="button" class="submit" value="Sign In" id="loginSubmit">
         </div>
       </div>
 
-      <!-- Registration form -->
+      <!-- REGISTER -->
       <div class="register-container" id="register">
         <div class="top">
           <span>Have an account? <a href="#" onclick="login()">Login</a></span>
           <header>Sign Up</header>
         </div>
+
         <div class="two-forms">
           <div class="input-box">
             <input type="text" class="input-field" placeholder="Firstname">
             <i class="bx bx-user"></i>
           </div>
+
           <div class="input-box">
             <input type="text" class="input-field" placeholder="Lastname">
             <i class="bx bx-user"></i>
           </div>
         </div>
+
         <div class="input-box">
           <input type="email" id="registerEmail" class="input-field" placeholder="Email" required>
           <i class="bx bx-envelope"></i>
         </div>
+
         <div class="input-box">
           <input type="password" id="registerPassword" class="input-field" placeholder="Password" required>
           <i class="bx bx-lock-alt"></i>
         </div>
+
         <div id="registerMessage" style="color:red; font-size: 14px;"></div>
+
         <div class="input-box">
           <input type="button" class="submit" value="Register" id="registerSubmit">
         </div>
       </div>
+
     </div>
   </div>
 
-  <!-- Menu toggle script -->
+  <!-- Menu toggle -->
   <script>
     function myMenuFunction() {
       var i = document.getElementById("navMenu");
@@ -103,7 +111,7 @@
     }
   </script>
 
-  <!-- Form switch script -->
+  <!-- Form switching -->
   <script>
     var a = document.getElementById("loginBtn");
     var b = document.getElementById("registerBtn");
@@ -129,24 +137,22 @@
     }
   </script>
 
-  <!-- Firebase logic -->
+  <!-- Firebase Auth Logic -->
   <script>
     const firebaseConfig = {
-   apiKey: "AIzaSyBjwM3I1afnA1hKeuhC4FndPC00suUiKHQ",
-  authDomain: "effective40-64d24.firebaseapp.com",
-  databaseURL: "https://effective40-64d24-default-rtdb.firebaseio.com",
-  projectId: "effective40-64d24",
-  storageBucket: "effective40-64d24.firebasestorage.app",
-  messagingSenderId: "99811191192",
-  appId: "1:99811191192:web:096d9fb7d2958b875523ed",
-  measurementId: "G-JVNFJ8JY53"
+      apiKey: "AIzaSyBjwM3I1afnA1hKeuhC4FndPC00suUiKHQ",
+      authDomain: "effective40-64d24.firebaseapp.com",
+      databaseURL: "https://effective40-64d24-default-rtdb.firebaseio.com",
+      projectId: "effective40-64d24",
+      storageBucket: "effective40-64d24.firebasestorage.app",
+      messagingSenderId: "99811191192",
+      appId: "1:99811191192:web:096d9fb7d2958b875523ed",
+      measurementId: "G-JVNFJ8JY53"
     };
 
-    // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
 
-    // Select DOM elements
     const loginEmail = document.getElementById('loginEmail');
     const loginPass = document.getElementById('loginPassword');
     const loginBtnSubmit = document.getElementById('loginSubmit');
@@ -157,7 +163,7 @@
     const registerBtnSubmit = document.getElementById('registerSubmit');
     const registerMessage = document.getElementById('registerMessage');
 
-    // Register
+    // Registration
     registerBtnSubmit.addEventListener('click', (e) => {
       e.preventDefault();
       if (!registerEmail.value || !registerPass.value) {
@@ -182,6 +188,7 @@
         loginMessage.textContent = "Please enter email and password.";
         return;
       }
+
       auth.signInWithEmailAndPassword(loginEmail.value, loginPass.value)
         .then(() => {
           loginMessage.style.color = "green";
@@ -196,25 +203,25 @@
         });
     });
 
-    // Auth state listener
+    // PROTECTED PAGE LOGIC
     auth.onAuthStateChanged(user => {
-      if (user) {
-        if (window.location.pathname.endsWith("index.html") || window.location.pathname === "/") {
-          window.location.href = "institutions.html";
-        }
-      } else {
-        if (window.location.pathname.endsWith("institutions.html")) {
-          window.location.href = "index.html";
-        }
-      }
-    });
+      const protectedPages = [
+        "institutions.html",
+        "boys.html",
+        "girls.html",
+        "overall.html"
+        ];
 
-    // Logout function (can be used later)
-    function logout() {
-      auth.signOut()
-        .then(() => alert('You have logged out.'))
-        .catch(error => alert(error.message));
-    }
+      const page = window.location.pathname.split("/").pop();
+
+      // If user is NOT logged in and page is protected → redirect to login
+      if (!user && protectedPages.includes(page)) {
+        window.location.href = "index.html";
+      }
+
+      // No auto-redirect from index.html anymore ✔
+    });
   </script>
+
 </body>
 </html>

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Institution Details</title>
+  <title>Institution Details — Effective 40</title>
   <style>
     body {
       background: url('background.jpg') no-repeat center center fixed;
@@ -18,11 +18,12 @@
       align-items: center;
       background-color: rgba(0, 0, 0, 0.7);
       padding: 10px 0;
+      flex-wrap: wrap;
     }
     .navbar a {
       color: white;
       text-decoration: none;
-      margin: 0 15px;
+      margin: 5px 15px;
       padding: 6px 10px;
       border-radius: 6px;
       transition: all 0.3s ease;
@@ -35,17 +36,27 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 90vh;
+      min-height: 90vh;
+      padding: 20px;
     }
     .form-card {
       background: rgba(0,0,0,0.75);
-      padding: 40px;
+      padding: 35px;
       border-radius: 15px;
-      width: 420px;
+      width: 100%;
+      max-width: 420px;
       box-shadow: 0 0 25px rgba(0,195,255,0.6);
     }
-    .form-card h2 { text-align: center; color: #00c3ff; margin-bottom: 20px; }
-    label { display: block; margin-top: 10px; }
+    .form-card h2 {
+      text-align: center;
+      color: #00c3ff;
+      margin-bottom: 25px;
+    }
+    label {
+      display: block;
+      margin-top: 12px;
+      font-weight: 500;
+    }
     input, select {
       width: 100%;
       padding: 10px;
@@ -54,47 +65,53 @@
       border-radius: 5px;
       background: rgba(255,255,255,0.2);
       color: white;
+      font-size: 15px;
     }
     button {
       width: 100%;
-      margin-top: 20px;
+      margin-top: 25px;
       padding: 12px;
       border: none;
-      border-radius: 5px;
+      border-radius: 8px;
       background: #00c3ff;
       color: white;
       font-size: 16px;
+      font-weight: 600;
       cursor: pointer;
+      transition: 0.3s;
     }
     button:hover {
       background: #0086b3;
       box-shadow: 0 0 15px #00c3ff;
+      transform: translateY(-2px);
     }
   </style>
 </head>
 <body>
   <div class="navbar">
-    <a href="index.html" id="homeBtn">Home</a>
+    <a href="index.html">Home</a>
     <a href="institutions.html" class="active">Institutions</a>
     <a href="overall.html">Overall</a>
     <a href="gender.html">Gender</a>
     <a href="subjects.html">Subjects</a>
+    <a href="analytics.html">Analytics</a>
   </div>
 
   <div class="container">
     <div class="form-card">
       <h2>Institution Details</h2>
       <form id="institutionForm">
-        <label>Date:</label>
+        <label for="date">Date:</label>
         <input type="date" id="date" required />
 
-        <label>KNEC Code:</label>
-        <input type="text" id="knecCode" placeholder="e.g. 09203402" required />
+        <label for="knecCode">KNEC Code:</label>
+        <input list="knecList" id="knecCode" placeholder="Type or select KNEC Code" required />
+        <datalist id="knecList"></datalist>
 
-        <label>Institution Name:</label>
-        <input type="text" id="institution" placeholder="e.g. Kerugoya Boys" required />
+        <label for="institution">Institution Name:</label>
+        <input type="text" id="institution" placeholder="Auto-filled from KNEC" readonly required />
 
-        <label>Category:</label>
+        <label for="category">Category:</label>
         <select id="category" required>
           <option value="">--Select--</option>
           <option>SUB-COUNTY</option>
@@ -103,7 +120,7 @@
           <option>NATIONAL</option>
         </select>
 
-        <label>Zone:</label>
+        <label for="zone">Zone:</label>
         <select id="zone" required>
           <option value="">--Select--</option>
           <option>INOI</option>
@@ -111,14 +128,14 @@
           <option>GAKOIGO</option>
         </select>
 
-        <label>Type:</label>
+        <label for="type">Type:</label>
         <select id="type" required>
           <option value="">--Select--</option>
           <option>Public</option>
           <option>Private</option>
         </select>
 
-        <label>School Type:</label>
+        <label for="schoolType">School Type:</label>
         <select id="schoolType" required>
           <option value="">--Select--</option>
           <option>Boys</option>
@@ -142,35 +159,56 @@
       projectId: "effective40-64d24",
       storageBucket: "effective40-64d24.firebasestorage.app",
       messagingSenderId: "99811191192",
-      appId: "1:99811191192:web:096d9fb7d2958b875523ed",
-      measurementId: "G-JVNFJ8JY53"
+      appId: "1:99811191192:web:096d9fb7d2958b875523ed"
     };
 
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
+    // Load schools.json and populate datalist
+    let schools = [];
+    fetch("schools.json")
+      .then(res => res.json())
+      .then(data => {
+        schools = data;
+        const list = document.getElementById("knecList");
+        data.forEach(school => {
+          const option = document.createElement("option");
+          option.value = school.KNEC;
+          option.textContent = school.Institution;
+          list.appendChild(option);
+        });
+      })
+      .catch(err => console.error("Error loading schools list:", err));
+
+    // Auto-fill Institution name on selecting KNEC
+    document.getElementById("knecCode").addEventListener("input", e => {
+      const found = schools.find(s => s.KNEC === e.target.value);
+      document.getElementById("institution").value = found ? found.Institution : "";
+    });
+
+    // Handle form submission
     document.getElementById("institutionForm").addEventListener("submit", async (e) => {
       e.preventDefault();
+
+      const form = e.target;
       const data = {
-        date: date.value,
-        knecCode: knecCode.value,
-        institution: institution.value,
-        category: category.value,
-        zone: zone.value,
-        type: type.value,
-        schoolType: schoolType.value
+        date: form.date.value,
+        knecCode: form.knecCode.value,
+        institution: form.institution.value,
+        category: form.category.value,
+        zone: form.zone.value,
+        type: form.type.value,
+        schoolType: form.schoolType.value
       };
 
-      // save to firebase
       await set(push(ref(db, "institutions")), data);
 
-      // store to localStorage for other pages
       localStorage.setItem("currentInstitution", JSON.stringify(data));
 
-      alert("Institution Saved!");
+      alert("Institution Saved Successfully!");
       window.location.href = "overall.html";
     });
   </script>
 </body>
 </html>
-

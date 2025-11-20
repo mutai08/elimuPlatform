@@ -4,6 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>Subjects Performance — Effective 40</title>
+
   <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
   <style>
     body {
@@ -48,28 +49,30 @@
       border-radius: 14px; padding: 26px; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
     }
     .subject-title {
-      text-align: center; color: #ffcf9b; margin-bottom: 20px; font-size: 22px;
+      text-align: center; color: #ffcf9b; margin-bottom: 14px; font-size: 22px;
     }
+    .meta-row { display:flex; gap:12px; justify-content:center; margin-bottom:12px; flex-wrap:wrap; }
+    .meta-row input { padding:8px; border-radius:8px; border:none; background: rgba(255,255,255,0.06); color:#fff; text-align:center; min-width:160px; }
     .means-row {
-      display: flex; gap: 12px; justify-content: center; margin-bottom: 20px; flex-wrap: wrap;
+      display: flex; gap: 12px; justify-content: center; margin-bottom: 18px; flex-wrap: wrap;
     }
     .means-row input {
-      padding: 8px; border-radius: 8px; border: none; width: 100px;
+      padding: 8px; border-radius: 8px; border: none; width: 120px;
       text-align: center; background: rgba(255, 255, 255, 0.07); color: #fff;
     }
-    .means-row label { font-size: 13px; color: #ffdca8; display: block; text-align: center; }
+    .means-row label { font-size: 13px; color: #ffdca8; display: block; text-align: center; margin-bottom:6px; }
     .grade-grid {
       display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
       background: rgba(255, 255, 255, 0.02); padding: 12px; border-radius: 10px;
     }
     .grade-item { display: flex; flex-direction: column; gap: 6px; }
-    .grade-item label { font-size: 13px; color: #ffdca8; }
+    .grade-item label { font-size: 13px; color: #ffdca8; text-align:center; }
     .grade-item input {
       padding: 10px; border-radius: 8px; border: none;
       background: rgba(255, 255, 255, 0.07); color: #fff; text-align: center;
     }
     .calc-panel {
-      display: flex; gap: 12px; margin-top: 10px; flex-wrap: wrap;
+      display: flex; gap: 12px; margin-top: 12px; flex-wrap: wrap;
       background: rgba(255, 255, 255, 0.02); padding: 12px; border-radius: 10px;
     }
     .calc-item {
@@ -78,7 +81,7 @@
     }
     .calc-item .label { font-size: 13px; color: #ffdca8; }
     .calc-item .value { font-size: 20px; font-weight: 700; color: #fff; margin-top: 6px; }
-    .btn-row { text-align: right; margin-top: 18px; }
+    .btn-row { text-align: right; margin-top: 18px; display:flex; gap:10px; justify-content:flex-end; }
     .btn-submit {
       background: #ff9800; color: #000; border: none; padding: 12px 18px;
       border-radius: 10px; font-weight: 700; cursor: pointer;
@@ -97,6 +100,7 @@
     <div class="nav-links">
       <a href="index.html">Home</a>
       <a href="institutions.html">Institutions</a>
+      <a href="overall.html">Overall</a>
       <a href="boys.html">Boys</a>
       <a href="girls.html">Girls</a>
       <a href="subjects.html" class="active">Subjects</a>
@@ -107,15 +111,30 @@
 
   <div class="page-wrap">
     <div class="card">
-      <h1 class="subject-title" id="subjectTitle">Subject: English</h1>
+      <h1 class="subject-title" id="subjectTitle">Subject</h1>
 
-      <div class="means-row">
-        <div><label>2024 Mean</label><input type="number" id="mean2024" value="0" step="0.0001"></div>
-        <div><label>2023 Mean</label><input type="number" id="mean2023" value="0" step="0.0001"></div>
-        <div><label>2022 Mean</label><input type="number" id="mean2022" value="0" step="0.0001"></div>
+      <div class="meta-row">
+        <input id="knecField" placeholder="KNEC Code" disabled />
+        <input id="instField" placeholder="Institution" disabled />
+        <input id="entryField" placeholder="Candidates Entry (A–E)" disabled />
       </div>
 
-      <div class="grade-grid" id="gradeInputs"></div>
+      <div class="means-row">
+        <div>
+          <label for="mean2024">2024 Mean</label>
+          <input id="mean2024" type="number" step="0.0001" min="0" placeholder="0.0000">
+        </div>
+        <div>
+          <label for="mean2023">2023 Mean</label>
+          <input id="mean2023" type="number" step="0.0001" min="0" placeholder="0.0000">
+        </div>
+        <div>
+          <label for="mean2022">2022 Mean</label>
+          <input id="mean2022" type="number" step="0.0001" min="0" placeholder="0.0000">
+        </div>
+      </div>
+
+      <div class="grade-grid" id="gradeInputs" aria-live="polite"></div>
 
       <div class="calc-panel">
         <div class="calc-item"><div class="label">Total Points</div><div class="value" id="totalPoints">0</div></div>
@@ -126,17 +145,17 @@
 
       <div class="btn-row">
         <button class="btn-submit" id="prevBtn">Previous</button>
-        <button class="btn-submit" id="nextBtn">Next</button>
+        <button class="btn-submit" id="nextBtn">Save & Next</button>
       </div>
     </div>
   </div>
 
-  <!-- Firebase SDK -->
+  <!-- Firebase compat -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 
   <script>
-    // Firebase Config
+    // ===== Firebase config =====
     const firebaseConfig = {
       apiKey: "AIzaSyBjwM3I1afnA1hKeuhC4FndPC00suUiKHQ",
       authDomain: "effective40-64d24.firebaseapp.com",
@@ -149,84 +168,296 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    const subjects = ["English","Kiswahili","Mathematics","Biology","Physics","Chemistry","History","Geography","C.R.E","Agriculture","Business Studies","Computer Studies","Home Science","Music","Drawing & Design","Art & Design","French"];
+    // ===== Subjects list with codes (you confirmed full list) =====
+    const subjects = [
+      { code: 101, name: "English" },
+      { code: 102, name: "Kiswahili" },
+      { code: 121, name: "Mathematics" },
+      { code: 231, name: "Biology" },
+      { code: 232, name: "Physics" },
+      { code: 233, name: "Chemistry" },
+      { code: 311, name: "History & Government" },
+      { code: 312, name: "Geography" },
+      { code: 313, name: "C.R.E" },
+      { code: 441, name: "Home Science" },
+      { code: 442, name: "Art & Design" },
+      { code: 443, name: "Agriculture" },
+      { code: 565, name: "Business Studies" },
+      { code: 451, name: "Computer Studies" },
+      { code: 449, name: "Drawing & Design" },
+      { code: 511, name: "Music" },
+      { code: 501, name: "French" },
+      { code: 502, name: "German" }
+    ];
+
+    // Grade weight map
+    const gradeMap = {
+      A:12, 'A-':11, 'B+':10, B:9, 'B-':8, 'C+':7, C:6, 'C-':5,
+      'D+':4, D:3, 'D-':2, E:1, X:0, Y:0, Z:0
+    };
+
+    // UI refs
+    const subjectTitle = document.getElementById('subjectTitle');
+    const gradeInputs = document.getElementById('gradeInputs');
+    const mean2024 = document.getElementById('mean2024');
+    const mean2023 = document.getElementById('mean2023');
+    const mean2022 = document.getElementById('mean2022');
+    const totalPointsEl = document.getElementById('totalPoints');
+    const currentMeanEl = document.getElementById('currentMean');
+    const deviationEl = document.getElementById('deviation');
+    const meanGradeEl = document.getElementById('meanGrade');
+    const entryField = document.getElementById('entryField');
+    const knecField = document.getElementById('knecField');
+    const instField = document.getElementById('instField');
+
     let currentIndex = 0;
 
-    const gradeMap = {A:12, 'A-':11, 'B+':10, B:9, 'B-':8, 'C+':7, C:6, 'C-':5, 'D+':4, D:3, 'D-':2, E:1, X:0, Y:0, Z:0};
+    // Try to load institution details from localStorage (two formats supported)
+    function loadInstitutionFromLocalStorage(){
+      const cur = localStorage.getItem('currentInstitution');
+      if (cur) {
+        try {
+          const obj = JSON.parse(cur);
+          if (obj && (obj.knecCode || obj.knec || obj.knecCode === "")){
+            knecField.value = obj.knecCode || obj.knec || '';
+          }
+          if (obj && (obj.institution || obj.institutionName)){
+            instField.value = obj.institution || obj.institutionName || '';
+          }
+          return;
+        } catch(e){
+          // fallthrough
+        }
+      }
+      // fallback to simple keys
+      knecField.value = localStorage.getItem('knec') || localStorage.getItem('knecCode') || '';
+      instField.value = localStorage.getItem('institution') || localStorage.getItem('institutionName') || '';
+    }
 
+    // Build grade inputs (A..Z as defined in gradeMap)
+    function buildGradeInputs(){
+      gradeInputs.innerHTML = '';
+      Object.keys(gradeMap).forEach(g => {
+        const div = document.createElement('div');
+        div.className = 'grade-item';
+        const label = document.createElement('label');
+        label.textContent = g;
+        const input = document.createElement('input');
+        input.type = 'number';
+        input.min = '0';
+        input.step = '1';
+        input.value = '0';
+        input.id = `grade_${g.replace(/\W/g,'')}`; // safe id
+        input.dataset.grade = g;
+        input.addEventListener('input', onGradeChange);
+        div.appendChild(label);
+        div.appendChild(input);
+        gradeInputs.appendChild(div);
+      });
+    }
+
+    // Get input element for a grade label
+    function gradeInputEl(g){
+      return document.getElementById(`grade_${g.replace(/\W/g,'')}`);
+    }
+
+    // Sum candidates A–E only (A, A-, B+, B, B-, C+, C, C-, D+, D, D-, E)
+    const candidatesGrades = ['A','A-','B+','B','B-','C+','C','C-','D+','D','D-','E'];
+
+    function onGradeChange(){
+      recalcAll();
+    }
+
+    // Recalculate totals, entry, mean, deviation, mean grade
+    function recalcAll(){
+      let totalPts = 0;
+      let totalCand = 0;
+      for (const [g, w] of Object.entries(gradeMap)){
+        const el = gradeInputEl(g);
+        const count = el ? Number(el.value) || 0 : 0;
+        totalPts += count * w;
+        if (candidatesGrades.includes(g)){
+          totalCand += count;
+        }
+      }
+
+      // Set the candidates entry auto (A–E)
+      entryField.value = totalCand;
+
+      const currMean = totalCand > 0 ? (totalPts / totalCand) : 0;
+      const last2024 = Number(mean2024.value) || 0;
+      const deviation = currMean - last2024;
+
+      totalPointsEl.textContent = totalPts;
+      currentMeanEl.textContent = currMean.toFixed(4);
+      deviationEl.textContent = deviation.toFixed(4);
+
+      // map current mean to grade (same thresholds as before)
+      const U = currMean;
+      let grade = 'E';
+      if (U >= 11.5) grade = 'A';
+      else if (U >= 10.5) grade = 'A-';
+      else if (U >= 9.5) grade = 'B+';
+      else if (U >= 8.5) grade = 'B';
+      else if (U >= 7.5) grade = 'B-';
+      else if (U >= 6.5) grade = 'C+';
+      else if (U >= 5.5) grade = 'C';
+      else if (U >= 4.5) grade = 'C-';
+      else if (U >= 3.5) grade = 'D+';
+      else if (U >= 2.5) grade = 'D';
+      else if (U >= 1.5) grade = 'D-';
+      else grade = 'E';
+
+      meanGradeEl.textContent = grade;
+    }
+
+    // Clear all inputs (used when loading a fresh subject)
+    function clearForm(){
+      mean2024.value = '';
+      mean2023.value = '';
+      mean2022.value = '';
+      Object.keys(gradeMap).forEach(g => {
+        const el = gradeInputEl(g);
+        if (el) el.value = '0';
+      });
+      totalPointsEl.textContent = '0';
+      currentMeanEl.textContent = '0.0000';
+      deviationEl.textContent = '0.0000';
+      meanGradeEl.textContent = 'E';
+      entryField.value = '0';
+    }
+
+    // Load a subject form; repopulate from localStorage if saved earlier
     function loadSubjectForm(){
-      const subj = subjects[currentIndex];
-      document.getElementById('subjectTitle').textContent = `Subject: ${subj}`;
-      const grid = document.getElementById('gradeInputs');
-      grid.innerHTML = '';
-      Object.keys(gradeMap).forEach(g=>{
-        const div=document.createElement('div');
-        div.className='grade-item';
-        div.innerHTML=`<label>${g}</label><input type="number" id="${g}" value="0" min="0">`;
-        grid.appendChild(div);
-      });
-      document.querySelectorAll('#gradeInputs input').forEach(el=>el.addEventListener('input',calc));
-      calc();
+      buildGradeInputs();
+      loadInstitutionFromLocalStorage();
+
+      const subject = subjects[currentIndex];
+      subjectTitle.textContent = `Subject: ${subject.name} (${subject.code})`;
+
+      // Check if previously saved in localStorage for quick edit/view
+      const savedKey = `subject_${subject.code}`;
+      const saved = localStorage.getItem(savedKey);
+      clearForm();
+
+      if (saved){
+        try {
+          const data = JSON.parse(saved);
+          // previous means
+          if (data.previousMeans){
+            mean2024.value = (data.previousMeans.mean2024 !== undefined) ? Number(data.previousMeans.mean2024).toFixed(4) : '';
+            mean2023.value = (data.previousMeans.mean2023 !== undefined) ? Number(data.previousMeans.mean2023).toFixed(4) : '';
+            mean2022.value = (data.previousMeans.mean2022 !== undefined) ? Number(data.previousMeans.mean2022).toFixed(4) : '';
+          }
+          // grades
+          if (data.grades){
+            Object.keys(gradeMap).forEach(g => {
+              const el = gradeInputEl(g);
+              if (el && data.grades[g] !== undefined) el.value = Number(data.grades[g]) || 0;
+            });
+          }
+          // update UI with recalc
+          recalcAll();
+          return;
+        } catch(e){
+          // corrupted saved value; ignore and start fresh
+          console.warn('Failed to parse saved subject data', e);
+        }
+      }
+
+      // If no saved data, ensure previous mean fields are blank (so they are not carried over)
+      mean2024.value = '';
+      mean2023.value = '';
+      mean2022.value = '';
+      recalcAll();
     }
 
-    function calc(){
-      let totalPts=0,totalCand=0;
-      Object.entries(gradeMap).forEach(([g,val])=>{
-        const count=Number(document.getElementById(g).value)||0;
-        totalPts+=count*val;
-        if(val>0) totalCand+=count;
-      });
-      const currMean=totalCand>0?(totalPts/totalCand):0;
-      document.getElementById('totalPoints').textContent=totalPts;
-      document.getElementById('currentMean').textContent=currMean.toFixed(4);
-      const lastYearMean = Number(document.getElementById('mean2024').value) || 0;
-      const deviation = currMean - lastYearMean;
-      document.getElementById('deviation').textContent = deviation.toFixed(4);
-      const meanGrade = Object.entries(gradeMap).find(([k,v])=>currMean>=v-0.5)?.[0]||'E';
-      document.getElementById('meanGrade').textContent=meanGrade;
-    }
-
-    async function saveSubject(){
-      const subj = subjects[currentIndex];
+    // Build payload & save to Realtime DB (and also localStorage cache)
+    async function saveCurrentSubject(){
+      const subject = subjects[currentIndex];
       const data = {
-        subject: subj,
+        subjectCode: subject.code,
+        subjectName: subject.name,
+        knec: knecField.value || '',
+        institution: instField.value || '',
         previousMeans: {
-          mean2024: Number(document.getElementById('mean2024').value)||0,
-          mean2023: Number(document.getElementById('mean2023').value)||0,
-          mean2022: Number(document.getElementById('mean2022').value)||0
+          mean2024: mean2024.value ? Number(mean2024.value) : 0,
+          mean2023: mean2023.value ? Number(mean2023.value) : 0,
+          mean2022: mean2022.value ? Number(mean2022.value) : 0
         },
         grades: {},
-        totalPoints: Number(document.getElementById('totalPoints').textContent),
-        mean: Number(document.getElementById('currentMean').textContent),
-        deviation: Number(document.getElementById('deviation').textContent),
-        meanGrade: document.getElementById('meanGrade').textContent,
+        totalPoints: Number(totalPointsEl.textContent) || 0,
+        currentMean: Number(currentMeanEl.textContent) || 0,
+        deviationFrom2024: Number(deviationEl.textContent) || 0,
+        meanGrade: meanGradeEl.textContent,
         createdAt: new Date().toISOString()
       };
-      Object.keys(gradeMap).forEach(g=>{
-        data.grades[g] = Number(document.getElementById(g).value)||0;
+
+      Object.keys(gradeMap).forEach(g => {
+        const el = gradeInputEl(g);
+        data.grades[g] = el ? Number(el.value) || 0 : 0;
       });
-      await db.ref('subjectsPerformance').push(data);
+
+      // Save to Firebase
+      try {
+        const newRef = db.ref('subjectsPerformance').push();
+        await newRef.set(data);
+        // also cache locally so previous button can re-populate
+        localStorage.setItem(`subject_${subject.code}`, JSON.stringify(data));
+        return { ok: true };
+      } catch (err) {
+        console.error('Failed to save subject to Firebase', err);
+        return { ok: false, error: err };
+      }
     }
 
-    document.getElementById('nextBtn').addEventListener('click', async ()=>{
-      await saveSubject();
-      if(currentIndex < subjects.length-1){
+    // Next button handler
+    document.getElementById('nextBtn').addEventListener('click', async () => {
+      // Validate: allow zero entry (school may have zero candidates) — but still save
+      // Save current subject
+      const res = await saveCurrentSubject();
+      if (!res.ok){
+        alert('Saving failed. Check console for details.');
+        return;
+      }
+      // Move next or finish
+      if (currentIndex < subjects.length - 1){
         currentIndex++;
         loadSubjectForm();
+        // scroll to top of card for UX
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       } else {
         alert('All subjects submitted successfully!');
         window.location.href = 'analytics.html';
       }
     });
 
-    document.getElementById('prevBtn').addEventListener('click', ()=>{
-      if(currentIndex > 0){
+    // Prev button handler
+    document.getElementById('prevBtn').addEventListener('click', () => {
+      if (currentIndex > 0){
         currentIndex--;
         loadSubjectForm();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else {
+        // optional: go back to previous page
+        window.location.href = 'boys.html';
       }
     });
 
-    document.querySelectorAll('#mean2024,#mean2023,#mean2022').forEach(el=>el.addEventListener('input',calc));
+    // mean inputs change triggers recalc
+    [mean2024, mean2023, mean2022].forEach(el => el.addEventListener('input', () => {
+      // keep 4 decimal places in display when user moves away
+      if (el.value !== '') {
+        // allow typing; formatting on blur
+      }
+      recalcAll();
+    }));
+    [mean2024, mean2023, mean2022].forEach(el => el.addEventListener('blur', () => {
+      if (el.value !== '') el.value = Number(el.value).toFixed(4);
+    }));
+
+    // on load
+    loadInstitutionFromLocalStorage();
     loadSubjectForm();
   </script>
 </body>
