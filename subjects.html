@@ -7,100 +7,56 @@
 
   <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
   <style>
-    body {
-      font-family: "Poppins", sans-serif;
-      background: url('background.jpg') center/cover no-repeat fixed;
-      margin: 0;
-      color: #fff;
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{
+      font-family:"Poppins",sans-serif;
+      background:url('background.jpg') center/cover no-repeat fixed;
+      margin:0;color:#fff;
     }
-    nav {
-      width: 100%;
-      position: fixed;
-      top: 0;
-      left: 0;
-      z-index: 200;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 14px 28px;
-      background: rgba(0, 0, 0, 0.65);
-      backdrop-filter: blur(6px);
-      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.4);
+    nav{
+      width:100%;position:fixed;top:0;left:0;z-index:200;
+      display:flex;justify-content:space-between;align-items:center;
+      padding:14px 22px;background:rgba(0,0,0,0.65);backdrop-filter:blur(6px);
+      box-shadow:0 4px 18px rgba(0,0,0,0.4);
     }
-    .nav-left { font-weight: 700; font-size: 20px; color: #fff; }
-    .nav-links { display: flex; gap: 18px; align-items: center; }
-    .nav-links a {
-      color: #fff; text-decoration: none; font-weight: 500;
-      padding: 6px 10px; border-radius: 6px; transition: .22s;
-    }
-    .nav-links a:hover, .nav-links a.active {
-      color: #ff9800; text-shadow: 0 0 10px #ff9800;
-      background: rgba(255, 255, 255, 0.03);
-    }
-    .btn-logout {
-      background: #ff9800; color: #fff; border: none;
-      padding: 8px 12px; border-radius: 8px; cursor: pointer;
-      font-weight: 600;
-    }
-    .btn-logout:hover { transform: translateY(-1px); }
-    .page-wrap { display: flex; flex-direction: column; align-items: center; padding: 120px 18px 40px; }
-    .card {
-      width: 100%; max-width: 980px; background: rgba(0, 0, 0, 0.65);
-      border-radius: 14px; padding: 26px; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
-    }
-    .subject-title {
-      text-align: center; color: #ffcf9b; margin-bottom: 14px; font-size: 22px;
-    }
-    .meta-row { display:flex; gap:12px; justify-content:center; margin-bottom:12px; flex-wrap:wrap; }
-    .meta-row input { padding:8px; border-radius:8px; border:none; background: rgba(255,255,255,0.06); color:#fff; text-align:center; min-width:160px; }
-    .means-row {
-      display: flex; gap: 12px; justify-content: center; margin-bottom: 18px; flex-wrap: wrap;
-    }
-    .means-row input {
-      padding: 8px; border-radius: 8px; border: none; width: 120px;
-      text-align: center; background: rgba(255, 255, 255, 0.07); color: #fff;
-    }
-    .means-row label { font-size: 13px; color: #ffdca8; display: block; text-align: center; margin-bottom:6px; }
-    .grade-grid {
-      display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
-      background: rgba(255, 255, 255, 0.02); padding: 12px; border-radius: 10px;
-    }
-    .grade-item { display: flex; flex-direction: column; gap: 6px; }
-    .grade-item label { font-size: 13px; color: #ffdca8; text-align:center; }
-    .grade-item input {
-      padding: 10px; border-radius: 8px; border: none;
-      background: rgba(255, 255, 255, 0.07); color: #fff; text-align: center;
-    }
-    .calc-panel {
-      display: flex; gap: 12px; margin-top: 12px; flex-wrap: wrap;
-      background: rgba(255, 255, 255, 0.02); padding: 12px; border-radius: 10px;
-    }
-    .calc-item {
-      flex: 1; min-width: 180px; padding: 10px; border-radius: 8px;
-      background: rgba(0, 0, 0, 0.35); text-align: center;
-    }
-    .calc-item .label { font-size: 13px; color: #ffdca8; }
-    .calc-item .value { font-size: 20px; font-weight: 700; color: #fff; margin-top: 6px; }
-    .btn-row { text-align: right; margin-top: 18px; display:flex; gap:10px; justify-content:flex-end; }
-    .btn-submit {
-      background: #ff9800; color: #000; border: none; padding: 12px 18px;
-      border-radius: 10px; font-weight: 700; cursor: pointer;
-    }
-    .btn-submit:hover { transform: scale(1.02); }
-    @media(max-width:900px) {
-      .card{padding:18px}
-      .grade-grid{grid-template-columns:repeat(2,1fr)}
-    }
+    .nav-left{font-weight:700;font-size:20px;color:#fff;padding-left:6px}
+    .nav-links{display:flex;gap:14px;align-items:center}
+    .nav-links a{color:#fff;text-decoration:none;font-weight:500;padding:6px 10px;border-radius:6px;transition:.22s}
+    .nav-links a:hover,.nav-links a.active{color:#ff9800;text-shadow:0 0 10px #ff9800;background:rgba(255,255,255,0.03)}
+    .btn-logout{background:#ff9800;color:#fff;border:none;padding:8px 12px;border-radius:8px;cursor:pointer;font-weight:600;}
+    .btn-logout:hover{transform:translateY(-1px)}
+    .page-wrap{display:flex;flex-direction:column;align-items:center;padding:120px 18px 40px}
+    .card{width:100%;max-width:980px;background:rgba(0,0,0,0.65);border-radius:14px;padding:26px;box-shadow:0 10px 40px rgba(0,0,0,0.6);}
+    .subject-title{text-align:center;color:#ffcf9b;margin-bottom:10px;font-size:20px}
+    .meta-row{display:flex;gap:12px;justify-content:space-between;align-items:center;flex-wrap:wrap;margin-bottom:14px}
+    .meta-row .meta{background:rgba(255,255,255,0.02);padding:10px;border-radius:8px}
+    .meta label{display:block;font-size:12px;color:#ffdca8}
+    .meta .val{font-weight:700;color:#fff;margin-top:6px}
+    .means-row{display:flex;gap:12px;justify-content:center;margin-bottom:18px;flex-wrap:wrap}
+    .means-row .mean-box{min-width:120px;background:rgba(255,255,255,0.02);padding:8px;border-radius:8px;text-align:center}
+    .means-row label{display:block;font-size:13px;color:#ffdca8;margin-bottom:6px}
+    .means-row input{width:100%;padding:8px;border-radius:6px;border:none;background:rgba(255,255,255,0.07);color:#fff;text-align:center}
+    .grade-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;background:rgba(255,255,255,0.02);padding:12px;border-radius:10px}
+    .grade-item{display:flex;flex-direction:column;gap:6px}
+    .grade-item label{font-size:13px;color:#ffdca8}
+    .grade-item input{padding:10px;border-radius:8px;border:none;background:rgba(255,255,255,0.07);color:#fff;text-align:center}
+    .calc-panel{display:flex;gap:12px;margin-top:12px;flex-wrap:wrap;background:rgba(255,255,255,0.02);padding:12px;border-radius:10px}
+    .calc-item{flex:1;min-width:180px;padding:10px;border-radius:8px;background:rgba(0,0,0,0.35);text-align:center}
+    .calc-item .label{font-size:13px;color:#ffdca8}
+    .calc-item .value{font-size:20px;font-weight:700;color:#fff;margin-top:6px}
+    .btn-row{text-align:right;margin-top:18px;display:flex;gap:8px;justify-content:flex-end}
+    .btn-submit{background:#ff9800;color:#000;border:none;padding:10px 16px;border-radius:8px;font-weight:700;cursor:pointer}
+    .btn-submit.secondary{background:rgba(255,255,255,0.06);color:#fff}
+    .btn-submit:hover{transform:scale(1.02)}
+    @media(max-width:900px){.grade-grid{grid-template-columns:repeat(2,1fr)}.meta-row{flex-direction:column;align-items:flex-start}}
   </style>
 </head>
-
 <body>
   <nav>
     <div class="nav-left">Effective 40</div>
     <div class="nav-links">
       <a href="index.html">Home</a>
       <a href="institutions.html">Institutions</a>
-      <a href="overall.html">Overall</a>
       <a href="boys.html">Boys</a>
       <a href="girls.html">Girls</a>
       <a href="subjects.html" class="active">Subjects</a>
@@ -111,30 +67,39 @@
 
   <div class="page-wrap">
     <div class="card">
-      <h1 class="subject-title" id="subjectTitle">Subject</h1>
+      <h1 class="subject-title" id="subjectTitle">Subject: —</h1>
 
       <div class="meta-row">
-        <input id="knecField" placeholder="KNEC Code" disabled />
-        <input id="instField" placeholder="Institution" disabled />
-        <input id="entryField" placeholder="Candidates Entry (A–E)" disabled />
+        <div class="meta">
+          <label>KNEC Code</label>
+          <div class="val" id="knecVal">—</div>
+        </div>
+        <div class="meta" style="flex:1;min-width:200px">
+          <label>Institution</label>
+          <div class="val" id="instVal">—</div>
+        </div>
+        <div class="meta">
+          <label>Candidates Entry (A–E)</label>
+          <div class="val" id="candidatesEntry">0</div>
+        </div>
       </div>
 
       <div class="means-row">
-        <div>
-          <label for="mean2024">2024 Mean</label>
-          <input id="mean2024" type="number" step="0.0001" min="0" placeholder="0.0000">
+        <div class="mean-box">
+          <label>2024 Mean</label>
+          <input id="mean2024" type="number" step="0.0001" placeholder="e.g. 5.0095" />
         </div>
-        <div>
-          <label for="mean2023">2023 Mean</label>
-          <input id="mean2023" type="number" step="0.0001" min="0" placeholder="0.0000">
+        <div class="mean-box">
+          <label>2023 Mean</label>
+          <input id="mean2023" type="number" step="0.0001" placeholder="e.g. 5.0095" />
         </div>
-        <div>
-          <label for="mean2022">2022 Mean</label>
-          <input id="mean2022" type="number" step="0.0001" min="0" placeholder="0.0000">
+        <div class="mean-box">
+          <label>2022 Mean</label>
+          <input id="mean2022" type="number" step="0.0001" placeholder="e.g. 5.0095" />
         </div>
       </div>
 
-      <div class="grade-grid" id="gradeInputs" aria-live="polite"></div>
+      <div class="grade-grid" id="gradeInputs"></div>
 
       <div class="calc-panel">
         <div class="calc-item"><div class="label">Total Points</div><div class="value" id="totalPoints">0</div></div>
@@ -144,18 +109,19 @@
       </div>
 
       <div class="btn-row">
-        <button class="btn-submit" id="prevBtn">Previous</button>
-        <button class="btn-submit" id="nextBtn">Save & Next</button>
+        <button class="btn-submit secondary" id="prevBtn">Previous</button>
+        <button class="btn-submit" id="saveBtn">Save Subject</button>
+        <button class="btn-submit" id="nextBtn">Next</button>
       </div>
     </div>
   </div>
 
-  <!-- Firebase compat -->
+  <!-- Firebase compat (client) -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 
   <script>
-    // ===== Firebase config =====
+    // ---------- CONFIG ----------
     const firebaseConfig = {
       apiKey: "AIzaSyBjwM3I1afnA1hKeuhC4FndPC00suUiKHQ",
       authDomain: "effective40-64d24.firebaseapp.com",
@@ -168,132 +134,141 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    // ===== Subjects list with codes (you confirmed full list) =====
+    // ---------- SUBJECT LIST (code/name) ----------
+    // You confirmed the list; it's embedded here.
     const subjects = [
-      { code: 101, name: "English" },
-      { code: 102, name: "Kiswahili" },
-      { code: 121, name: "Mathematics" },
-      { code: 231, name: "Biology" },
-      { code: 232, name: "Physics" },
-      { code: 233, name: "Chemistry" },
-      { code: 311, name: "History & Government" },
-      { code: 312, name: "Geography" },
-      { code: 313, name: "C.R.E" },
-      { code: 441, name: "Home Science" },
-      { code: 442, name: "Art & Design" },
-      { code: 443, name: "Agriculture" },
-      { code: 565, name: "Business Studies" },
-      { code: 451, name: "Computer Studies" },
-      { code: 449, name: "Drawing & Design" },
-      { code: 511, name: "Music" },
-      { code: 501, name: "French" },
-      { code: 502, name: "German" }
+      { code: "101", name: "English" },
+      { code: "102", name: "Kiswahili" },
+      { code: "121", name: "Mathematics" },
+      { code: "231", name: "Biology" },
+      { code: "232", name: "Physics" },
+      { code: "233", name: "Chemistry" },
+      { code: "311", name: "History" },
+      { code: "312", name: "Geography" },
+      { code: "313", name: "C.R.E" },
+      { code: "441", name: "Home Science" },
+      { code: "442", name: "Art & Design" },
+      { code: "443", name: "Agriculture" },
+      { code: "444", name: "Woodwork" },
+      { code: "445", name: "Metalwork" },
+      { code: "446", name: "Building & Construction" },
+      { code: "451", name: "Computer Studies" },
+      { code: "565", name: "Business Studies" },
+      { code: "501", name: "French" },
+      { code: "502", name: "German" },
     ];
 
-    // Grade weight map
-    const gradeMap = {
-      A:12, 'A-':11, 'B+':10, B:9, 'B-':8, 'C+':7, C:6, 'C-':5,
-      'D+':4, D:3, 'D-':2, E:1, X:0, Y:0, Z:0
-    };
+    // grade map (points)
+    const gradeMap = { "A":12, "A-":11, "B+":10, "B":9, "B-":8, "C+":7, "C":6, "C-":5, "D+":4, "D":3, "D-":2, "E":1, "X":0, "Y":0, "Z":0 };
+    const gradeKeys = Object.keys(gradeMap);
 
-    // UI refs
+    // current index
+    let currentIndex = 0;
+
+    // DOM elements
     const subjectTitle = document.getElementById('subjectTitle');
     const gradeInputs = document.getElementById('gradeInputs');
-    const mean2024 = document.getElementById('mean2024');
-    const mean2023 = document.getElementById('mean2023');
-    const mean2022 = document.getElementById('mean2022');
     const totalPointsEl = document.getElementById('totalPoints');
     const currentMeanEl = document.getElementById('currentMean');
     const deviationEl = document.getElementById('deviation');
     const meanGradeEl = document.getElementById('meanGrade');
-    const entryField = document.getElementById('entryField');
-    const knecField = document.getElementById('knecField');
-    const instField = document.getElementById('instField');
+    const candidatesEntryEl = document.getElementById('candidatesEntry');
 
-    let currentIndex = 0;
+    const mean2024El = document.getElementById('mean2024');
+    const mean2023El = document.getElementById('mean2023');
+    const mean2022El = document.getElementById('mean2022');
 
-    // Try to load institution details from localStorage (two formats supported)
-    function loadInstitutionFromLocalStorage(){
-      const cur = localStorage.getItem('currentInstitution');
-      if (cur) {
-        try {
-          const obj = JSON.parse(cur);
-          if (obj && (obj.knecCode || obj.knec || obj.knecCode === "")){
-            knecField.value = obj.knecCode || obj.knec || '';
-          }
-          if (obj && (obj.institution || obj.institutionName)){
-            instField.value = obj.institution || obj.institutionName || '';
-          }
-          return;
-        } catch(e){
-          // fallthrough
-        }
+    const knecVal = document.getElementById('knecVal');
+    const instVal = document.getElementById('instVal');
+
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const saveBtn = document.getElementById('saveBtn');
+
+    // Auto-fill institution + knec from localStorage.currentInstitution
+    function loadInstitutionFromLocal() {
+      const raw = localStorage.getItem('currentInstitution') || localStorage.getItem('institution') || null;
+      if (!raw) {
+        knecVal.textContent = '—';
+        instVal.textContent = '—';
+        return;
       }
-      // fallback to simple keys
-      knecField.value = localStorage.getItem('knec') || localStorage.getItem('knecCode') || '';
-      instField.value = localStorage.getItem('institution') || localStorage.getItem('institutionName') || '';
+      let parsed = null;
+      try { parsed = JSON.parse(raw); } catch (e) { parsed = { knecCode: raw, institution: raw }; }
+      const knec = parsed.knecCode || parsed.knec || localStorage.getItem('knec') || '';
+      const inst = parsed.institution || parsed.name || localStorage.getItem('institution') || '';
+      knecVal.textContent = knec || '—';
+      instVal.textContent = inst || '—';
     }
 
-    // Build grade inputs (A..Z as defined in gradeMap)
-    function buildGradeInputs(){
+    // build grade inputs for current subject
+    function buildGradeInputs() {
       gradeInputs.innerHTML = '';
-      Object.keys(gradeMap).forEach(g => {
+      gradeKeys.forEach(g => {
         const div = document.createElement('div');
         div.className = 'grade-item';
-        const label = document.createElement('label');
-        label.textContent = g;
-        const input = document.createElement('input');
-        input.type = 'number';
-        input.min = '0';
-        input.step = '1';
-        input.value = '0';
-        input.id = `grade_${g.replace(/\W/g,'')}`; // safe id
-        input.dataset.grade = g;
-        input.addEventListener('input', onGradeChange);
-        div.appendChild(label);
-        div.appendChild(input);
+        const inputId = `grade_${g}`;
+        div.innerHTML = `<label>${g}</label><input type="number" id="${inputId}" min="0" value="0">`;
         gradeInputs.appendChild(div);
       });
+      // attach listeners
+      document.querySelectorAll('#gradeInputs input').forEach(el => el.addEventListener('input', calc));
     }
 
-    // Get input element for a grade label
-    function gradeInputEl(g){
-      return document.getElementById(`grade_${g.replace(/\W/g,'')}`);
-    }
-
-    // Sum candidates A–E only (A, A-, B+, B, B-, C+, C, C-, D+, D, D-, E)
-    const candidatesGrades = ['A','A-','B+','B','B-','C+','C','C-','D+','D','D-','E'];
-
-    function onGradeChange(){
-      recalcAll();
-    }
-
-    // Recalculate totals, entry, mean, deviation, mean grade
-    function recalcAll(){
-      let totalPts = 0;
-      let totalCand = 0;
-      for (const [g, w] of Object.entries(gradeMap)){
-        const el = gradeInputEl(g);
-        const count = el ? Number(el.value) || 0 : 0;
-        totalPts += count * w;
-        if (candidatesGrades.includes(g)){
-          totalCand += count;
-        }
+    // load saved values for a subject from localStorage (prevent carry over)
+    function loadSubjectFromLocal(subjCode) {
+      const key = `subject_${subjCode}`;
+      const raw = localStorage.getItem(key);
+      if (!raw) {
+        // reset inputs to defaults
+        mean2024El.value = '';
+        mean2023El.value = '';
+        mean2022El.value = '';
+        gradeKeys.forEach(g => { document.getElementById(`grade_${g}`).value = 0; });
+        return;
       }
+      try {
+        const data = JSON.parse(raw);
+        mean2024El.value = (data.previousMeans && data.previousMeans.mean2024 != null) ? Number(data.previousMeans.mean2024).toFixed(4) : '';
+        mean2023El.value = (data.previousMeans && data.previousMeans.mean2023 != null) ? Number(data.previousMeans.mean2023).toFixed(4) : '';
+        mean2022El.value = (data.previousMeans && data.previousMeans.mean2022 != null) ? Number(data.previousMeans.mean2022).toFixed(4) : '';
+        gradeKeys.forEach(g => { document.getElementById(`grade_${g}`).value = Number((data.grades && data.grades[g]) || 0); });
+      } catch (e) {
+        // if parse failed reset
+        mean2024El.value = '';
+        mean2023El.value = '';
+        mean2022El.value = '';
+        gradeKeys.forEach(g => { document.getElementById(`grade_${g}`).value = 0; });
+      }
+    }
 
-      // Set the candidates entry auto (A–E)
-      entryField.value = totalCand;
+    // compute totals, mean and grade
+    function calc() {
+      let totalPts = 0;
+      let candidatesAE = 0; // count only A-E
+      gradeKeys.forEach(g => {
+        const val = Number(document.getElementById(`grade_${g}`).value) || 0;
+        const pts = gradeMap[g] || 0;
+        totalPts += val * pts;
+        if (pts > 0) candidatesAE += val; // A-E have points > 0
+      });
 
-      const currMean = totalCand > 0 ? (totalPts / totalCand) : 0;
-      const last2024 = Number(mean2024.value) || 0;
-      const deviation = currMean - last2024;
+      // update candidate entry display
+      candidatesEntryEl.textContent = candidatesAE;
 
+      // current mean uses A–E candidate count (as requested)
+      const currentMean = candidatesAE > 0 ? (totalPts / candidatesAE) : 0;
+      // display
       totalPointsEl.textContent = totalPts;
-      currentMeanEl.textContent = currMean.toFixed(4);
+      currentMeanEl.textContent = currentMean.toFixed(4);
+
+      // deviation = currentMean - mean2024
+      const mean2024 = Number(mean2024El.value) || 0;
+      const deviation = currentMean - mean2024;
       deviationEl.textContent = deviation.toFixed(4);
 
-      // map current mean to grade (same thresholds as before)
-      const U = currMean;
+      // mean grade mapping same as overall logic
+      const U = currentMean;
       let grade = 'E';
       if (U >= 11.5) grade = 'A';
       else if (U >= 10.5) grade = 'A-';
@@ -307,158 +282,132 @@
       else if (U >= 2.5) grade = 'D';
       else if (U >= 1.5) grade = 'D-';
       else grade = 'E';
-
       meanGradeEl.textContent = grade;
     }
 
-    // Clear all inputs (used when loading a fresh subject)
-    function clearForm(){
-      mean2024.value = '';
-      mean2023.value = '';
-      mean2022.value = '';
-      Object.keys(gradeMap).forEach(g => {
-        const el = gradeInputEl(g);
-        if (el) el.value = '0';
-      });
-      totalPointsEl.textContent = '0';
-      currentMeanEl.textContent = '0.0000';
-      deviationEl.textContent = '0.0000';
-      meanGradeEl.textContent = 'E';
-      entryField.value = '0';
-    }
+    // Save current subject to Firebase and localStorage
+    async function saveCurrentSubject() {
+      const subj = subjects[currentIndex];
+      const knec = knecVal.textContent === '—' ? '' : knecVal.textContent;
+      const inst = instVal.textContent === '—' ? '' : instVal.textContent;
 
-    // Load a subject form; repopulate from localStorage if saved earlier
-    function loadSubjectForm(){
-      buildGradeInputs();
-      loadInstitutionFromLocalStorage();
-
-      const subject = subjects[currentIndex];
-      subjectTitle.textContent = `Subject: ${subject.name} (${subject.code})`;
-
-      // Check if previously saved in localStorage for quick edit/view
-      const savedKey = `subject_${subject.code}`;
-      const saved = localStorage.getItem(savedKey);
-      clearForm();
-
-      if (saved){
-        try {
-          const data = JSON.parse(saved);
-          // previous means
-          if (data.previousMeans){
-            mean2024.value = (data.previousMeans.mean2024 !== undefined) ? Number(data.previousMeans.mean2024).toFixed(4) : '';
-            mean2023.value = (data.previousMeans.mean2023 !== undefined) ? Number(data.previousMeans.mean2023).toFixed(4) : '';
-            mean2022.value = (data.previousMeans.mean2022 !== undefined) ? Number(data.previousMeans.mean2022).toFixed(4) : '';
-          }
-          // grades
-          if (data.grades){
-            Object.keys(gradeMap).forEach(g => {
-              const el = gradeInputEl(g);
-              if (el && data.grades[g] !== undefined) el.value = Number(data.grades[g]) || 0;
-            });
-          }
-          // update UI with recalc
-          recalcAll();
-          return;
-        } catch(e){
-          // corrupted saved value; ignore and start fresh
-          console.warn('Failed to parse saved subject data', e);
-        }
-      }
-
-      // If no saved data, ensure previous mean fields are blank (so they are not carried over)
-      mean2024.value = '';
-      mean2023.value = '';
-      mean2022.value = '';
-      recalcAll();
-    }
-
-    // Build payload & save to Realtime DB (and also localStorage cache)
-    async function saveCurrentSubject(){
-      const subject = subjects[currentIndex];
+      // build data
       const data = {
-        subjectCode: subject.code,
-        subjectName: subject.name,
-        knec: knecField.value || '',
-        institution: instField.value || '',
+        subjectCode: subj.code,
+        subjectName: subj.name,
         previousMeans: {
-          mean2024: mean2024.value ? Number(mean2024.value) : 0,
-          mean2023: mean2023.value ? Number(mean2023.value) : 0,
-          mean2022: mean2022.value ? Number(mean2022.value) : 0
+          mean2024: mean2024El.value ? Number(mean2024El.value).toFixed(4) : null,
+          mean2023: mean2023El.value ? Number(mean2023El.value).toFixed(4) : null,
+          mean2022: mean2022El.value ? Number(mean2022El.value).toFixed(4) : null
         },
         grades: {},
         totalPoints: Number(totalPointsEl.textContent) || 0,
         currentMean: Number(currentMeanEl.textContent) || 0,
-        deviationFrom2024: Number(deviationEl.textContent) || 0,
-        meanGrade: meanGradeEl.textContent,
+        deviation: Number(deviationEl.textContent) || 0,
+        meanGrade: meanGradeEl.textContent || 'E',
+        knec: knec || null,
+        institution: inst || null,
         createdAt: new Date().toISOString()
       };
 
-      Object.keys(gradeMap).forEach(g => {
-        const el = gradeInputEl(g);
-        data.grades[g] = el ? Number(el.value) || 0 : 0;
+      gradeKeys.forEach(g => {
+        data.grades[g] = Number(document.getElementById(`grade_${g}`).value) || 0;
       });
 
-      // Save to Firebase
+      // save to Firebase under subjectsPerformance/<knec_or_unknown>/<subjectCode> for easy querying
       try {
-        const newRef = db.ref('subjectsPerformance').push();
+        const parentPath = knec ? `subjectsPerformance/${knec}` : `subjectsPerformance/unknown`;
+        const newRef = firebase.database().ref(parentPath + "/" + subj.code).push();
         await newRef.set(data);
-        // also cache locally so previous button can re-populate
-        localStorage.setItem(`subject_${subject.code}`, JSON.stringify(data));
-        return { ok: true };
       } catch (err) {
-        console.error('Failed to save subject to Firebase', err);
-        return { ok: false, error: err };
+        console.error('Firebase save error:', err);
+        // still continue to save locally
       }
+
+      // save locally to avoid carry-over and for quick reload
+      try {
+        localStorage.setItem(`subject_${subj.code}`, JSON.stringify(data));
+      } catch (e) {
+        console.warn('localStorage save failed', e);
+      }
+
+      return data;
     }
 
-    // Next button handler
-    document.getElementById('nextBtn').addEventListener('click', async () => {
-      // Validate: allow zero entry (school may have zero candidates) — but still save
-      // Save current subject
-      const res = await saveCurrentSubject();
-      if (!res.ok){
-        alert('Saving failed. Check console for details.');
-        return;
-      }
-      // Move next or finish
-      if (currentIndex < subjects.length - 1){
-        currentIndex++;
-        loadSubjectForm();
-        // scroll to top of card for UX
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+    // load a subject screen (no carry-over)
+    function loadSubject(index) {
+      currentIndex = index;
+      const subj = subjects[currentIndex];
+      // set title
+      subjectTitle.textContent = `Subject: ${subj.name} — (${subj.code})`;
+      // set institution/knec
+      loadInstitutionFromLocal();
+      // build inputs & load saved values specific to this subject
+      buildGradeInputs();
+      loadSubjectFromLocal(subj.code);
+      // ensure means inputs limited to 4 decimals — we'll format if they exist
+      [mean2024El, mean2023El, mean2022El].forEach(el => {
+        if (el.value !== '') {
+          el.value = Number(el.value).toFixed(4);
+        }
+      });
+      // attach mean inputs to recalc
+      [mean2024El, mean2023El, mean2022El].forEach(el => el.addEventListener('input', calc));
+      // compute initial values
+      calc();
+
+      // update button state
+      prevBtn.disabled = currentIndex === 0;
+      nextBtn.textContent = currentIndex < subjects.length - 1 ? 'Next' : 'Finish';
+    }
+
+    // navigation handlers
+    prevBtn.addEventListener('click', () => {
+      if (currentIndex === 0) return;
+      // save current to localStorage (but do not push to Firebase unless user clicks Save)
+      const subj = subjects[currentIndex];
+      const temporary = {
+        previousMeans: {
+          mean2024: mean2024El.value ? Number(mean2024El.value).toFixed(4) : null,
+          mean2023: mean2023El.value ? Number(mean2023El.value).toFixed(4) : null,
+          mean2022: mean2022El.value ? Number(mean2022El.value).toFixed(4) : null
+        },
+        grades: {}
+      };
+      gradeKeys.forEach(g => temporary.grades[g] = Number(document.getElementById(`grade_${g}`).value) || 0);
+      try { localStorage.setItem(`subject_${subjects[currentIndex].code}`, JSON.stringify(temporary)); } catch(e){}
+
+      loadSubject(currentIndex - 1);
+    });
+
+    nextBtn.addEventListener('click', async () => {
+      // Save current subject (push to firebase and local)
+      await saveCurrentSubject();
+
+      if (currentIndex < subjects.length - 1) {
+        loadSubject(currentIndex + 1);
       } else {
         alert('All subjects submitted successfully!');
+        // redirect to analytics page
         window.location.href = 'analytics.html';
       }
     });
 
-    // Prev button handler
-    document.getElementById('prevBtn').addEventListener('click', () => {
-      if (currentIndex > 0){
-        currentIndex--;
-        loadSubjectForm();
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      } else {
-        // optional: go back to previous page
-        window.location.href = 'boys.html';
-      }
+    // Save button: explicit save (useful if user wants to save then continue later)
+    saveBtn.addEventListener('click', async () => {
+      await saveCurrentSubject();
+      alert('Subject saved locally and to Firebase (if available).');
     });
 
-    // mean inputs change triggers recalc
-    [mean2024, mean2023, mean2022].forEach(el => el.addEventListener('input', () => {
-      // keep 4 decimal places in display when user moves away
-      if (el.value !== '') {
-        // allow typing; formatting on blur
-      }
-      recalcAll();
-    }));
-    [mean2024, mean2023, mean2022].forEach(el => el.addEventListener('blur', () => {
-      if (el.value !== '') el.value = Number(el.value).toFixed(4);
-    }));
+    // load initial
+    loadSubject(0);
 
-    // on load
-    loadInstitutionFromLocalStorage();
-    loadSubjectForm();
+    // logout button - optional (if you have auth elsewhere)
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+      // if using auth, sign out here. For now just clear localstorage and redirect
+      // localStorage.removeItem('currentInstitution');
+      window.location.href = 'index.html';
+    });
   </script>
 </body>
 </html>
