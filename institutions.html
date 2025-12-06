@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -12,6 +13,7 @@
       margin: 0;
       color: #fff;
     }
+
     .navbar {
       display: flex;
       justify-content: center;
@@ -20,6 +22,7 @@
       padding: 10px 0;
       flex-wrap: wrap;
     }
+
     .navbar a {
       color: white;
       text-decoration: none;
@@ -28,10 +31,13 @@
       border-radius: 6px;
       transition: all 0.3s ease;
     }
-    .navbar a:hover, .navbar a.active {
+
+    .navbar a:hover,
+    .navbar a.active {
       background-color: #00c3ff;
       box-shadow: 0 0 15px #00c3ff;
     }
+
     .container {
       display: flex;
       justify-content: center;
@@ -39,34 +45,40 @@
       min-height: 90vh;
       padding: 20px;
     }
+
     .form-card {
-      background: rgba(0,0,0,0.75);
+      background: rgba(0, 0, 0, 0.75);
       padding: 35px;
       border-radius: 15px;
       width: 100%;
       max-width: 420px;
-      box-shadow: 0 0 25px rgba(0,195,255,0.6);
+      box-shadow: 0 0 25px rgba(0, 195, 255, 0.6);
     }
+
     .form-card h2 {
       text-align: center;
       color: #00c3ff;
       margin-bottom: 25px;
     }
+
     label {
       display: block;
       margin-top: 12px;
       font-weight: 500;
     }
-    input, select {
+
+    input,
+    select {
       width: 100%;
       padding: 10px;
       margin-top: 5px;
       border: none;
       border-radius: 5px;
-      background: rgba(255,255,255,0.2);
+      background: rgba(255, 255, 255, 0.2);
       color: white;
       font-size: 15px;
     }
+
     button {
       width: 100%;
       margin-top: 25px;
@@ -80,6 +92,7 @@
       cursor: pointer;
       transition: 0.3s;
     }
+
     button:hover {
       background: #0086b3;
       box-shadow: 0 0 15px #00c3ff;
@@ -87,6 +100,7 @@
     }
   </style>
 </head>
+
 <body>
   <div class="navbar">
     <a href="index.html">Home</a>
@@ -109,7 +123,7 @@
         <datalist id="knecList"></datalist>
 
         <label for="institution">Institution Name:</label>
-        <input type="text" id="institution" placeholder="Auto-filled from KNEC" readonly required />
+        <input type="text" id="institution" placeholder="Auto-filled or Type Name" required />
 
         <label for="category">Category:</label>
         <select id="category" required>
@@ -155,7 +169,7 @@
     const firebaseConfig = {
       apiKey: "AIzaSyBjwM3I1afnA1hKeuhC4FndPC00suUiKHQ",
       authDomain: "effective40-64d24.firebaseapp.com",
-      databaseURL: "https://effective40-64d24-default-rtdb.firebaseio.com",
+      databaseURL: "https://effective40-64d24-default-rtdb.firebaseio.com/",
       projectId: "effective40-64d24",
       storageBucket: "effective40-64d24.firebasestorage.app",
       messagingSenderId: "99811191192",
@@ -184,7 +198,9 @@
     // Auto-fill Institution name on selecting KNEC
     document.getElementById("knecCode").addEventListener("input", e => {
       const found = schools.find(s => s.KNEC === e.target.value);
-      document.getElementById("institution").value = found ? found.Institution : "";
+      if (found) {
+        document.getElementById("institution").value = found.Institution;
+      }
     });
 
     // Handle form submission
@@ -204,11 +220,16 @@
 
       await set(push(ref(db, "institutions")), data);
 
+      // Save full object
       localStorage.setItem("currentInstitution", JSON.stringify(data));
+      // Save individual keys for legacy pages (overall.html, boys.html, girls.html rely on these)
+      localStorage.setItem("institution", data.institution);
+      localStorage.setItem("knec", data.knecCode);
 
-      alert("Institution Saved Successfully!");
+      // Replaced alert with direct redirect for smoother flow
       window.location.href = "overall.html";
     });
   </script>
 </body>
+
 </html>

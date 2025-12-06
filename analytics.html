@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Analytics Dashboard — Effective 40</title>
+
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        :root {
+            --primary: #ff9800;
+            --bg-glass: rgba(0, 0, 0, 0.65);
+            --bg-panel: rgba(255, 255, 255, 0.03);
+            --text-muted: #ddd;
+            --text-label: #ffdca8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: "Poppins", sans-serif;
+            background: url('background.jpg') center/cover no-repeat fixed;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 100px;
+        }
+
+        /* NAV */
+        nav {
+            width: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 200;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 28px;
+            background: var(--bg-glass);
+            backdrop-filter: blur(6px);
+            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.4);
+        }
+
+        .nav-left {
+            font-weight: 700;
+            font-size: 20px;
+            color: #fff;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 18px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 6px 10px;
+            border-radius: 6px;
+            transition: .22s;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: var(--primary);
+            text-shadow: 0 0 10px var(--primary);
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .btn-logout {
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .btn-logout:hover {
+            transform: translateY(-1px);
+        }
+
+        /* DASHBOARD */
+        .dashboard {
+            width: 100%;
+            max-width: 1200px;
+            padding: 20px;
+        }
+
+        .page-title {
+            margin-bottom: 24px;
+            color: var(--primary);
+            text-align: center;
+            font-size: 28px;
+        }
+
+        .section-card {
+            background: var(--bg-glass);
+            border-radius: 14px;
+            padding: 26px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+        }
+
+        .section-header {
+            font-size: 20px;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 8px;
+        }
+
+        /* GRID LAYOUTS */
+        .viz-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        /* TABLE */
+        .data-table-wrap {
+            width: 100%;
+            overflow-x: auto;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 400px;
+        }
+
+        th {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-label);
+            font-weight: 600;
+            padding: 12px;
+            text-align: left;
+        }
+
+        td {
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 10px 12px;
+            font-size: 14px;
+        }
+
+        tr:hover td {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .rank-col {
+            width: 60px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .score-col {
+            font-weight: 600;
+            text-align: right;
+        }
+
+        /* CHART WRAPPERS */
+        .chart-box {
+            background: var(--bg-panel);
+            border-radius: 10px;
+            padding: 14px;
+            position: relative;
+            height: 350px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* CONTROLS */
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+
+        select {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            padding: 8px 12px;
+            border-radius: 6px;
+            outline: none;
+            font-family: inherit;
+        }
+
+        select:focus {
+            border-color: var(--primary);
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 300;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.3s;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--primary);
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 10px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @media(max-width: 900px) {
+            .viz-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .chart-box {
+                height: 300px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- LOADING -->
+    <div class="loading-overlay" id="loader">
+        <div class="spinner"></div>
+        <div>Loading Analytics...</div>
+    </div>
+
+    <nav>
+        <div class="nav-left">Effective 40</div>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="institutions.html">Institutions</a>
+            <a href="overall.html">Overall</a>
+            <a href="boys.html">Boys</a>
+            <a href="girls.html">Girls</a>
+            <a href="subjects.html">Subjects</a>
+            <a href="analytics.html" class="active">Analytics</a>
+        </div>
+        <button class="btn-logout" id="logoutBtn">Logout</button>
+    </nav>
+
+    <div class="dashboard">
+        <h1 class="page-title">Analytics Dashboard</h1>
+
+        <!-- OVERALL PERFORMANCE -->
+        <div class="section-card">
+            <div class="section-header">Overall Performance Ranking</div>
+
+            <!-- STATS SUMMARY (New) -->
+            <div class="viz-grid" style="margin-bottom:20px; grid-template-columns: repeat(3, 1fr);">
+                <div class="meta"
+                    style="background:var(--bg-panel); padding:15px; border-radius:8px; text-align:center;">
+                    <div style="font-size:13px; color:var(--text-label)">Registered Schools</div>
+                    <div style="font-size:24px; font-weight:700;" id="statTotalSchools">0</div>
+                </div>
+                <div class="meta"
+                    style="background:var(--bg-panel); padding:15px; border-radius:8px; text-align:center;">
+                    <div style="font-size:13px; color:var(--text-label)">Top Performer</div>
+                    <div style="font-size:18px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"
+                        id="statTopSchool">-</div>
+                </div>
+                <div class="meta"
+                    style="background:var(--bg-panel); padding:15px; border-radius:8px; text-align:center;">
+                    <div style="font-size:13px; color:var(--text-label)">Average Mean</div>
+                    <div style="font-size:24px; font-weight:700;" id="statAvgMean">0.00</div>
+                </div>
+            </div>
+
+            <div class="viz-grid">
+                <!-- Table -->
+                <div>
+                    <div class="data-table-wrap">
+                        <table id="overallTable">
+                            <thead>
+                                <tr>
+                                    <th class="rank-col">#</th>
+                                    <th>Institution</th>
+                                    <th style="font-size:12px;">Cat/Zone</th>
+                                    <th class="score-col">Mean</th>
+                                    <th class="score-col">Entry</th>
+                                    <th>Grd</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+                <!-- Chart -->
+                <div class="chart-box">
+                    <canvas id="overallChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- GENDER COMPARISON -->
+        <div class="section-card">
+            <div class="section-header">Gender Analysis</div>
+            <div class="viz-grid">
+                <!-- Boys -->
+                <div>
+                    <h4 style="margin-bottom:10px; color:#a3d6ff">Top Boys Schools</h4>
+                    <div class="data-table-wrap" style="max-height: 250px; overflow-y:auto;">
+                        <table id="boysTable">
+                            <thead>
+                                <tr>
+                                    <th class="rank-col">#</th>
+                                    <th>Institution</th>
+                                    <th class="score-col">Mean</th>
+                                    <th class="score-col">Zone</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+                <!-- Girls -->
+                <div>
+                    <h4 style="margin-bottom:10px; color:#ffb3d9">Top Girls Schools</h4>
+                    <div class="data-table-wrap" style="max-height: 250px; overflow-y:auto;">
+                        <table id="girlsTable">
+                            <thead>
+                                <tr>
+                                    <th class="rank-col">#</th>
+                                    <th>Institution</th>
+                                    <th class="score-col">Mean</th>
+                                    <th class="score-col">Zone</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SUBJECT PERFORMANCE -->
+        <div class="section-card">
+            <div class="section-header">Subject Rankings</div>
+            <div class="controls">
+                <select id="subjectSelect">
+                    <option value="" disabled selected>Select Subject...</option>
+                    <option value="101">English</option>
+                    <option value="102">Kiswahili</option>
+                    <option value="121">Mathematics</option>
+                    <option value="231">Biology</option>
+                    <option value="232">Physics</option>
+                    <option value="233">Chemistry</option>
+                    <option value="311">History</option>
+                    <option value="312">Geography</option>
+                    <option value="313">C.R.E</option>
+                    <option value="441">Home Science</option>
+                    <option value="442">Art & Design</option>
+                    <option value="443">Agriculture</option>
+                    <option value="444">Woodwork</option>
+                    <option value="445">Metalwork</option>
+                    <option value="446">Building & Const.</option>
+                    <option value="451">Computer Studies</option>
+                    <option value="565">Business Studies</option>
+                    <option value="501">French</option>
+                    <option value="502">German</option>
+                </select>
+            </div>
+            <div class="viz-grid">
+                <div class="data-table-wrap">
+                    <table id="subjectTable">
+                        <thead>
+                            <tr>
+                                <th class="rank-col">#</th>
+                                <th>Institution</th>
+                                <th>Category</th>
+                                <th class="score-col">Mean</th>
+                                <th class="score-col">Dev</th>
+                                <th>Grd</th>
+                            </tr>
+                        </thead>
+                        <tbody id="subjectTableBody">
+                            <tr>
+                                <td colspan="6" style="text-align:center; color:#888;">Select a subject to view rankings
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="chart-box">
+                    <canvas id="subjectChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Firebase Config -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+
+    <script>
+        // CONFIG
+        const firebaseConfig = {
+            apiKey: "AIzaSyBjwM3I1afnA1hKeuhC4FndPC00suUiKHQ",
+            authDomain: "effective40-64d24.firebaseapp.com",
+            databaseURL: "https://effective40-64d24-default-rtdb.firebaseio.com",
+            projectId: "effective40-64d24",
+            storageBucket: "effective40-64d24.firebasestorage.app",
+            messagingSenderId: "99811191192",
+            appId: "1:99811191192:web:096d9fb7d2958b875523ed"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+        const auth = firebase.auth();
+
+        let overallData = [];
+        let boysData = [];
+        let girlsData = [];
+        let subjectsData = {};
+        let institutionsMap = {}; // knec -> { category, zone, type, ... }
+
+        // INIT
+        async function init() {
+            try {
+                // Fetch all concurrently
+                const [ovSnap, boysSnap, girlsSnap, subjSnap, instSnap] = await Promise.all([
+                    db.ref('overallPerformance').once('value'),
+                    db.ref('boysPerformance').once('value'),
+                    db.ref('girlsPerformance').once('value'),
+                    db.ref('subjectsPerformance').once('value'),
+                    db.ref('institutions').once('value')
+                ]);
+
+                // 1. Process Institutions Map
+                if (instSnap.exists()) {
+                    const raw = instSnap.val();
+                    // institutions is a list/object. We map by knecCode or KNEC (fallback)
+                    Object.values(raw).forEach(inst => {
+                        const code = inst.knecCode || inst.KNEC;
+                        if (code) institutionsMap[code] = inst;
+                    });
+                }
+
+                // 2. Process Overall
+                if (ovSnap.exists()) {
+                    const raw = ovSnap.val();
+                    overallData = Object.values(raw).map(augmentWithInst).sort((a, b) => b.currentMean - a.currentMean);
+                }
+
+                // 3. Process Boys
+                if (boysSnap.exists()) {
+                    const raw = boysSnap.val();
+                    boysData = Object.values(raw).map(augmentWithInst).sort((a, b) => b.currentMean - a.currentMean);
+                }
+
+                // 4. Process Girls
+                if (girlsSnap.exists()) {
+                    const raw = girlsSnap.val();
+                    girlsData = Object.values(raw).map(augmentWithInst).sort((a, b) => b.currentMean - a.currentMean);
+                }
+
+                // 5. Process Subjects
+                if (subjSnap.exists()) {
+                    subjectsData = subjSnap.val();
+                }
+
+                updateStats();
+                renderOverall();
+                renderBoys();
+                renderGirls();
+
+            } catch (err) {
+                console.error("Data load error:", err);
+                alert("Error loading data from Firebase. Check console.");
+            } finally {
+                document.getElementById('loader').style.opacity = '0';
+                setTimeout(() => document.getElementById('loader').style.display = 'none', 300);
+            }
+        }
+
+        // Augment data object with institution details if match found
+        function augmentWithInst(item) {
+            if (!item) return item;
+            // ensure item.knec is a string for matching
+            const key = String(item.knec || '').trim();
+
+            let match = null;
+            if (key && institutionsMap[key]) {
+                match = institutionsMap[key];
+            }
+
+            // If no match by KNEC, we could try matching by Name roughly? 
+            // But let's trust KNEC. 
+
+            if (match) {
+                item.category = match.category;
+                item.zone = match.zone;
+                item.type = match.type;
+                // Fallback for institution name if missing in performance record
+                // This fixes the issue where institution is saved as empty/nil in performance but exists in inst db
+                if (!item.institution || item.institution === 'Unknown' || item.institution.trim() === '') {
+                    item.institution = match.institution || match.Institution;
+                }
+            }
+            return item;
+        }
+
+        function updateStats() {
+            // Total Schools Registered (in institutions DB or overall DB?) -> Use Overall DB count
+            const total = overallData.length;
+            document.getElementById('statTotalSchools').textContent = total;
+
+            // Top School
+            if (total > 0) {
+                document.getElementById('statTopSchool').textContent = overallData[0].institution || 'Unknown';
+            }
+
+            // Avg Mean of all entered schools
+            if (total > 0) {
+                const sum = overallData.reduce((acc, c) => acc + (Number(c.currentMean) || 0), 0);
+                document.getElementById('statAvgMean').textContent = (sum / total).toFixed(4);
+            }
+        }
+
+        // --- RENDER OVERALL ---
+        let overallChartInst = null;
+        function renderOverall() {
+            // Top 10 Table
+            const tbody = document.querySelector('#overallTable tbody');
+            tbody.innerHTML = '';
+            const top10 = overallData.slice(0, 10);
+
+            top10.forEach((item, index) => {
+                const tr = document.createElement('tr');
+                // Create concise meta string
+                let meta = [];
+                if (item.category) meta.push(item.category.substring(0, 3)); // e.g., SUB
+                if (item.zone) meta.push(item.zone);
+                const metaStr = meta.length ? meta.join('/') : '-';
+
+                tr.innerHTML = `
+        <td class="rank-col">${index + 1}</td>
+        <td>
+            <div style="font-weight:600">${item.institution || 'Unknown'}</div>
+            <div style="font-size:11px; color:#888;">${item.knec || ''}</div>
+        </td>
+        <td style="font-size:12px; color:#aaa;">${metaStr}</td>
+        <td class="score-col">${item.currentMean.toFixed(4)}</td>
+        <td class="score-col">${item.entry}</td>
+        <td>${item.meanGrade || '-'}</td>
+      `;
+                tbody.appendChild(tr);
+            });
+
+            if (top10.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:#888;">No Data Available</td></tr>`;
+                return;
+            }
+
+            // Chart
+            const ctx = document.getElementById('overallChart').getContext('2d');
+            overallChartInst = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: top10.map(d => (d.institution || 'Unknown').substring(0, 15)),
+                    datasets: [{
+                        label: 'Current Mean',
+                        data: top10.map(d => d.currentMean),
+                        backgroundColor: 'rgba(255, 152, 0, 0.7)',
+                        borderColor: 'rgba(255, 152, 0, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.1)' }, ticks: { color: '#ddd' } },
+                        x: { grid: { display: false }, ticks: { color: '#ccc', font: { size: 10 } } }
+                    }
+                }
+            });
+        }
+
+        // --- RENDER BOYS ---
+        function renderBoys() {
+            const tbody = document.querySelector('#boysTable tbody');
+            tbody.innerHTML = '';
+            const top = boysData.slice(0, 10);
+            top.forEach((item, index) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+        <td class="rank-col">${index + 1}</td>
+        <td>${item.institution || 'Unknown'}</td>
+        <td class="score-col">${item.currentMean.toFixed(4)}</td>
+        <td class="score-col" style="font-size:12px; color:#aaa;">${item.zone || '-'}</td>`;
+                tbody.appendChild(tr);
+            });
+            if (top.length === 0) tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:#888">No Data</td></tr>';
+        }
+
+        // --- RENDER GIRLS ---
+        function renderGirls() {
+            const tbody = document.querySelector('#girlsTable tbody');
+            tbody.innerHTML = '';
+            const top = girlsData.slice(0, 10);
+            top.forEach((item, index) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+        <td class="rank-col">${index + 1}</td>
+        <td>${item.institution || 'Unknown'}</td>
+        <td class="score-col">${item.currentMean.toFixed(4)}</td>
+        <td class="score-col" style="font-size:12px; color:#aaa;">${item.zone || '-'}</td>`;
+                tbody.appendChild(tr);
+            });
+            if (top.length === 0) tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:#888">No Data</td></tr>';
+        }
+
+        // --- SUBJECT FILTER ---
+        let subjectChartInst = null;
+        document.getElementById('subjectSelect').addEventListener('change', (e) => {
+            const code = e.target.value;
+            renderSubject(code);
+        });
+
+        function renderSubject(code) {
+            if (!code) return;
+
+            let items = [];
+            // Flatten subjects data
+            // Structure: subjectsData[knec][subjectCode][PUSHID] = data
+            Object.values(subjectsData).forEach(knecObj => {
+                // knecObj is { "101": {...}, "102": {...} }
+                if (knecObj[code]) {
+                    // knecObj[code] is a Map of PushIDs -> Data
+                    const pushMap = knecObj[code];
+                    Object.values(pushMap).forEach(record => {
+                        items.push(augmentWithInst(record));
+                    });
+                }
+            });
+
+            // Sort desc
+            items.sort((a, b) => b.currentMean - a.currentMean);
+
+            // Table
+            const tbody = document.getElementById('subjectTableBody');
+            tbody.innerHTML = '';
+
+            items.forEach((item, idx) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+        <td class="rank-col">${idx + 1}</td>
+        <td>${item.institution || 'Unknown'}</td>
+        <td style="font-size:12px; color:#aaa;">${item.category || '-'}</td>
+        <td class="score-col">${item.currentMean.toFixed(4)}</td>
+        <td class="score-col">${item.deviation ? item.deviation.toFixed(4) : '-'}</td>
+        <td>${item.meanGrade}</td>
+      `;
+                tbody.appendChild(tr);
+            });
+
+            if (items.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:#888;">No data found for this subject.</td></tr>`;
+                if (subjectChartInst) subjectChartInst.destroy();
+                return;
+            }
+
+            // Chart
+            const top10 = items.slice(0, 10);
+            const ctx = document.getElementById('subjectChart').getContext('2d');
+
+            if (subjectChartInst) subjectChartInst.destroy();
+
+            subjectChartInst = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: top10.map(d => (d.institution || 'Unk').substring(0, 12)),
+                    datasets: [{
+                        label: 'Subject Mean',
+                        data: top10.map(d => d.currentMean),
+                        backgroundColor: 'rgba(54, 162, 235, 0.7)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.1)' }, ticks: { color: '#ddd' } },
+                        x: { grid: { display: false }, ticks: { color: '#ccc', font: { size: 10 } } }
+                    }
+                }
+            });
+        }
+
+        // Logout
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            auth.signOut().then(() => location.href = 'index.html');
+        });
+
+        // Start
+        init();
+
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,22 @@
+[
+  { "code": 101, "name": "English" },
+  { "code": 102, "name": "Kiswahili" },
+  { "code": 121, "name": "Mathematics" },
+  { "code": 231, "name": "Biology" },
+  { "code": 232, "name": "Physics" },
+  { "code": 233, "name": "Chemistry" },
+  { "code": 311, "name": "History & Government" },
+  { "code": 312, "name": "Geography" },
+  { "code": 313, "name": "Christian Religious Education" },
+  { "code": 441, "name": "Home Science" },
+  { "code": 442, "name": "Art & Design" },
+  { "code": 443, "name": "Agriculture" },
+  { "code": 444, "name": "Building & Construction" },
+  { "code": 446, "name": "Woodwork" },
+  { "code": 449, "name": "Drawing & Design" },
+  { "code": 451, "name": "Computer Studies" },
+  { "code": 501, "name": "French" },
+  { "code": 502, "name": "German" },
+  { "code": 511, "name": "Music" },
+  { "code": 565, "name": "Business Studies" }
+]

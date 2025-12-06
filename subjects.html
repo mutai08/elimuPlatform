@@ -1,56 +1,267 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Subjects Performance — Effective 40</title>
 
   <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
   <style>
-    *{box-sizing:border-box;margin:0;padding:0}
-    body{
-      font-family:"Poppins",sans-serif;
-      background:url('background.jpg') center/cover no-repeat fixed;
-      margin:0;color:#fff;
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
     }
-    nav{
-      width:100%;position:fixed;top:0;left:0;z-index:200;
-      display:flex;justify-content:space-between;align-items:center;
-      padding:14px 22px;background:rgba(0,0,0,0.65);backdrop-filter:blur(6px);
-      box-shadow:0 4px 18px rgba(0,0,0,0.4);
+
+    body {
+      font-family: "Poppins", sans-serif;
+      background: url('background.jpg') center/cover no-repeat fixed;
+      margin: 0;
+      color: #fff;
     }
-    .nav-left{font-weight:700;font-size:20px;color:#fff;padding-left:6px}
-    .nav-links{display:flex;gap:14px;align-items:center}
-    .nav-links a{color:#fff;text-decoration:none;font-weight:500;padding:6px 10px;border-radius:6px;transition:.22s}
-    .nav-links a:hover,.nav-links a.active{color:#ff9800;text-shadow:0 0 10px #ff9800;background:rgba(255,255,255,0.03)}
-    .btn-logout{background:#ff9800;color:#fff;border:none;padding:8px 12px;border-radius:8px;cursor:pointer;font-weight:600;}
-    .btn-logout:hover{transform:translateY(-1px)}
-    .page-wrap{display:flex;flex-direction:column;align-items:center;padding:120px 18px 40px}
-    .card{width:100%;max-width:980px;background:rgba(0,0,0,0.65);border-radius:14px;padding:26px;box-shadow:0 10px 40px rgba(0,0,0,0.6);}
-    .subject-title{text-align:center;color:#ffcf9b;margin-bottom:10px;font-size:20px}
-    .meta-row{display:flex;gap:12px;justify-content:space-between;align-items:center;flex-wrap:wrap;margin-bottom:14px}
-    .meta-row .meta{background:rgba(255,255,255,0.02);padding:10px;border-radius:8px}
-    .meta label{display:block;font-size:12px;color:#ffdca8}
-    .meta .val{font-weight:700;color:#fff;margin-top:6px}
-    .means-row{display:flex;gap:12px;justify-content:center;margin-bottom:18px;flex-wrap:wrap}
-    .means-row .mean-box{min-width:120px;background:rgba(255,255,255,0.02);padding:8px;border-radius:8px;text-align:center}
-    .means-row label{display:block;font-size:13px;color:#ffdca8;margin-bottom:6px}
-    .means-row input{width:100%;padding:8px;border-radius:6px;border:none;background:rgba(255,255,255,0.07);color:#fff;text-align:center}
-    .grade-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;background:rgba(255,255,255,0.02);padding:12px;border-radius:10px}
-    .grade-item{display:flex;flex-direction:column;gap:6px}
-    .grade-item label{font-size:13px;color:#ffdca8}
-    .grade-item input{padding:10px;border-radius:8px;border:none;background:rgba(255,255,255,0.07);color:#fff;text-align:center}
-    .calc-panel{display:flex;gap:12px;margin-top:12px;flex-wrap:wrap;background:rgba(255,255,255,0.02);padding:12px;border-radius:10px}
-    .calc-item{flex:1;min-width:180px;padding:10px;border-radius:8px;background:rgba(0,0,0,0.35);text-align:center}
-    .calc-item .label{font-size:13px;color:#ffdca8}
-    .calc-item .value{font-size:20px;font-weight:700;color:#fff;margin-top:6px}
-    .btn-row{text-align:right;margin-top:18px;display:flex;gap:8px;justify-content:flex-end}
-    .btn-submit{background:#ff9800;color:#000;border:none;padding:10px 16px;border-radius:8px;font-weight:700;cursor:pointer}
-    .btn-submit.secondary{background:rgba(255,255,255,0.06);color:#fff}
-    .btn-submit:hover{transform:scale(1.02)}
-    @media(max-width:900px){.grade-grid{grid-template-columns:repeat(2,1fr)}.meta-row{flex-direction:column;align-items:flex-start}}
+
+    nav {
+      width: 100%;
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 200;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 22px;
+      background: rgba(0, 0, 0, 0.65);
+      backdrop-filter: blur(6px);
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.4);
+    }
+
+    .nav-left {
+      font-weight: 700;
+      font-size: 20px;
+      color: #fff;
+      padding-left: 6px
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 14px;
+      align-items: center
+    }
+
+    .nav-links a {
+      color: #fff;
+      text-decoration: none;
+      font-weight: 500;
+      padding: 6px 10px;
+      border-radius: 6px;
+      transition: .22s
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active {
+      color: #ff9800;
+      text-shadow: 0 0 10px #ff9800;
+      background: rgba(255, 255, 255, 0.03)
+    }
+
+    .btn-logout {
+      background: #ff9800;
+      color: #fff;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .btn-logout:hover {
+      transform: translateY(-1px)
+    }
+
+    .page-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 120px 18px 40px
+    }
+
+    .card {
+      width: 100%;
+      max-width: 980px;
+      background: rgba(0, 0, 0, 0.65);
+      border-radius: 14px;
+      padding: 26px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+    }
+
+    .subject-title {
+      text-align: center;
+      color: #ffcf9b;
+      margin-bottom: 10px;
+      font-size: 20px
+    }
+
+    .meta-row {
+      display: flex;
+      gap: 12px;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 14px
+    }
+
+    .meta-row .meta {
+      background: rgba(255, 255, 255, 0.02);
+      padding: 10px;
+      border-radius: 8px
+    }
+
+    .meta label {
+      display: block;
+      font-size: 12px;
+      color: #ffdca8
+    }
+
+    .meta .val {
+      font-weight: 700;
+      color: #fff;
+      margin-top: 6px
+    }
+
+    .means-row {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      margin-bottom: 18px;
+      flex-wrap: wrap
+    }
+
+    .means-row .mean-box {
+      min-width: 120px;
+      background: rgba(255, 255, 255, 0.02);
+      padding: 8px;
+      border-radius: 8px;
+      text-align: center
+    }
+
+    .means-row label {
+      display: block;
+      font-size: 13px;
+      color: #ffdca8;
+      margin-bottom: 6px
+    }
+
+    .means-row input {
+      width: 100%;
+      padding: 8px;
+      border-radius: 6px;
+      border: none;
+      background: rgba(255, 255, 255, 0.07);
+      color: #fff;
+      text-align: center
+    }
+
+    .grade-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      background: rgba(255, 255, 255, 0.02);
+      padding: 12px;
+      border-radius: 10px
+    }
+
+    .grade-item {
+      display: flex;
+      flex-direction: column;
+      gap: 6px
+    }
+
+    .grade-item label {
+      font-size: 13px;
+      color: #ffdca8
+    }
+
+    .grade-item input {
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+      background: rgba(255, 255, 255, 0.07);
+      color: #fff;
+      text-align: center
+    }
+
+    .calc-panel {
+      display: flex;
+      gap: 12px;
+      margin-top: 12px;
+      flex-wrap: wrap;
+      background: rgba(255, 255, 255, 0.02);
+      padding: 12px;
+      border-radius: 10px
+    }
+
+    .calc-item {
+      flex: 1;
+      min-width: 180px;
+      padding: 10px;
+      border-radius: 8px;
+      background: rgba(0, 0, 0, 0.35);
+      text-align: center
+    }
+
+    .calc-item .label {
+      font-size: 13px;
+      color: #ffdca8
+    }
+
+    .calc-item .value {
+      font-size: 20px;
+      font-weight: 700;
+      color: #fff;
+      margin-top: 6px
+    }
+
+    .btn-row {
+      text-align: right;
+      margin-top: 18px;
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end
+    }
+
+    .btn-submit {
+      background: #ff9800;
+      color: #000;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-weight: 700;
+      cursor: pointer
+    }
+
+    .btn-submit.secondary {
+      background: rgba(255, 255, 255, 0.06);
+      color: #fff
+    }
+
+    .btn-submit:hover {
+      transform: scale(1.02)
+    }
+
+    @media(max-width:900px) {
+      .grade-grid {
+        grid-template-columns: repeat(2, 1fr)
+      }
+
+      .meta-row {
+        flex-direction: column;
+        align-items: flex-start
+      }
+    }
   </style>
 </head>
+
 <body>
   <nav>
     <div class="nav-left">Effective 40</div>
@@ -102,10 +313,22 @@
       <div class="grade-grid" id="gradeInputs"></div>
 
       <div class="calc-panel">
-        <div class="calc-item"><div class="label">Total Points</div><div class="value" id="totalPoints">0</div></div>
-        <div class="calc-item"><div class="label">Current Mean</div><div class="value" id="currentMean">0.0000</div></div>
-        <div class="calc-item"><div class="label">Deviation (vs 2024)</div><div class="value" id="deviation">0.0000</div></div>
-        <div class="calc-item"><div class="label">Mean Grade</div><div class="value" id="meanGrade">E</div></div>
+        <div class="calc-item">
+          <div class="label">Total Points</div>
+          <div class="value" id="totalPoints">0</div>
+        </div>
+        <div class="calc-item">
+          <div class="label">Current Mean</div>
+          <div class="value" id="currentMean">0.0000</div>
+        </div>
+        <div class="calc-item">
+          <div class="label">Deviation (vs 2024)</div>
+          <div class="value" id="deviation">0.0000</div>
+        </div>
+        <div class="calc-item">
+          <div class="label">Mean Grade</div>
+          <div class="value" id="meanGrade">E</div>
+        </div>
       </div>
 
       <div class="btn-row">
@@ -135,7 +358,6 @@
     const db = firebase.database();
 
     // ---------- SUBJECT LIST (code/name) ----------
-    // You confirmed the list; it's embedded here.
     const subjects = [
       { code: "101", name: "English" },
       { code: "102", name: "Kiswahili" },
@@ -159,7 +381,7 @@
     ];
 
     // grade map (points)
-    const gradeMap = { "A":12, "A-":11, "B+":10, "B":9, "B-":8, "C+":7, "C":6, "C-":5, "D+":4, "D":3, "D-":2, "E":1, "X":0, "Y":0, "Z":0 };
+    const gradeMap = { "A": 12, "A-": 11, "B+": 10, "B": 9, "B-": 8, "C+": 7, "C": 6, "C-": 5, "D+": 4, "D": 3, "D-": 2, "E": 1, "X": 0, "Y": 0, "Z": 0 };
     const gradeKeys = Object.keys(gradeMap);
 
     // current index
@@ -321,7 +543,6 @@
         await newRef.set(data);
       } catch (err) {
         console.error('Firebase save error:', err);
-        // still continue to save locally
       }
 
       // save locally to avoid carry-over and for quick reload
@@ -375,7 +596,7 @@
         grades: {}
       };
       gradeKeys.forEach(g => temporary.grades[g] = Number(document.getElementById(`grade_${g}`).value) || 0);
-      try { localStorage.setItem(`subject_${subjects[currentIndex].code}`, JSON.stringify(temporary)); } catch(e){}
+      try { localStorage.setItem(`subject_${subjects[currentIndex].code}`, JSON.stringify(temporary)); } catch (e) { }
 
       loadSubject(currentIndex - 1);
     });
@@ -387,7 +608,7 @@
       if (currentIndex < subjects.length - 1) {
         loadSubject(currentIndex + 1);
       } else {
-        alert('All subjects submitted successfully!');
+        // alert('All subjects submitted successfully!');
         // redirect to analytics page
         window.location.href = 'analytics.html';
       }
@@ -410,4 +631,5 @@
     });
   </script>
 </body>
+
 </html>
