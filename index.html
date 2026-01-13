@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -9,8 +10,7 @@
   <title>Effective-40</title>
 
   <!-- Firebase SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <link rel="icon" href="data:,">
 </head>
 
 <body>
@@ -138,21 +138,14 @@
   </script>
 
   <!-- Firebase Auth Logic -->
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+  <!-- Centralized Auth -->
+  <script src="auth.js"></script>
+
   <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyBjwM3I1afnA1hKeuhC4FndPC00suUiKHQ",
-      authDomain: "effective40-64d24.firebaseapp.com",
-      databaseURL: "https://effective40-64d24-default-rtdb.firebaseio.com",
-      projectId: "effective40-64d24",
-      storageBucket: "effective40-64d24.firebasestorage.app",
-      messagingSenderId: "99811191192",
-      appId: "1:99811191192:web:096d9fb7d2958b875523ed",
-      measurementId: "G-JVNFJ8JY53"
-    };
-
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-
     const loginEmail = document.getElementById('loginEmail');
     const loginPass = document.getElementById('loginPassword');
     const loginBtnSubmit = document.getElementById('loginSubmit');
@@ -173,7 +166,15 @@
       auth.createUserWithEmailAndPassword(registerEmail.value, registerPass.value)
         .then(() => {
           registerMessage.style.color = "green";
-          registerMessage.textContent = "Registration successful!";
+          registerMessage.textContent = "Registration successful! Switching to login...";
+
+          // Auto-switch to login tab after 1.5s
+          setTimeout(() => {
+            login(); // Switch UI to login
+            // Pre-fill login email
+            loginEmail.value = registerEmail.value;
+            registerMessage.textContent = "";
+          }, 1500);
         })
         .catch(error => {
           registerMessage.style.color = "red";
@@ -193,35 +194,15 @@
         .then(() => {
           loginMessage.style.color = "green";
           loginMessage.textContent = "Login successful!";
-          setTimeout(() => {
-            window.location.href = "institutions.html";
-          }, 1000);
+          // Redirect handled by auth.js listener
         })
         .catch(error => {
           loginMessage.style.color = "red";
           loginMessage.textContent = error.message;
         });
     });
-
-    // PROTECTED PAGE LOGIC
-    auth.onAuthStateChanged(user => {
-      const protectedPages = [
-        "institutions.html",
-        "boys.html",
-        "girls.html",
-        "overall.html"
-        ];
-
-      const page = window.location.pathname.split("/").pop();
-
-      // If user is NOT logged in and page is protected → redirect to login
-      if (!user && protectedPages.includes(page)) {
-        window.location.href = "index.html";
-      }
-
-      // No auto-redirect from index.html anymore ✔
-    });
   </script>
 
 </body>
+
 </html>

@@ -7,6 +7,7 @@
     <title>Analytics Dashboard — Effective 40</title>
 
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
@@ -25,79 +26,12 @@
             padding: 0;
         }
 
-        body {
-            font-family: "Poppins", sans-serif;
-            background: url('background.jpg') center/cover no-repeat fixed;
-            color: #fff;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding-top: 100px;
-        }
-
-        /* NAV */
-        nav {
-            width: 100%;
-            position: fixed;
-            top: 0;
-            left: 0;
-            z-index: 200;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 14px 28px;
-            background: var(--bg-glass);
-            backdrop-filter: blur(6px);
-            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.4);
-        }
-
-        .nav-left {
-            font-weight: 700;
-            font-size: 20px;
-            color: #fff;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 18px;
-            align-items: center;
-        }
-
-        .nav-links a {
-            color: #fff;
-            text-decoration: none;
-            font-weight: 500;
-            padding: 6px 10px;
-            border-radius: 6px;
-            transition: .22s;
-        }
-
-        .nav-links a:hover,
-        .nav-links a.active {
-            color: var(--primary);
-            text-shadow: 0 0 10px var(--primary);
-            background: rgba(255, 255, 255, 0.03);
-        }
-
-        .btn-logout {
-            background: var(--primary);
-            color: #fff;
-            border: none;
-            padding: 8px 12px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-        }
-
-        .btn-logout:hover {
-            transform: translateY(-1px);
-        }
-
-        /* DASHBOARD */
+        /* Specific dashboard styles */
         .dashboard {
             width: 100%;
             max-width: 1200px;
             padding: 20px;
+            margin: 0 auto;
         }
 
         .page-title {
@@ -214,7 +148,7 @@
             width: 100%;
             height: 100%;
             background: rgba(0, 0, 0, 0.8);
-            z-index: 300;
+            z-index: 3000;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -258,189 +192,172 @@
         <div>Loading Analytics...</div>
     </div>
 
-    <nav>
-        <div class="nav-left">Effective 40</div>
-        <div class="nav-links">
-            <a href="index.html">Home</a>
-            <a href="institutions.html">Institutions</a>
-            <a href="overall.html">Overall</a>
-            <a href="boys.html">Boys</a>
-            <a href="girls.html">Girls</a>
-            <a href="subjects.html">Subjects</a>
-            <a href="analytics.html" class="active">Analytics</a>
-        </div>
-        <button class="btn-logout" id="logoutBtn">Logout</button>
-    </nav>
+    <div class="main-content">
 
-    <div class="dashboard">
-        <h1 class="page-title">Analytics Dashboard</h1>
+        <div class="dashboard">
+            <h1 class="page-title">Analytics Dashboard</h1>
 
-        <!-- OVERALL PERFORMANCE -->
-        <div class="section-card">
-            <div class="section-header">Overall Performance Ranking</div>
+            <!-- OVERALL PERFORMANCE -->
+            <div class="section-card">
+                <div class="section-header">Overall Performance Ranking</div>
 
-            <!-- STATS SUMMARY (New) -->
-            <div class="viz-grid" style="margin-bottom:20px; grid-template-columns: repeat(3, 1fr);">
-                <div class="meta"
-                    style="background:var(--bg-panel); padding:15px; border-radius:8px; text-align:center;">
-                    <div style="font-size:13px; color:var(--text-label)">Registered Schools</div>
-                    <div style="font-size:24px; font-weight:700;" id="statTotalSchools">0</div>
+                <!-- STATS SUMMARY (New) -->
+                <div class="viz-grid" style="margin-bottom:20px; grid-template-columns: repeat(3, 1fr);">
+                    <div class="meta"
+                        style="background:var(--bg-panel); padding:15px; border-radius:8px; text-align:center;">
+                        <div style="font-size:13px; color:var(--text-label)">Registered Schools</div>
+                        <div style="font-size:24px; font-weight:700;" id="statTotalSchools">0</div>
+                    </div>
+                    <div class="meta"
+                        style="background:var(--bg-panel); padding:15px; border-radius:8px; text-align:center;">
+                        <div style="font-size:13px; color:var(--text-label)">Top Performer</div>
+                        <div style="font-size:18px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"
+                            id="statTopSchool">-</div>
+                    </div>
+                    <div class="meta"
+                        style="background:var(--bg-panel); padding:15px; border-radius:8px; text-align:center;">
+                        <div style="font-size:13px; color:var(--text-label)">Average Mean</div>
+                        <div style="font-size:24px; font-weight:700;" id="statAvgMean">0.00</div>
+                    </div>
                 </div>
-                <div class="meta"
-                    style="background:var(--bg-panel); padding:15px; border-radius:8px; text-align:center;">
-                    <div style="font-size:13px; color:var(--text-label)">Top Performer</div>
-                    <div style="font-size:18px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"
-                        id="statTopSchool">-</div>
-                </div>
-                <div class="meta"
-                    style="background:var(--bg-panel); padding:15px; border-radius:8px; text-align:center;">
-                    <div style="font-size:13px; color:var(--text-label)">Average Mean</div>
-                    <div style="font-size:24px; font-weight:700;" id="statAvgMean">0.00</div>
+
+                <div class="viz-grid">
+                    <!-- Table -->
+                    <div>
+                        <div class="data-table-wrap">
+                            <table id="overallTable">
+                                <thead>
+                                    <tr>
+                                        <th class="rank-col">#</th>
+                                        <th>Institution</th>
+                                        <th style="font-size:12px;">Cat/Zone</th>
+                                        <th class="score-col">Mean</th>
+                                        <th class="score-col">Entry</th>
+                                        <th>Grd</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <!-- Chart -->
+                    <div class="chart-box">
+                        <canvas id="overallChart"></canvas>
+                    </div>
                 </div>
             </div>
 
-            <div class="viz-grid">
-                <!-- Table -->
-                <div>
+            <!-- GENDER COMPARISON -->
+            <div class="section-card">
+                <div class="section-header">Gender Analysis</div>
+                <div class="viz-grid">
+                    <!-- Boys -->
+                    <div>
+                        <h4 style="margin-bottom:10px; color:#a3d6ff">Top Boys Schools</h4>
+                        <div class="data-table-wrap" style="max-height: 250px; overflow-y:auto;">
+                            <table id="boysTable">
+                                <thead>
+                                    <tr>
+                                        <th class="rank-col">#</th>
+                                        <th>Institution</th>
+                                        <th class="score-col">Mean</th>
+                                        <th class="score-col">Zone</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <!-- Girls -->
+                    <div>
+                        <h4 style="margin-bottom:10px; color:#ffb3d9">Top Girls Schools</h4>
+                        <div class="data-table-wrap" style="max-height: 250px; overflow-y:auto;">
+                            <table id="girlsTable">
+                                <thead>
+                                    <tr>
+                                        <th class="rank-col">#</th>
+                                        <th>Institution</th>
+                                        <th class="score-col">Mean</th>
+                                        <th class="score-col">Zone</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SUBJECT PERFORMANCE -->
+            <div class="section-card">
+                <div class="section-header">Subject Rankings</div>
+                <div class="controls">
+                    <select id="subjectSelect">
+                        <option value="" disabled selected>Select Subject...</option>
+                        <option value="101">English</option>
+                        <option value="102">Kiswahili</option>
+                        <option value="121">Mathematics</option>
+                        <option value="231">Biology</option>
+                        <option value="232">Physics</option>
+                        <option value="233">Chemistry</option>
+                        <option value="311">History</option>
+                        <option value="312">Geography</option>
+                        <option value="313">C.R.E</option>
+                        <option value="441">Home Science</option>
+                        <option value="442">Art & Design</option>
+                        <option value="443">Agriculture</option>
+                        <option value="444">Woodwork</option>
+                        <option value="445">Metalwork</option>
+                        <option value="446">Building & Const.</option>
+                        <option value="451">Computer Studies</option>
+                        <option value="565">Business Studies</option>
+                        <option value="501">French</option>
+                        <option value="502">German</option>
+                    </select>
+                </div>
+                <div class="viz-grid">
                     <div class="data-table-wrap">
-                        <table id="overallTable">
+                        <table id="subjectTable">
                             <thead>
                                 <tr>
                                     <th class="rank-col">#</th>
                                     <th>Institution</th>
-                                    <th style="font-size:12px;">Cat/Zone</th>
+                                    <th>Category</th>
                                     <th class="score-col">Mean</th>
-                                    <th class="score-col">Entry</th>
+                                    <th class="score-col">Dev</th>
                                     <th>Grd</th>
                                 </tr>
                             </thead>
-                            <tbody></tbody>
-                        </table>
-                    </div>
-                </div>
-                <!-- Chart -->
-                <div class="chart-box">
-                    <canvas id="overallChart"></canvas>
-                </div>
-            </div>
-        </div>
-
-        <!-- GENDER COMPARISON -->
-        <div class="section-card">
-            <div class="section-header">Gender Analysis</div>
-            <div class="viz-grid">
-                <!-- Boys -->
-                <div>
-                    <h4 style="margin-bottom:10px; color:#a3d6ff">Top Boys Schools</h4>
-                    <div class="data-table-wrap" style="max-height: 250px; overflow-y:auto;">
-                        <table id="boysTable">
-                            <thead>
+                            <tbody id="subjectTableBody">
                                 <tr>
-                                    <th class="rank-col">#</th>
-                                    <th>Institution</th>
-                                    <th class="score-col">Mean</th>
-                                    <th class="score-col">Zone</th>
+                                    <td colspan="6" style="text-align:center; color:#888;">Select a subject to view
+                                        rankings
+                                    </td>
                                 </tr>
-                            </thead>
-                            <tbody></tbody>
+                            </tbody>
                         </table>
                     </div>
-                </div>
-                <!-- Girls -->
-                <div>
-                    <h4 style="margin-bottom:10px; color:#ffb3d9">Top Girls Schools</h4>
-                    <div class="data-table-wrap" style="max-height: 250px; overflow-y:auto;">
-                        <table id="girlsTable">
-                            <thead>
-                                <tr>
-                                    <th class="rank-col">#</th>
-                                    <th>Institution</th>
-                                    <th class="score-col">Mean</th>
-                                    <th class="score-col">Zone</th>
-                                </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
+                    <div class="chart-box">
+                        <canvas id="subjectChart"></canvas>
                     </div>
                 </div>
             </div>
+
         </div>
 
-        <!-- SUBJECT PERFORMANCE -->
-        <div class="section-card">
-            <div class="section-header">Subject Rankings</div>
-            <div class="controls">
-                <select id="subjectSelect">
-                    <option value="" disabled selected>Select Subject...</option>
-                    <option value="101">English</option>
-                    <option value="102">Kiswahili</option>
-                    <option value="121">Mathematics</option>
-                    <option value="231">Biology</option>
-                    <option value="232">Physics</option>
-                    <option value="233">Chemistry</option>
-                    <option value="311">History</option>
-                    <option value="312">Geography</option>
-                    <option value="313">C.R.E</option>
-                    <option value="441">Home Science</option>
-                    <option value="442">Art & Design</option>
-                    <option value="443">Agriculture</option>
-                    <option value="444">Woodwork</option>
-                    <option value="445">Metalwork</option>
-                    <option value="446">Building & Const.</option>
-                    <option value="451">Computer Studies</option>
-                    <option value="565">Business Studies</option>
-                    <option value="501">French</option>
-                    <option value="502">German</option>
-                </select>
-            </div>
-            <div class="viz-grid">
-                <div class="data-table-wrap">
-                    <table id="subjectTable">
-                        <thead>
-                            <tr>
-                                <th class="rank-col">#</th>
-                                <th>Institution</th>
-                                <th>Category</th>
-                                <th class="score-col">Mean</th>
-                                <th class="score-col">Dev</th>
-                                <th>Grd</th>
-                            </tr>
-                        </thead>
-                        <tbody id="subjectTableBody">
-                            <tr>
-                                <td colspan="6" style="text-align:center; color:#888;">Select a subject to view rankings
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div class="chart-box">
-                    <canvas id="subjectChart"></canvas>
-                </div>
-            </div>
-        </div>
-
-    </div>
+    </div> <!-- end main-content -->
 
     <!-- Firebase Config -->
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 
+    <script src="auth.js"></script>
+    <script src="layout.js"></script>
+
     <script>
         // CONFIG
-        const firebaseConfig = {
-            apiKey: "AIzaSyBjwM3I1afnA1hKeuhC4FndPC00suUiKHQ",
-            authDomain: "effective40-64d24.firebaseapp.com",
-            databaseURL: "https://effective40-64d24-default-rtdb.firebaseio.com",
-            projectId: "effective40-64d24",
-            storageBucket: "effective40-64d24.firebasestorage.app",
-            messagingSenderId: "99811191192",
-            appId: "1:99811191192:web:096d9fb7d2958b875523ed"
-        };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
-        const auth = firebase.auth();
+        // db and auth from auth.js
 
         let overallData = [];
         let boysData = [];

@@ -7,6 +7,7 @@
   <title>Subjects Performance — Effective 40</title>
 
   <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
   <style>
     * {
       box-sizing: border-box;
@@ -14,85 +15,16 @@
       padding: 0
     }
 
-    body {
-      font-family: "Poppins", sans-serif;
-      background: url('background.jpg') center/cover no-repeat fixed;
-      margin: 0;
-      color: #fff;
-    }
-
-    nav {
-      width: 100%;
-      position: fixed;
-      top: 0;
-      left: 0;
-      z-index: 200;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 14px 22px;
-      background: rgba(0, 0, 0, 0.65);
-      backdrop-filter: blur(6px);
-      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.4);
-    }
-
-    .nav-left {
-      font-weight: 700;
-      font-size: 20px;
-      color: #fff;
-      padding-left: 6px
-    }
-
-    .nav-links {
-      display: flex;
-      gap: 14px;
-      align-items: center
-    }
-
-    .nav-links a {
-      color: #fff;
-      text-decoration: none;
-      font-weight: 500;
-      padding: 6px 10px;
-      border-radius: 6px;
-      transition: .22s
-    }
-
-    .nav-links a:hover,
-    .nav-links a.active {
-      color: #ff9800;
-      text-shadow: 0 0 10px #ff9800;
-      background: rgba(255, 255, 255, 0.03)
-    }
-
-    .btn-logout {
-      background: #ff9800;
-      color: #fff;
-      border: none;
-      padding: 8px 12px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: 600;
-    }
-
-    .btn-logout:hover {
-      transform: translateY(-1px)
-    }
-
-    .page-wrap {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 120px 18px 40px
-    }
-
+    /* Form styles kept local */
     .card {
       width: 100%;
       max-width: 980px;
-      background: rgba(0, 0, 0, 0.65);
+      /* Using slightly darker glass for the forms */
+      background: rgba(15, 15, 15, 0.8);
       border-radius: 14px;
       padding: 26px;
       box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+      margin: 0 auto;
     }
 
     .subject-title {
@@ -159,7 +91,7 @@
       border: none;
       background: rgba(255, 255, 255, 0.07);
       color: #fff;
-      text-align: center
+      text-align: center;
     }
 
     .grade-grid {
@@ -188,7 +120,7 @@
       border: none;
       background: rgba(255, 255, 255, 0.07);
       color: #fff;
-      text-align: center
+      text-align: center;
     }
 
     .calc-panel {
@@ -230,24 +162,7 @@
       justify-content: flex-end
     }
 
-    .btn-submit {
-      background: #ff9800;
-      color: #000;
-      border: none;
-      padding: 10px 16px;
-      border-radius: 8px;
-      font-weight: 700;
-      cursor: pointer
-    }
-
-    .btn-submit.secondary {
-      background: rgba(255, 255, 255, 0.06);
-      color: #fff
-    }
-
-    .btn-submit:hover {
-      transform: scale(1.02)
-    }
+    /* Removed local btn styles to valid style.css classes */
 
     @media(max-width:900px) {
       .grade-grid {
@@ -263,20 +178,8 @@
 </head>
 
 <body>
-  <nav>
-    <div class="nav-left">Effective 40</div>
-    <div class="nav-links">
-      <a href="index.html">Home</a>
-      <a href="institutions.html">Institutions</a>
-      <a href="boys.html">Boys</a>
-      <a href="girls.html">Girls</a>
-      <a href="subjects.html" class="active">Subjects</a>
-      <a href="analytics.html">Analytics</a>
-    </div>
-    <button class="btn-logout" id="logoutBtn">Logout</button>
-  </nav>
 
-  <div class="page-wrap">
+  <div class="main-content">
     <div class="card">
       <h1 class="subject-title" id="subjectTitle">Subject: —</h1>
 
@@ -332,9 +235,9 @@
       </div>
 
       <div class="btn-row">
-        <button class="btn-submit secondary" id="prevBtn">Previous</button>
+        <button class="btn-secondary" id="prevBtn">Previous</button>
         <button class="btn-submit" id="saveBtn">Save Subject</button>
-        <button class="btn-submit" id="nextBtn">Next</button>
+        <button class="btn-submit" id="nextBtn" style="min-width: 100px;">Next</button>
       </div>
     </div>
   </div>
@@ -342,20 +245,14 @@
   <!-- Firebase compat (client) -->
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+
+  <script src="auth.js"></script>
+  <script src="layout.js"></script>
 
   <script>
     // ---------- CONFIG ----------
-    const firebaseConfig = {
-      apiKey: "AIzaSyBjwM3I1afnA1hKeuhC4FndPC00suUiKHQ",
-      authDomain: "effective40-64d24.firebaseapp.com",
-      databaseURL: "https://effective40-64d24-default-rtdb.firebaseio.com",
-      projectId: "effective40-64d24",
-      storageBucket: "effective40-64d24.firebasestorage.app",
-      messagingSenderId: "99811191192",
-      appId: "1:99811191192:web:096d9fb7d2958b875523ed"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
+    // db and auth from auth.js
 
     // ---------- SUBJECT LIST (code/name) ----------
     const subjects = [
@@ -437,31 +334,20 @@
       document.querySelectorAll('#gradeInputs input').forEach(el => el.addEventListener('input', calc));
     }
 
-    // load saved values for a subject from localStorage (prevent carry over)
+    // load saved values from local (fallback)
     function loadSubjectFromLocal(subjCode) {
       const key = `subject_${subjCode}`;
       const raw = localStorage.getItem(key);
-      if (!raw) {
-        // reset inputs to defaults
-        mean2024El.value = '';
-        mean2023El.value = '';
-        mean2022El.value = '';
-        gradeKeys.forEach(g => { document.getElementById(`grade_${g}`).value = 0; });
-        return;
-      }
+      if (!raw) return; // already reset in loadSubjectData
+
       try {
         const data = JSON.parse(raw);
         mean2024El.value = (data.previousMeans && data.previousMeans.mean2024 != null) ? Number(data.previousMeans.mean2024).toFixed(4) : '';
         mean2023El.value = (data.previousMeans && data.previousMeans.mean2023 != null) ? Number(data.previousMeans.mean2023).toFixed(4) : '';
         mean2022El.value = (data.previousMeans && data.previousMeans.mean2022 != null) ? Number(data.previousMeans.mean2022).toFixed(4) : '';
         gradeKeys.forEach(g => { document.getElementById(`grade_${g}`).value = Number((data.grades && data.grades[g]) || 0); });
-      } catch (e) {
-        // if parse failed reset
-        mean2024El.value = '';
-        mean2023El.value = '';
-        mean2022El.value = '';
-        gradeKeys.forEach(g => { document.getElementById(`grade_${g}`).value = 0; });
-      }
+        calc();
+      } catch (e) { }
     }
 
     // compute totals, mean and grade
@@ -507,6 +393,56 @@
       meanGradeEl.textContent = grade;
     }
 
+    // KEY GENERATION
+    const savedKnec = localStorage.getItem('knec') || 'unknown';
+    const cleanKnec = savedKnec.replace(/[^a-zA-Z0-9]/g, "");
+    const currentYear = new Date().getFullYear();
+    const docId = `${cleanKnec}_${currentYear}`;
+
+    // LOAD DATA
+    function loadSubjectData(subjCode) {
+      // Reset inputs first
+      mean2024El.value = '';
+      mean2023El.value = '';
+      mean2022El.value = '';
+      gradeKeys.forEach(g => { document.getElementById(`grade_${g}`).value = 0; });
+
+      // Update display vals
+      totalPointsEl.textContent = '0';
+      currentMeanEl.textContent = '0.0000';
+      deviationEl.textContent = '0.0000';
+      meanGradeEl.textContent = 'E';
+      candidatesEntryEl.textContent = '0';
+
+      if (!cleanKnec || cleanKnec === 'unknown') {
+        loadSubjectFromLocal(subjCode); // Fallback
+        return;
+      }
+
+      const refPath = `subjectsPerformance/${docId}/${subjCode}`;
+      db.ref(refPath).once('value').then(snapshot => {
+        const data = snapshot.val();
+        if (data) {
+          if (data.previousMeans) {
+            if (data.previousMeans.mean2024) mean2024El.value = data.previousMeans.mean2024;
+            if (data.previousMeans.mean2023) mean2023El.value = data.previousMeans.mean2023;
+            if (data.previousMeans.mean2022) mean2022El.value = data.previousMeans.mean2022;
+          }
+          if (data.grades) {
+            gradeKeys.forEach(g => {
+              if (data.grades[g] !== undefined) {
+                document.getElementById(`grade_${g}`).value = data.grades[g];
+              }
+            });
+          }
+          calc();
+          console.log("Subject data loaded from DB");
+        } else {
+          loadSubjectFromLocal(subjCode); // Fallback if not in DB
+        }
+      });
+    }
+
     // Save current subject to Firebase and localStorage
     async function saveCurrentSubject() {
       const subj = subjects[currentIndex];
@@ -536,16 +472,14 @@
         data.grades[g] = Number(document.getElementById(`grade_${g}`).value) || 0;
       });
 
-      // save to Firebase under subjectsPerformance/<knec_or_unknown>/<subjectCode> for easy querying
+      // save to Firebase
       try {
-        const parentPath = knec ? `subjectsPerformance/${knec}` : `subjectsPerformance/unknown`;
-        const newRef = firebase.database().ref(parentPath + "/" + subj.code).push();
-        await newRef.set(data);
+        await db.ref(`subjectsPerformance/${docId}/${subj.code}`).set(data);
       } catch (err) {
         console.error('Firebase save error:', err);
       }
 
-      // save locally to avoid carry-over and for quick reload
+      // save locally
       try {
         localStorage.setItem(`subject_${subj.code}`, JSON.stringify(data));
       } catch (e) {
@@ -555,27 +489,21 @@
       return data;
     }
 
-    // load a subject screen (no carry-over)
+    // load a subject screen
     function loadSubject(index) {
       currentIndex = index;
       const subj = subjects[currentIndex];
-      // set title
+
       subjectTitle.textContent = `Subject: ${subj.name} — (${subj.code})`;
-      // set institution/knec
+
       loadInstitutionFromLocal();
-      // build inputs & load saved values specific to this subject
       buildGradeInputs();
-      loadSubjectFromLocal(subj.code);
-      // ensure means inputs limited to 4 decimals — we'll format if they exist
-      [mean2024El, mean2023El, mean2022El].forEach(el => {
-        if (el.value !== '') {
-          el.value = Number(el.value).toFixed(4);
-        }
-      });
-      // attach mean inputs to recalc
-      [mean2024El, mean2023El, mean2022El].forEach(el => el.addEventListener('input', calc));
-      // compute initial values
-      calc();
+
+      // Load Data (DB priority)
+      loadSubjectData(subj.code);
+
+      // attach mean inputs to recalc if not already
+      [mean2024El, mean2023El, mean2022El].forEach(el => el.addEventListener('input', calc)); // ensure listener
 
       // update button state
       prevBtn.disabled = currentIndex === 0;
@@ -585,19 +513,6 @@
     // navigation handlers
     prevBtn.addEventListener('click', () => {
       if (currentIndex === 0) return;
-      // save current to localStorage (but do not push to Firebase unless user clicks Save)
-      const subj = subjects[currentIndex];
-      const temporary = {
-        previousMeans: {
-          mean2024: mean2024El.value ? Number(mean2024El.value).toFixed(4) : null,
-          mean2023: mean2023El.value ? Number(mean2023El.value).toFixed(4) : null,
-          mean2022: mean2022El.value ? Number(mean2022El.value).toFixed(4) : null
-        },
-        grades: {}
-      };
-      gradeKeys.forEach(g => temporary.grades[g] = Number(document.getElementById(`grade_${g}`).value) || 0);
-      try { localStorage.setItem(`subject_${subjects[currentIndex].code}`, JSON.stringify(temporary)); } catch (e) { }
-
       loadSubject(currentIndex - 1);
     });
 
@@ -609,25 +524,23 @@
         loadSubject(currentIndex + 1);
       } else {
         // alert('All subjects submitted successfully!');
-        // redirect to analytics page
         window.location.href = 'analytics.html';
       }
     });
 
-    // Save button: explicit save (useful if user wants to save then continue later)
+    // Save button
     saveBtn.addEventListener('click', async () => {
       await saveCurrentSubject();
-      alert('Subject saved locally and to Firebase (if available).');
+      alert('Subject saved/updated.');
     });
 
     // load initial
     loadSubject(0);
 
-    // logout button - optional (if you have auth elsewhere)
+    // logout button
     document.getElementById('logoutBtn').addEventListener('click', () => {
-      // if using auth, sign out here. For now just clear localstorage and redirect
-      // localStorage.removeItem('currentInstitution');
-      window.location.href = 'index.html';
+      if (auth) auth.signOut().then(() => location.href = 'index.html');
+      else location.href = 'index.html';
     });
   </script>
 </body>

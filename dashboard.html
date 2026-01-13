@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard — Effective 40</title>
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <!-- Sidebar injected by layout.js -->
+
+    <div class="main-content">
+        <!-- Top Header injected by layout.js -->
+
+        <div class="dash-grid">
+            <div class="dash-card">
+                <div class="icon-box"><i class='bx bxs-school'></i></div>
+                <h3 id="statSchools">-</h3>
+                <p>Total Schools</p>
+            </div>
+            <div class="dash-card">
+                <div class="icon-box"><i class='bx bx-trending-up'></i></div>
+                <h3 id="statMean">-</h3>
+                <p>Average Mean Score</p>
+            </div>
+            <div class="dash-card">
+                <div class="icon-box"><i class='bx bxs-user-detail'></i></div>
+                <h3 id="statEntry">-</h3>
+                <p>Total Candidates</p>
+            </div>
+        </div>
+
+        <h2 style="color:#fff; margin-bottom:15px;">Quick Actions</h2>
+        <div class="action-row">
+            <a href="institutions.html" class="big-btn">
+                <i class='bx bxs-edit'></i>
+                Start Data Entry
+            </a>
+            <a href="analytics.html" class="big-btn">
+                <i class='bx bxs-pie-chart-alt-2'></i>
+                View Reports
+            </a>
+        </div>
+
+        <div style="margin-top: 30px;">
+            <h3 style="color:#fff; margin-bottom:15px;">Recent Data</h3>
+            <p style="color:#aaa; font-size:14px;">Select "Start Data Entry" to choose an institution and begin.</p>
+        </div>
+    </div>
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+    <script src="auth.js"></script>
+
+    <!-- Shared Layout -->
+    <script src="layout.js"></script>
+
+    <script>
+        // Simple Dashboard Logic (Stats)
+        // db is available from auth.js
+        setTimeout(() => {
+            if (!window.db) return;
+
+            // Example: Count schools in localStorage or DB? 
+            // Since we use push/set in specific paths, getting "Total Schools" might be expensive if not indexed.
+            // We'll just show placeholder or simple logic for now.
+
+            // Attempt to read 'overallPerformance' to count entries (Simulated stats)
+            db.ref('overallPerformance').limitToLast(10).once('value').then(snap => {
+                const count = snap.numChildren();
+                document.getElementById('statSchools').textContent = count;
+
+                let totalMean = 0;
+                let entries = 0;
+                snap.forEach(child => {
+                    const val = child.val();
+                    if (val.currentMean) totalMean += val.currentMean;
+                    if (val.entry) entries += val.entry;
+                });
+
+                const avg = count > 0 ? (totalMean / count).toFixed(3) : '0.000';
+                document.getElementById('statMean').textContent = avg;
+                document.getElementById('statEntry').textContent = entries;
+            });
+        }, 1500);
+    </script>
+</body>
+
+</html>

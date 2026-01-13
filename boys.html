@@ -7,6 +7,7 @@
   <title>Boys Performance — Effective 40</title>
 
   <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
   <style>
     * {
       box-sizing: border-box;
@@ -14,86 +15,16 @@
       padding: 0
     }
 
-    body {
-      font-family: "Poppins", sans-serif;
-      background: url('background.jpg') center/cover no-repeat fixed;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      color: #fff;
-    }
-
-    nav {
-      width: 100%;
-      position: fixed;
-      top: 0;
-      left: 0;
-      z-index: 200;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 14px 28px;
-      background: rgba(0, 0, 0, 0.65);
-      backdrop-filter: blur(6px);
-      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.4);
-    }
-
-    .nav-left {
-      font-weight: 700;
-      font-size: 20px;
-      color: #fff
-    }
-
-    .nav-links {
-      display: flex;
-      gap: 18px;
-      align-items: center
-    }
-
-    .nav-links a {
-      color: #fff;
-      text-decoration: none;
-      font-weight: 500;
-      padding: 6px 10px;
-      border-radius: 6px;
-      transition: .22s
-    }
-
-    .nav-links a:hover,
-    .nav-links a.active {
-      color: #ff9800;
-      text-shadow: 0 0 10px #ff9800;
-      background: rgba(255, 255, 255, 0.03)
-    }
-
-    .btn-logout {
-      background: #ff9800;
-      color: #fff;
-      border: none;
-      padding: 8px 12px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: 600;
-    }
-
-    .btn-logout:hover {
-      transform: translateY(-1px)
-    }
-
-    .page-wrap {
-      width: 100%;
-      display: flex;
-      justify-content: center;
-      padding: 120px 18px 40px
-    }
-
+    /* Layout override */
     .card {
       width: 100%;
       max-width: 980px;
-      background: rgba(0, 0, 0, 0.65);
+      /* Using slightly darker glass for the forms */
+      background: rgba(15, 15, 15, 0.8);
       border-radius: 14px;
       padding: 26px;
       box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+      margin: 0 auto;
     }
 
     .grid {
@@ -217,20 +148,6 @@
       color: #fff
     }
 
-    .btn-submit {
-      background: #ff9800;
-      color: #000;
-      border: none;
-      padding: 12px 18px;
-      border-radius: 10px;
-      font-weight: 700;
-      cursor: pointer;
-    }
-
-    .btn-submit:hover {
-      transform: scale(1.02)
-    }
-
     @media(max-width:900px) {
       .grid {
         grid-template-columns: 1fr
@@ -245,20 +162,7 @@
 
 <body>
 
-  <nav>
-    <div class="nav-left">Effective 40</div>
-    <div class="nav-links">
-      <a href="index.html">Home</a>
-      <a href="institutions.html">Institutions</a>
-      <a href="overall.html">Overall</a>
-      <a href="boys.html" class="active">Boys Performance</a>
-      <a href="subjects.html">Subjects</a>
-      <a href="analytics.html">Analytics</a>
-    </div>
-    <button class="btn-logout" id="logoutBtn">Logout</button>
-  </nav>
-
-  <div class="page-wrap">
+  <div class="main-content">
     <div class="card">
       <h1 style="color:#ffcf9b">Boys’ Performance Entry</h1>
       <p style="font-size:13px;color:#ddd;margin-bottom:20px">Enter grade distribution for boys. You may input 0 where
@@ -272,9 +176,9 @@
           </div>
           <div><label>Previous Means (3 years)</label>
             <div class="previous-means">
-              <div class="prev-item"><input id="meanYr3" placeholder="3 yrs ago" type="number" step="0.0001"></div>
-              <div class="prev-item"><input id="meanYr2" placeholder="2 yrs ago" type="number" step="0.0001"></div>
-              <div class="prev-item"><input id="meanYr1" placeholder="Last year" type="number" step="0.0001"></div>
+              <div class="prev-item"><input id="meanYr3" placeholder="2022" type="number" step="0.0001"></div>
+              <div class="prev-item"><input id="meanYr2" placeholder="2023" type="number" step="0.0001"></div>
+              <div class="prev-item"><input id="meanYr1" placeholder="2024" type="number" step="0.0001"></div>
             </div>
           </div>
         </div>
@@ -315,20 +219,11 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 
+  <script src="auth.js"></script>
+  <script src="layout.js"></script>
+
   <script>
-    // Firebase setup
-    const firebaseConfig = {
-      apiKey: "AIzaSyBjwM3I1afnA1hKeuhC4FndPC00suUiKHQ",
-      authDomain: "effective40-64d24.firebaseapp.com",
-      databaseURL: "https://effective40-64d24-default-rtdb.firebaseio.com",
-      projectId: "effective40-64d24",
-      storageBucket: "effective40-64d24.firebasestorage.app",
-      messagingSenderId: "99811191192",
-      appId: "1:99811191192:web:096d9fb7d2958b875523ed"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-    const auth = firebase.auth();
+    // db and auth are initialized in auth.js
 
     // Grades setup
     const grades = ["A", "A-", "B+", "B", "B-", "C+", "C", "C-", "D+", "D", "D-", "E", "X", "Y", "Z"];
@@ -344,8 +239,11 @@
     const weightMap = { A: 12, "Aminus": 11, "Bplus": 10, B: 9, "Bminus": 8, "Cplus": 7, C: 6, "Cminus": 5, "Dplus": 4, D: 3, "Dminus": 2, E: 1, X: 0, Y: 0, Z: 0 };
 
     // Autofill institution details
-    document.getElementById('instField').value = localStorage.getItem('institution') || '';
-    document.getElementById('knecField').value = localStorage.getItem('knec') || '';
+    const savedKnec = localStorage.getItem('knec') || 'unknown';
+    const savedInst = localStorage.getItem('institution') || '';
+
+    document.getElementById('instField').value = savedInst;
+    document.getElementById('knecField').value = savedKnec;
 
     function num(v) { const n = parseFloat(v); return isNaN(n) ? 0 : n; }
 
@@ -380,6 +278,44 @@
     }
     document.querySelectorAll('input[type="number"]').forEach(i => i.addEventListener('input', recalc));
 
+    // KEY GENERATION
+    const cleanKnec = savedKnec.replace(/[^a-zA-Z0-9]/g, "");
+    const currentYear = new Date().getFullYear();
+    const docId = `${cleanKnec}_${currentYear}`;
+
+    // LOAD EXISTING DATA
+    function loadData() {
+      if (!cleanKnec || cleanKnec === 'unknown') return;
+
+      db.ref('boysPerformance/' + docId).once('value').then(snapshot => {
+        const data = snapshot.val();
+        if (data) {
+          // Populate Grades
+          if (data.grades) {
+            grades.forEach(g => {
+              const id = "g" + g.replace('+', 'plus').replace('-', 'minus');
+              if (data.grades[id] !== undefined) {
+                document.getElementById(id).value = data.grades[id];
+              }
+            });
+          }
+
+          // Populate Previous Means
+          if (data.previousMeans) {
+            if (data.previousMeans.threeYearsAgo) document.getElementById('meanYr3').value = data.previousMeans.threeYearsAgo;
+            if (data.previousMeans.twoYearsAgo) document.getElementById('meanYr2').value = data.previousMeans.twoYearsAgo;
+            if (data.previousMeans.lastYear) document.getElementById('meanYr1').value = data.previousMeans.lastYear;
+          }
+
+          recalc(); // Update totals
+          console.log("Existing data loaded for edit.");
+        }
+      }).catch(err => console.error("Error loading data:", err));
+    }
+
+    // Call load immediately
+    loadData();
+
     document.getElementById('saveBtn').addEventListener('click', async () => {
       const knec = document.getElementById('knecField').value;
       const inst = document.getElementById('instField').value;
@@ -397,18 +333,19 @@
           lastYear: num(document.getElementById('meanYr1').value)
         },
         grades: Object.fromEntries(grades.map(g => ["g" + g.replace('+', 'plus').replace('-', 'minus'), num(document.getElementById("g" + g.replace('+', 'plus').replace('-', 'minus')).value)])),
-        year: new Date().getFullYear(),
-        createdAt: new Date().toISOString()
+        year: currentYear,
+        updatedAt: new Date().toISOString()
       };
 
       try {
-        await db.ref("boysPerformance").push(payload);
+        await db.ref("boysPerformance/" + docId).set(payload);
         window.location.href = "girls.html";
       } catch (e) { alert("Error: " + e.message); }
     });
 
     document.getElementById("logoutBtn").addEventListener("click", () => {
-      auth.signOut().then(() => location.href = "index.html");
+      if (auth) auth.signOut().then(() => location.href = "index.html");
+      else location.href = "index.html";
     });
   </script>
 </body>

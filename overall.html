@@ -7,6 +7,7 @@
   <title>Overall Performance — Effective 40</title>
 
   <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
   <style>
     * {
       box-sizing: border-box;
@@ -14,85 +15,18 @@
       padding: 0
     }
 
-    body {
-      font-family: "Poppins", sans-serif;
-      background: url('background.jpg') center/cover no-repeat fixed;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      color: #fff;
-    }
-
-    nav {
-      width: 100%;
-      position: fixed;
-      top: 0;
-      left: 0;
-      z-index: 200;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 14px 28px;
-      background: rgba(0, 0, 0, 0.65);
-      backdrop-filter: blur(6px);
-      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.4);
-    }
-
-    .nav-left {
-      font-weight: 700;
-      font-size: 20px;
-      color: #fff
-    }
-
-    .nav-links {
-      display: flex;
-      gap: 18px;
-      align-items: center
-    }
-
-    .nav-links a {
-      color: #fff;
-      text-decoration: none;
-      font-weight: 500;
-      padding: 6px 10px;
-      border-radius: 6px;
-      transition: .22s
-    }
-
-    .nav-links a:hover,
-    .nav-links a.active {
-      color: #ff9800;
-      text-shadow: 0 0 10px #ff9800;
-      background: rgba(255, 255, 255, 0.03)
-    }
-
-    .btn-logout {
-      background: #ff9800;
-      color: #fff;
-      border: none;
-      padding: 8px 12px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: 600;
-    }
-
-    .btn-logout:hover {
-      transform: translateY(-1px)
-    }
-
-    .page-wrap {
-      width: 100%;
-      display: flex;
-      justify-content: center;
-      padding: 120px 18px 40px
-    }
-
+    /* Keep structure styles */
     .card {
       width: 100%;
       max-width: 980px;
-      background: rgba(0, 0, 0, 0.65);
-      border-radius: 14px;
       padding: 26px;
+      margin: 0 auto;
+      /* Background and border are now handled by style.css .card if matched, or we keep local overrides for layout specifics if needed */
+      /* For consistency, we rely on style.css .dash-card or similar, but here we used .card. 
+         I will keep basic layout styles but remove colors to let transparent glass background from style.css shine if possible, 
+         OR re-declare the glass style if style.css doesn't target .card universally. */
+      background: rgba(15, 15, 15, 0.8);
+      border-radius: 14px;
       box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
     }
 
@@ -217,19 +151,7 @@
       color: #fff
     }
 
-    .btn-submit {
-      background: #ff9800;
-      color: #000;
-      border: none;
-      padding: 12px 18px;
-      border-radius: 10px;
-      font-weight: 700;
-      cursor: pointer;
-    }
-
-    .btn-submit:hover {
-      transform: scale(1.02)
-    }
+    /* Buttons are now handled by style.css .btn-submit class */
 
     @media(max-width:900px) {
       .grid {
@@ -245,20 +167,7 @@
 
 <body>
 
-  <nav>
-    <div class="nav-left">Effective 40</div>
-    <div class="nav-links">
-      <a href="index.html">Home</a>
-      <a href="institutions.html">Institutions</a>
-      <a href="boys.html">Boys Performance</a>
-      <a href="girls.html">Girls Performance</a>
-      <a href="subjects.html">Subjects</a>
-      <a href="analytics.html">Analytics Dashboard</a>
-    </div>
-    <button class="btn-logout" id="logoutBtn">Logout</button>
-  </nav>
-
-  <div class="page-wrap">
+  <div class="main-content">
     <div class="card">
       <h1 style="color:#ffcf9b">Overall Performance Entry</h1>
       <p style="font-size:13px;color:#ddd;margin-bottom:20px">Enter the grade distribution and previous means.
@@ -271,9 +180,9 @@
               disabled /></div>
           <div><label>Previous Means (3 years)</label>
             <div class="previous-means">
-              <div class="prev-item"><input id="meanYr3" placeholder="3 yrs ago" type="number" step="0.0001"></div>
-              <div class="prev-item"><input id="meanYr2" placeholder="2 yrs ago" type="number" step="0.0001"></div>
-              <div class="prev-item"><input id="meanYr1" placeholder="Last year" type="number" step="0.0001"></div>
+              <div class="prev-item"><input id="meanYr3" placeholder="2022" type="number" step="0.0001"></div>
+              <div class="prev-item"><input id="meanYr2" placeholder="2023" type="number" step="0.0001"></div>
+              <div class="prev-item"><input id="meanYr1" placeholder="2024" type="number" step="0.0001"></div>
             </div>
           </div>
         </div>
@@ -325,35 +234,28 @@
         <button class="btn-submit" id="saveBtn">Save & Continue</button>
       </div>
     </div>
-  </div>
+  </div> <!-- end main-content -->
 
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyBjwM3I1afnA1hKeuhC4FndPC00suUiKHQ",
-      authDomain: "effective40-64d24.firebaseapp.com",
-      databaseURL: "https://effective40-64d24-default-rtdb.firebaseio.com",
-      projectId: "effective40-64d24",
-      storageBucket: "effective40-64d24.firebasestorage.app",
-      messagingSenderId: "99811191192",
-      appId: "1:99811191192:web:096d9fb7d2958b875523ed",
-      measurementId: "G-JVNFJ8JY53"
-    };
+  <script src="auth.js"></script>
+  <script src="layout.js"></script>
 
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-    const auth = firebase.auth();
+  <script>
+    // db & auth from auth.js
 
     // Field references
     const ids = ['gA', 'gAminus', 'gBplus', 'gB', 'gBminus', 'gCplus', 'gC', 'gCminus', 'gDplus', 'gD', 'gDminus', 'gE', 'gX', 'gY', 'gZ'];
     const weightMap = { gA: 12, gAminus: 11, gBplus: 10, gB: 9, gBminus: 8, gCplus: 7, gC: 6, gCminus: 5, gDplus: 4, gD: 3, gDminus: 2, gE: 1, gX: 0, gY: 0, gZ: 0 };
 
     // Auto-fill institution and knec
-    document.getElementById('instField').value = localStorage.getItem('institution') || '';
-    document.getElementById('knecField').value = localStorage.getItem('knec') || '';
+    const savedKnec = localStorage.getItem('knec') || 'unknown';
+    const savedInst = localStorage.getItem('institution') || '';
+
+    document.getElementById('instField').value = savedInst;
+    document.getElementById('knecField').value = savedKnec;
 
     // Helper to parse numbers
     function num(v) { const n = parseFloat(v); return isNaN(n) ? 0 : n; }
@@ -401,6 +303,43 @@
 
     document.querySelectorAll('input[type="number"]').forEach(el => el.addEventListener('input', recalc));
 
+    // KEY GENERATION
+    const cleanKnec = savedKnec.replace(/[^a-zA-Z0-9]/g, "");
+    const currentYear = new Date().getFullYear();
+    const docId = `${cleanKnec}_${currentYear}`;
+
+    // LOAD EXISTING DATA
+    function loadData() {
+      if (!cleanKnec || cleanKnec === 'unknown') return;
+
+      db.ref('overallPerformance/' + docId).once('value').then(snapshot => {
+        const data = snapshot.val();
+        if (data) {
+          // Populate Grades
+          if (data.grades) {
+            ids.forEach(id => {
+              if (data.grades[id] !== undefined) {
+                document.getElementById(id).value = data.grades[id];
+              }
+            });
+          }
+
+          // Populate Previous Means
+          if (data.previousMeans) {
+            if (data.previousMeans.threeYearsAgo) document.getElementById('meanYr3').value = data.previousMeans.threeYearsAgo;
+            if (data.previousMeans.twoYearsAgo) document.getElementById('meanYr2').value = data.previousMeans.twoYearsAgo;
+            if (data.previousMeans.lastYear) document.getElementById('meanYr1').value = data.previousMeans.lastYear;
+          }
+
+          recalc(); // Update totals
+          console.log("Existing data loaded for edit.");
+        }
+      }).catch(err => console.error("Error loading data:", err));
+    }
+
+    // Call load immediately
+    loadData();
+
     document.getElementById('saveBtn').addEventListener('click', async () => {
       const knec = document.getElementById('knecField').value;
       const inst = document.getElementById('instField').value;
@@ -425,19 +364,21 @@
         deviationFromLastYear: Number(deviation.toFixed(4)),
         meanGrade,
         grades: Object.fromEntries(ids.map(id => [id, num(document.getElementById(id).value)])),
-        year: new Date().getFullYear(),
-        createdAt: new Date().toISOString()
+        year: currentYear,
+        updatedAt: new Date().toISOString()
       };
 
       try {
-        await db.ref('overallPerformance').push(payload);
-        // alert('Overall Performance Saved successfully!');
+        // Use .set() with unique ID to prevent duplicates (Update existing)
+        await db.ref('overallPerformance/' + docId).set(payload);
+        // alert('Overall Performance Saved/Updated successfully!');
         window.location.href = 'boys.html';
       } catch (e) { alert('Error saving: ' + e.message); }
     });
 
     document.getElementById('logoutBtn').addEventListener('click', () => {
-      auth.signOut().then(() => location.href = 'index.html');
+      if (auth) auth.signOut().then(() => location.href = 'index.html');
+      else location.href = 'index.html';
     });
   </script>
 </body>
