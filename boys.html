@@ -343,10 +343,7 @@
       } catch (e) { alert("Error: " + e.message); }
     });
 
-    document.getElementById("logoutBtn").addEventListener("click", () => {
-      if (auth) auth.signOut().then(() => location.href = "index.html");
-      else location.href = "index.html";
-    });
+
   </script>
 </body>
 

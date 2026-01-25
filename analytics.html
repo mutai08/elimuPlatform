@@ -199,7 +199,13 @@
 
             <!-- OVERALL PERFORMANCE -->
             <div class="section-card">
-                <div class="section-header">Overall Performance Ranking</div>
+                <div class="section-header" style="display:flex; justify-content:space-between; align-items:center;">
+                    <span>Overall Performance Ranking</span>
+                    <button class="btn-secondary" style="padding:6px 12px; font-size:13px;"
+                        onclick="exportTableToExcel('overallTable', 'Overall_Performance')">
+                        <i class='bx bxs-download'></i> Export Excel
+                    </button>
+                </div>
 
                 <!-- STATS SUMMARY (New) -->
                 <div class="viz-grid" style="margin-bottom:20px; grid-template-columns: repeat(3, 1fr);">
@@ -228,12 +234,7 @@
                             <table id="overallTable">
                                 <thead>
                                     <tr>
-                                        <th class="rank-col">#</th>
-                                        <th>Institution</th>
-                                        <th style="font-size:12px;">Cat/Zone</th>
-                                        <th class="score-col">Mean</th>
-                                        <th class="score-col">Entry</th>
-                                        <th>Grd</th>
+                                        <!-- Will be filled by JS -->
                                     </tr>
                                 </thead>
                                 <tbody></tbody>
@@ -253,34 +254,30 @@
                 <div class="viz-grid">
                     <!-- Boys -->
                     <div>
-                        <h4 style="margin-bottom:10px; color:#a3d6ff">Top Boys Schools</h4>
+                        <div
+                            style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                            <h4 style="color:#a3d6ff">Top Boys Schools</h4>
+                            <button class="btn-secondary" style="padding:4px 8px; font-size:11px;"
+                                onclick="exportTableToExcel('boysTable', 'Boys_Performance')">Export</button>
+                        </div>
                         <div class="data-table-wrap" style="max-height: 250px; overflow-y:auto;">
                             <table id="boysTable">
-                                <thead>
-                                    <tr>
-                                        <th class="rank-col">#</th>
-                                        <th>Institution</th>
-                                        <th class="score-col">Mean</th>
-                                        <th class="score-col">Zone</th>
-                                    </tr>
-                                </thead>
+                                <thead></thead>
                                 <tbody></tbody>
                             </table>
                         </div>
                     </div>
                     <!-- Girls -->
                     <div>
-                        <h4 style="margin-bottom:10px; color:#ffb3d9">Top Girls Schools</h4>
+                        <div
+                            style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                            <h4 style="color:#ffb3d9">Top Girls Schools</h4>
+                            <button class="btn-secondary" style="padding:4px 8px; font-size:11px;"
+                                onclick="exportTableToExcel('girlsTable', 'Girls_Performance')">Export</button>
+                        </div>
                         <div class="data-table-wrap" style="max-height: 250px; overflow-y:auto;">
                             <table id="girlsTable">
-                                <thead>
-                                    <tr>
-                                        <th class="rank-col">#</th>
-                                        <th>Institution</th>
-                                        <th class="score-col">Mean</th>
-                                        <th class="score-col">Zone</th>
-                                    </tr>
-                                </thead>
+                                <thead></thead>
                                 <tbody></tbody>
                             </table>
                         </div>
@@ -290,7 +287,13 @@
 
             <!-- SUBJECT PERFORMANCE -->
             <div class="section-card">
-                <div class="section-header">Subject Rankings</div>
+                <div class="section-header" style="display:flex; justify-content:space-between; align-items:center;">
+                    <span>Subject Rankings</span>
+                    <button class="btn-secondary" style="padding:6px 12px; font-size:13px;"
+                        onclick="exportTableToExcel('subjectTable', 'Subject_Performance')">
+                        <i class='bx bxs-download'></i> Export Excel
+                    </button>
+                </div>
                 <div class="controls">
                     <select id="subjectSelect">
                         <option value="" disabled selected>Select Subject...</option>
@@ -318,16 +321,7 @@
                 <div class="viz-grid">
                     <div class="data-table-wrap">
                         <table id="subjectTable">
-                            <thead>
-                                <tr>
-                                    <th class="rank-col">#</th>
-                                    <th>Institution</th>
-                                    <th>Category</th>
-                                    <th class="score-col">Mean</th>
-                                    <th class="score-col">Dev</th>
-                                    <th>Grd</th>
-                                </tr>
-                            </thead>
+                            <thead></thead>
                             <tbody id="subjectTableBody">
                                 <tr>
                                     <td colspan="6" style="text-align:center; color:#888;">Select a subject to view
@@ -347,6 +341,9 @@
 
     </div> <!-- end main-content -->
 
+    <!-- SheetJS for Excel Export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
     <!-- Firebase Config -->
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
@@ -356,6 +353,14 @@
     <script src="layout.js"></script>
 
     <script>
+        // Export Function
+        function exportTableToExcel(tableId, name) {
+            const table = document.getElementById(tableId);
+            if (!table) return;
+            const wb = XLSX.utils.table_to_book(table, { strip: true });
+            XLSX.writeFile(wb, `${name}.xlsx`);
+        }
+
         // CONFIG
         // db and auth from auth.js
 
@@ -468,43 +473,89 @@
             }
         }
 
+        // Helper to get grade count safely
+        function getGrade(item, gradeKey, isSubject = false) {
+            // Overall/Boys/Girls use keys like 'gA', 'gAminus'
+            // Subjects use keys like 'A', 'A-'
+            if (!item || !item.grades) return 0;
+
+            let key = gradeKey;
+            if (!isSubject) {
+                // Map 'A' -> 'gA', 'A-' -> 'gAminus'
+                const map = {
+                    'A': 'gA', 'A-': 'gAminus',
+                    'B+': 'gBplus', 'B': 'gB', 'B-': 'gBminus',
+                    'C+': 'gCplus', 'C': 'gC', 'C-': 'gCminus',
+                    'D+': 'gDplus', 'D': 'gD', 'D-': 'gDminus',
+                    'E': 'gE'
+                };
+                key = map[gradeKey] || gradeKey;
+            }
+            return item.grades[key] || 0;
+        }
+
+        const gradeCols = ['A', 'A-', 'B+', 'B', 'B-', 'C+', 'C', 'C-', 'D+', 'D', 'D-', 'E'];
+
+        function buildGradeHeaders() {
+            return gradeCols.map(g => `<th style="font-size:11px; padding:4px;">${g}</th>`).join('');
+        }
+
+        // UPDATE TABLE HEADERS DYNAMICALLY or STATICALLY
+        // Let's replace the HTML content of the tables in the render functions or just update the HTML block above.
+        // We will do it in JavaScript to ensure consistency.
+
+        function setTableHeaders(tableId, extraCols = '') {
+            const table = document.getElementById(tableId);
+            const thead = table.querySelector('thead');
+            thead.innerHTML = `
+                <tr>
+                    <th class="rank-col">#</th>
+                    <th>Institution</th>
+                    ${extraCols}
+                    <th class="score-col">Entry</th>
+                    <th class="score-col">Mean</th>
+                    ${buildGradeHeaders()}
+                </tr>
+            `;
+        }
+
         // --- RENDER OVERALL ---
         let overallChartInst = null;
         function renderOverall() {
-            // Top 10 Table
+            setTableHeaders('overallTable', '<th style="font-size:12px;">Cat</th>');
+
             const tbody = document.querySelector('#overallTable tbody');
             tbody.innerHTML = '';
-            const top10 = overallData.slice(0, 10);
 
-            top10.forEach((item, index) => {
+            // Sort by Mean Desc
+            const data = overallData.sort((a, b) => b.currentMean - a.currentMean);
+
+            data.forEach((item, index) => {
                 const tr = document.createElement('tr');
-                // Create concise meta string
-                let meta = [];
-                if (item.category) meta.push(item.category.substring(0, 3)); // e.g., SUB
-                if (item.zone) meta.push(item.zone);
-                const metaStr = meta.length ? meta.join('/') : '-';
+                const gradeCells = gradeCols.map(g => `<td style="font-size:11px; padding:4px;">${getGrade(item, g, false)}</td>`).join('');
 
                 tr.innerHTML = `
-        <td class="rank-col">${index + 1}</td>
-        <td>
-            <div style="font-weight:600">${item.institution || 'Unknown'}</div>
-            <div style="font-size:11px; color:#888;">${item.knec || ''}</div>
-        </td>
-        <td style="font-size:12px; color:#aaa;">${metaStr}</td>
-        <td class="score-col">${item.currentMean.toFixed(4)}</td>
-        <td class="score-col">${item.entry}</td>
-        <td>${item.meanGrade || '-'}</td>
-      `;
+                    <td class="rank-col">${index + 1}</td>
+                    <td>
+                        <div style="font-weight:600">${item.institution || 'Unknown'}</div>
+                    </td>
+                    <td style="font-size:12px; color:#aaa;">${item.category || '-'}</td>
+                    <td class="score-col">${item.entry}</td>
+                    <td class="score-col">${Number(item.currentMean).toFixed(4)}</td>
+                    ${gradeCells}
+                `;
                 tbody.appendChild(tr);
             });
 
-            if (top10.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:#888;">No Data Available</td></tr>`;
+            if (data.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="18" style="text-align:center;color:#888;">No Data Available</td></tr>`;
                 return;
             }
 
-            // Chart
+            // Chart (Top 10)
+            const top10 = data.slice(0, 10);
             const ctx = document.getElementById('overallChart').getContext('2d');
+            if (overallChartInst) overallChartInst.destroy();
             overallChartInst = new Chart(ctx, {
                 type: 'bar',
                 data: {
@@ -530,36 +581,56 @@
 
         // --- RENDER BOYS ---
         function renderBoys() {
+            setTableHeaders('boysTable');
             const tbody = document.querySelector('#boysTable tbody');
             tbody.innerHTML = '';
-            const top = boysData.slice(0, 10);
-            top.forEach((item, index) => {
+
+            // Filter 0 entry and sort
+            const data = boysData
+                .filter(item => item.entry > 0)
+                .sort((a, b) => b.currentMean - a.currentMean);
+
+            data.forEach((item, index) => {
                 const tr = document.createElement('tr');
+                const gradeCells = gradeCols.map(g => `<td style="font-size:11px; padding:4px;">${getGrade(item, g, false)}</td>`).join('');
+
                 tr.innerHTML = `
-        <td class="rank-col">${index + 1}</td>
-        <td>${item.institution || 'Unknown'}</td>
-        <td class="score-col">${item.currentMean.toFixed(4)}</td>
-        <td class="score-col" style="font-size:12px; color:#aaa;">${item.zone || '-'}</td>`;
+                    <td class="rank-col">${index + 1}</td>
+                    <td>${item.institution || 'Unknown'}</td>
+                    <td class="score-col">${item.entry}</td>
+                    <td class="score-col">${Number(item.currentMean).toFixed(4)}</td>
+                    ${gradeCells}
+                `;
                 tbody.appendChild(tr);
             });
-            if (top.length === 0) tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:#888">No Data</td></tr>';
+            if (data.length === 0) tbody.innerHTML = '<tr><td colspan="17" style="text-align:center;color:#888">No Data (Note: Schools with 0 entry are hidden)</td></tr>';
         }
 
         // --- RENDER GIRLS ---
         function renderGirls() {
+            setTableHeaders('girlsTable');
             const tbody = document.querySelector('#girlsTable tbody');
             tbody.innerHTML = '';
-            const top = girlsData.slice(0, 10);
-            top.forEach((item, index) => {
+
+            // Filter 0 entry and sort
+            const data = girlsData
+                .filter(item => item.entry > 0)
+                .sort((a, b) => b.currentMean - a.currentMean);
+
+            data.forEach((item, index) => {
                 const tr = document.createElement('tr');
+                const gradeCells = gradeCols.map(g => `<td style="font-size:11px; padding:4px;">${getGrade(item, g, false)}</td>`).join('');
+
                 tr.innerHTML = `
-        <td class="rank-col">${index + 1}</td>
-        <td>${item.institution || 'Unknown'}</td>
-        <td class="score-col">${item.currentMean.toFixed(4)}</td>
-        <td class="score-col" style="font-size:12px; color:#aaa;">${item.zone || '-'}</td>`;
+                    <td class="rank-col">${index + 1}</td>
+                    <td>${item.institution || 'Unknown'}</td>
+                    <td class="score-col">${item.entry}</td>
+                    <td class="score-col">${Number(item.currentMean).toFixed(4)}</td>
+                    ${gradeCells}
+                `;
                 tbody.appendChild(tr);
             });
-            if (top.length === 0) tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:#888">No Data</td></tr>';
+            if (data.length === 0) tbody.innerHTML = '<tr><td colspan="17" style="text-align:center;color:#888">No Data (Note: Schools with 0 entry are hidden)</td></tr>';
         }
 
         // --- SUBJECT FILTER ---
@@ -572,45 +643,71 @@
         function renderSubject(code) {
             if (!code) return;
 
+            setTableHeaders('subjectTable'); // Update headers
+
             let items = [];
-            // Flatten subjects data
-            // Structure: subjectsData[knec][subjectCode][PUSHID] = data
-            Object.values(subjectsData).forEach(knecObj => {
-                // knecObj is { "101": {...}, "102": {...} }
-                if (knecObj[code]) {
-                    // knecObj[code] is a Map of PushIDs -> Data
-                    const pushMap = knecObj[code];
-                    Object.values(pushMap).forEach(record => {
-                        items.push(augmentWithInst(record));
-                    });
+
+            // Parse subjectsData
+            // subjectsData structure: { "schoolDocId": { "subjectCode": { data... } } }
+            // OR if subjects.html saves as: db.ref(...).set(data), then it is:
+            // subjectsPerformance / docId / subjectCode / { ... }
+
+            // So subjectsData keys are docIds.
+            Object.keys(subjectsData).forEach(docId => {
+                const schoolSubjects = subjectsData[docId];
+                if (schoolSubjects && schoolSubjects[code]) {
+                    // This IS the record
+                    const record = schoolSubjects[code];
+                    items.push(augmentWithInst(record));
                 }
             });
 
-            // Sort desc
+            // Sort desc by Mean
             items.sort((a, b) => b.currentMean - a.currentMean);
 
             // Table
             const tbody = document.getElementById('subjectTableBody');
             tbody.innerHTML = '';
 
-            items.forEach((item, idx) => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-        <td class="rank-col">${idx + 1}</td>
-        <td>${item.institution || 'Unknown'}</td>
-        <td style="font-size:12px; color:#aaa;">${item.category || '-'}</td>
-        <td class="score-col">${item.currentMean.toFixed(4)}</td>
-        <td class="score-col">${item.deviation ? item.deviation.toFixed(4) : '-'}</td>
-        <td>${item.meanGrade}</td>
-      `;
-                tbody.appendChild(tr);
-            });
-
             if (items.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:#888;">No data found for this subject.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="17" style="text-align:center;color:#888;">No data found for this subject.</td></tr>`;
                 if (subjectChartInst) subjectChartInst.destroy();
                 return;
             }
+
+            // Calc Entry for Subject if missing?
+            // subjects.html has `candidatesEntry` calculated but doesn't explicitly save "entry" field in the root of data object?
+            // Let's check subjects.html saveStructure.
+            // It saves `grades: {}`. It does NOT seem to save a separate 'entry' field in the root object in the save code I read.
+            // Wait, in `calc()` it updates `candidatesEntryEl`.
+            // In safeCurrentSubject():
+            // data = { subjectCode, ..., grades, currentMean, ... }
+            // IT DOES NOT SAVE 'entry' count explicitly! 
+            // We must calculate it from grades for the report.
+
+            items.forEach(item => {
+                // Determine entry from grades
+                let entry = 0;
+                if (item.grades) {
+                    Object.values(item.grades).forEach(v => entry += (Number(v) || 0));
+                }
+                item.entry = entry;
+            });
+
+            items.forEach((item, idx) => {
+                const tr = document.createElement('tr');
+                // For subjects, keys are 'A', 'B' etc. so isSubject=true
+                const gradeCells = gradeCols.map(g => `<td style="font-size:11px; padding:4px;">${getGrade(item, g, true)}</td>`).join('');
+
+                tr.innerHTML = `
+                    <td class="rank-col">${idx + 1}</td>
+                    <td>${item.institution || item.Institution || 'Unknown'}</td>
+                    <td class="score-col">${item.entry}</td>
+                    <td class="score-col">${Number(item.currentMean).toFixed(4)}</td>
+                    ${gradeCells}
+                `;
+                tbody.appendChild(tr);
+            });
 
             // Chart
             const top10 = items.slice(0, 10);
@@ -640,13 +737,25 @@
             });
         }
 
-        // Logout
-        document.getElementById('logoutBtn').addEventListener('click', () => {
-            auth.signOut().then(() => location.href = 'index.html');
+        // Wait for Auth before init to prevent permission errors
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                console.log("Auth confirmed, starting init...");
+                init();
+            } else {
+                console.warn("No user found in analytics, waiting for redirect...");
+            }
         });
 
-        // Start
-        init();
+        // Safety timeout for loader (10s)
+        setTimeout(() => {
+            const loader = document.getElementById('loader');
+            if (loader && loader.style.display !== 'none') {
+                loader.innerHTML += '<div style="color:red;margin-top:10px;">Taking longer than expected... Check console for errors.</div>';
+                // Optional: Force hide
+                // loader.style.display = 'none'; 
+            }
+        }, 10000);
 
     </script>
 </body>

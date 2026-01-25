@@ -8,6 +8,8 @@
   <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
   <title>Effective-40</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#ff9800">
 
   <!-- Firebase SDKs -->
   <link rel="icon" href="data:,">
@@ -203,6 +205,18 @@
     });
   </script>
 
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+          .then(registration => {
+            console.log('ServiceWorker registration successful with scope: ', registration.scope);
+          }, err => {
+            console.log('ServiceWorker registration failed: ', err);
+          });
+      });
+    }
+  </script>
 </body>
 
 </html>

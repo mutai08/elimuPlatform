@@ -1,0 +1,21 @@
+{
+    "name": "Elimu Platform",
+    "short_name": "Elimu",
+    "start_url": "./index.html",
+    "display": "standalone",
+    "background_color": "#1e1e1e",
+    "theme_color": "#ff9800",
+    "orientation": "portrait-primary",
+    "icons": [
+        {
+            "src": "images/icon.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "images/icon.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ]
+}

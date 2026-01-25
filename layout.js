@@ -7,6 +7,12 @@
     // 2. Inject Stylesheet if not present (optional, but ensures consistent styles)
     // document.head.insertAdjacentHTML('beforeend', '<link rel="stylesheet" href="style.css">');
 
+    // Inject PWA Manifest and Theme Color
+    if (!document.querySelector('link[rel="manifest"]')) {
+        document.head.insertAdjacentHTML('beforeend', '<link rel="manifest" href="manifest.json">');
+        document.head.insertAdjacentHTML('beforeend', '<meta name="theme-color" content="#ff9800">');
+    }
+
     // 3. Define the Sidebar HTML
     const sidebarHTML = `
     <nav class="sidebar">
@@ -95,5 +101,169 @@
         `;
         contentArea.insertAdjacentHTML('afterbegin', headerHTML);
     }
+
+    // 9. Inject Chatbot Widget
+    const chatbotHTML = `
+    <button class="chatbot-toggler">
+        <span class="material-symbols-rounded">mode_comment</span>
+        <span class="material-symbols-outlined" style="display: none;">close</span>
+    </button>
+    <div class="chatbot">
+        <header>
+            <h2>Assistant</h2>
+            <span class="close-btn material-symbols-outlined">close</span>
+        </header>
+        <ul class="chatbox">
+            <li class="chat incoming">
+                <span class="material-symbols-outlined">smart_toy</span>
+                <p>Hi there 👋<br>How can I help you today?</p>
+            </li>
+        </ul>
+        <div class="chat-input">
+            <textarea placeholder="Enter a message..." spellcheck="false" required></textarea>
+            <span id="send-btn" class="material-symbols-rounded">send</span>
+        </div>
+    </div>
+    <!-- Google Symbols for Icons if not present (using Boxicons mostly but chatbot design uses Symbols or we can map to Boxicons) -->
+    <!-- Let's use Boxicons since project uses them, to avoid extra loads. I'll replace classes in JS injection below or just handle it now -->
+    `;
+
+    // REPLACING ICONS WITH BOXICONS for consistency
+    const chatbotHTMLFixed = `
+    <button class="chatbot-toggler">
+        <i class='bx bxs-message-rounded-dots'></i>
+        <i class='bx bx-x' style="display: none;"></i>
+    </button>
+    <div class="chatbot">
+        <header>
+            <h2>Assistant</h2>
+            <span class="close-btn"><i class='bx bx-x'></i></span>
+        </header>
+        <ul class="chatbox">
+            <li class="chat incoming">
+                <span><i class='bx bxs-bot'></i></span>
+                <p>Hi there 👋<br>How can I help you today?</p>
+            </li>
+        </ul>
+        <div class="chat-input">
+            <textarea placeholder="Enter a message..." spellcheck="false" required></textarea>
+            <span id="send-btn"><i class='bx bxs-send'></i></span>
+        </div>
+    </div>
+    `;
+
+    document.body.insertAdjacentHTML('beforeend', chatbotHTMLFixed);
+
+    // 10. Chatbot Logic
+    const chatbotToggler = document.querySelector(".chatbot-toggler");
+    const closeBtn = document.querySelector(".close-btn");
+    const chatbox = document.querySelector(".chatbox");
+    const chatInput = document.querySelector(".chat-input textarea");
+    const sendChatBtn = document.querySelector(".chat-input span");
+
+    let userMessage = null; // Variable to store user's message
+    const inputInitHeight = chatInput.scrollHeight;
+
+    const createChatLi = (message, className) => {
+        // Create a chat <li> element with passed message and className
+        const chatLi = document.createElement("li");
+        chatLi.classList.add("chat", className);
+        let chatContent = className === "outgoing" ? `<p></p>` : `<span><i class='bx bxs-bot'></i></span><p></p>`;
+        chatLi.innerHTML = chatContent;
+        chatLi.querySelector("p").textContent = message;
+        return chatLi; // return chat <li> element
+    }
+
+    const generateResponse = (chatElement) => {
+        const messageElement = chatElement.querySelector("p");
+        const lowerMsg = userMessage.toLowerCase();
+        let response = "I'm just a demo assistant. I can't process complex requests yet.";
+
+        // Simple Simulated Response Logic
+        if (lowerMsg.includes("hello") || lowerMsg.includes("hi")) {
+            response = "Hello! I'm here to help you manage your school data.";
+        } else if (lowerMsg.includes("save") || lowerMsg.includes("data")) {
+            // Check if they are trying to save specific data via chat?
+            // For now, give a generic helpful message but also acknowledge we saved their "input"
+            response = "I've saved your message to the database. For official records, please use the forms.";
+        } else if (lowerMsg.includes("dashboard")) {
+            response = "You can navigate to the Dashboard using the sidebar menu.";
+        } else if (lowerMsg.includes("error") || lowerMsg.includes("bug")) {
+            response = "I'm sorry to hear that. Please contact support or refresh the page.";
+        } else {
+            response = "I have received your input and saved it to our records.";
+        }
+
+        // Simulate typing delay
+        setTimeout(() => {
+            messageElement.textContent = response;
+            chatbox.scrollTo(0, chatbox.scrollHeight);
+
+            // Save BOT response to Firebase
+            if (window.db && window.auth && window.auth.currentUser) {
+                const userId = window.auth.currentUser.uid;
+                window.db.ref('chatLogs/' + userId).push({
+                    sender: 'bot',
+                    message: response,
+                    timestamp: firebase.database.ServerValue.TIMESTAMP
+                });
+            }
+        }, 600);
+    }
+
+    const handleChat = () => {
+        userMessage = chatInput.value.trim(); // Get user entered message and remove extra whitespace
+        if (!userMessage) return;
+
+        // Clear the input textarea and set its height to default
+        chatInput.value = "";
+        chatInput.style.height = `${inputInitHeight}px`;
+
+        // Append the user's message to the chatbox
+        chatbox.appendChild(createChatLi(userMessage, "outgoing"));
+        chatbox.scrollTo(0, chatbox.scrollHeight);
+
+        // Save USER message to Firebase
+        if (window.db && window.auth) {
+            const user = window.auth.currentUser;
+            if (user) {
+                const userId = user.uid;
+                window.db.ref('chatLogs/' + userId).push({
+                    sender: 'user',
+                    message: userMessage,
+                    timestamp: firebase.database.ServerValue.TIMESTAMP
+                });
+            } else {
+                console.warn("User not authenticated; chat not saved.");
+            }
+        }
+
+        setTimeout(() => {
+            // Display "Thinking..." message while waiting for the response
+            const incomingChatLi = createChatLi("Thinking...", "incoming");
+            chatbox.appendChild(incomingChatLi);
+            chatbox.scrollTo(0, chatbox.scrollHeight);
+            generateResponse(incomingChatLi);
+        }, 600);
+    }
+
+    chatInput.addEventListener("input", () => {
+        // Adjust the height of the input textarea based on its content
+        chatInput.style.height = `${inputInitHeight}px`;
+        chatInput.style.height = `${chatInput.scrollHeight}px`;
+    });
+
+    chatInput.addEventListener("keydown", (e) => {
+        // If Enter key is pressed without Shift key and the window 
+        // width is greater than 800px, handle the chat
+        if (e.key === "Enter" && !e.shiftKey && window.innerWidth > 800) {
+            e.preventDefault();
+            handleChat();
+        }
+    });
+
+    sendChatBtn.addEventListener("click", handleChat);
+    closeBtn.addEventListener("click", () => document.body.classList.remove("show-chatbot"));
+    chatbotToggler.addEventListener("click", () => document.body.classList.toggle("show-chatbot"));
 
 })();
