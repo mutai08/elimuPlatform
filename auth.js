@@ -63,3 +63,4 @@ auth.onAuthStateChanged(user => {
         window.location.href = "dashboard.html";
     }
 });
+
