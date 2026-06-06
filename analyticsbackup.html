@@ -1,1014 +1,763 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Analytics — Effective 40</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Analytics Dashboard — Effective 40</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<style>
-/* ── TOKENS ─────────────────────────────────────────────── */
-:root {
-  --or:#ff9800; --ord:#f57c00; --orl:#ffb74d; --og:rgba(255,152,0,.14);
-  --gr:#25d366; --ge:rgba(37,211,102,.13);
-  --bl:#38bdf8; --be:rgba(56,189,248,.13);
-  --rd:#f87171; --re:rgba(248,113,113,.12);
-  --am:#fbbf24; --ae:rgba(251,191,36,.12);
-  --pu:#a78bfa; --pe:rgba(167,139,250,.12);
-  --pk:#f9a8d4;
-  --bg:#080a0e; --s1:#0d1017; --s2:#111520; --s3:#161c2d; --s4:#1c2438;
-  --g1:rgba(255,255,255,.03); --g2:rgba(255,255,255,.055);
-  --b1:rgba(255,255,255,.06); --b2:rgba(255,255,255,.10); --b3:rgba(255,255,255,.16);
-  --t1:#f0f4ff; --t2:#b8c5e0; --t3:#6b7fa0; --t4:#3a4460;
-}
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
-body{background:var(--bg);color:var(--t1);font-family:'DM Sans',system-ui,sans-serif}
-h1,h2,h3,h4{font-family:'Syne',sans-serif;letter-spacing:-.02em}
+    <style>
+        :root {
+            --primary: #ff9800;
+            --bg-glass: rgba(0, 0, 0, 0.65);
+            --bg-panel: rgba(255, 255, 255, 0.03);
+            --text-muted: #ddd;
+            --text-label: #ffdca8;
+        }
 
-/* ── SCROLL BAR ─────────────────────────────────────────── */
-.scroll-bar{position:fixed;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--or),var(--ord));transform-origin:left;transform:scaleX(0);z-index:999;transition:transform .1s}
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-/* ── LOADER ─────────────────────────────────────────────── */
-.loader{position:fixed;inset:0;background:rgba(8,10,14,.94);z-index:9000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;transition:opacity .4s}
-.spinner{width:44px;height:44px;border:3px solid rgba(255,152,0,.2);border-top-color:var(--or);border-radius:50%;animation:spin .8s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-.load-txt{font-size:13px;color:var(--t3)}
+        /* Specific dashboard styles */
+        .dashboard {
+            width: 100%;
+            max-width: 1200px;
+            padding: 20px;
+            margin: 0 auto;
+        }
 
-/* ── MAIN CONTENT ────────────────────────────────────────── */
-.main-content{padding:0 28px 50px}
+        .page-title {
+            margin-bottom: 24px;
+            color: var(--primary);
+            text-align: center;
+            font-size: 28px;
+        }
 
-/* ── TOP HEADER ──────────────────────────────────────────── */
-.top-header{display:flex;justify-content:space-between;align-items:center;padding:13px 20px;margin-bottom:22px;background:rgba(13,16,23,.8);border:1px solid var(--b1);border-radius:16px;backdrop-filter:blur(20px)}
-.breadcrumbs{font-size:13px;color:var(--t2);font-weight:500}
-.breadcrumbs span{color:var(--or);font-weight:700;margin:0 4px}
-.current-school-badge{background:var(--og);color:var(--orl);padding:5px 14px;border-radius:20px;font-size:12px;font-weight:600;border:1px solid rgba(255,152,0,.22)}
-.hdr-right{display:flex;gap:8px;align-items:center}
+        .section-card {
+            background: var(--bg-glass);
+            border-radius: 14px;
+            padding: 26px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+        }
 
-/* ── KPI GRID ────────────────────────────────────────────── */
-.kpi-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:13px;margin-bottom:24px}
-.kpi{background:var(--s2);border:1px solid var(--b1);border-radius:18px;padding:18px 15px;position:relative;overflow:hidden;transition:transform .2s,border-color .2s}
-.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--ka)}
-.kpi:hover{transform:translateY(-3px);border-color:var(--b2)}
-.kpi-glow{position:absolute;top:-24px;right:-14px;width:80px;height:80px;border-radius:50%;background:radial-gradient(circle,var(--ka) 0%,transparent 70%);opacity:.12;pointer-events:none}
-.kpi-icon{width:36px;height:36px;border-radius:9px;background:var(--kb);display:flex;align-items:center;justify-content:center;font-size:17px;color:var(--ka);margin-bottom:10px}
-.kpi-val{font-family:'Syne',sans-serif;font-size:23px;font-weight:800;color:var(--t1);line-height:1.1;margin-bottom:3px}
-.kpi-lbl{font-size:10px;color:var(--t3);font-weight:600;text-transform:uppercase;letter-spacing:.6px}
-.kpi-delta{display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;margin-top:7px}
-.d-up{background:var(--ge);color:var(--gr)}
-.d-dn{background:var(--re);color:var(--rd)}
-.d-fl{background:var(--g2);color:var(--t3)}
+        .section-header {
+            font-size: 20px;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 8px;
+        }
 
-/* ── SECTION HEADER ──────────────────────────────────────── */
-.sh{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
-.sh-l{display:flex;align-items:center;gap:11px}
-.sh-ico{width:32px;height:32px;border-radius:8px;background:var(--og);display:flex;align-items:center;justify-content:center;color:var(--or);font-size:15px}
-.sh h2{font-size:16px;color:var(--t1)}
-.sh p{font-size:11px;color:var(--t3);margin-top:1px}
-.sh-r{display:flex;gap:7px;align-items:center}
+        /* GRID LAYOUTS */
+        .viz-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
 
-/* ── BUTTONS ─────────────────────────────────────────────── */
-.btn{display:inline-flex;align-items:center;gap:5px;padding:7px 14px;border-radius:8px;font-size:11px;font-weight:600;cursor:pointer;border:none;transition:.15s;font-family:'DM Sans',sans-serif}
-.btn-p{background:linear-gradient(135deg,var(--or),var(--ord));color:#fff;box-shadow:0 3px 12px rgba(255,152,0,.2)}
-.btn-p:hover{filter:brightness(1.08);transform:translateY(-1px)}
-.btn-g{background:var(--g2);color:var(--t2);border:1px solid var(--b1)}
-.btn-g:hover{background:var(--s4);color:var(--t1);border-color:var(--b2)}
-.btn-s{padding:5px 11px;font-size:11px}
+        /* TABLE */
+        .data-table-wrap {
+            width: 100%;
+            overflow-x: auto;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
 
-/* ── PANEL ───────────────────────────────────────────────── */
-.pnl{background:var(--s2);border:1px solid var(--b1);border-radius:15px;overflow:hidden}
-.pt{padding:14px 16px 0;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--t1);display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}
-.pb{padding:0 16px 16px}
-.ptag{background:rgba(255,152,0,.1);color:var(--orl);font-size:9px;font-weight:700;padding:2px 7px;border-radius:20px;border:1px solid rgba(255,152,0,.18);font-family:'DM Sans',sans-serif;white-space:nowrap}
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 400px;
+        }
 
-/* ── GRIDS ───────────────────────────────────────────────── */
-.g2{display:grid;grid-template-columns:1fr 1fr;gap:17px;margin-bottom:20px}
-.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:15px;margin-bottom:20px}
-.g64{display:grid;grid-template-columns:1.6fr 1fr;gap:17px;margin-bottom:20px}
-.g46{display:grid;grid-template-columns:1fr 1.6fr;gap:17px;margin-bottom:20px}
-.fr{margin-bottom:20px}
+        th {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-label);
+            font-weight: 600;
+            padding: 12px;
+            text-align: left;
+        }
 
-/* ── TABLE ───────────────────────────────────────────────── */
-.dt{overflow-x:auto}
-.dt::-webkit-scrollbar{height:3px}
-.dt::-webkit-scrollbar-thumb{background:var(--b2);border-radius:2px}
-.dtbl{width:100%;border-collapse:collapse;font-size:12px;min-width:380px}
-.dtbl thead th{padding:8px 11px;text-align:left;font-size:10px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;background:rgba(255,255,255,.022);border-bottom:1px solid var(--b1);white-space:nowrap}
-.dtbl tbody td{padding:8px 11px;border-bottom:1px solid rgba(255,255,255,.035);color:var(--t2);vertical-align:middle}
-.dtbl tbody tr:last-child td{border:none}
-.dtbl tbody tr:hover td{background:rgba(255,255,255,.02)}
-.rn{font-family:'Syne',sans-serif;font-size:12px;font-weight:800;color:var(--t4)}
-.rntop{color:var(--or)}
-.iname{font-weight:600;color:var(--t1);font-size:12px}
-.isub{font-size:10px;color:var(--t3);margin-top:1px}
-.mv{font-family:'DM Mono',monospace;font-size:12px;font-weight:500}
-.gp{display:inline-flex;align-items:center;justify-content:center;min-width:28px;height:19px;border-radius:5px;padding:0 4px;font-size:10px;font-weight:700;font-family:'Syne',sans-serif}
-.ga{background:rgba(37,211,102,.13);color:var(--gr)}
-.gb{background:rgba(56,189,248,.13);color:var(--bl)}
-.gc{background:rgba(251,191,36,.11);color:var(--am)}
-.gd{background:rgba(248,113,113,.11);color:var(--rd)}
-.ge{background:rgba(255,255,255,.05);color:var(--t3)}
-.dup{color:var(--gr);font-family:'DM Mono',monospace;font-size:11px}
-.ddn{color:var(--rd);font-family:'DM Mono',monospace;font-size:11px}
-.dfl{color:var(--t3);font-family:'DM Mono',monospace;font-size:11px}
-.gct{font-size:11px;text-align:center;padding:8px 5px!important;font-family:'DM Mono',monospace}
+        td {
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 10px 12px;
+            font-size: 14px;
+        }
 
-/* ── CONTROLS ────────────────────────────────────────────── */
-.ctrl{background:var(--s3);border:1px solid var(--b2);color:var(--t1);padding:6px 11px;border-radius:8px;font-size:11px;outline:none;font-family:'DM Sans',sans-serif;cursor:pointer}
-.ctrl:focus{border-color:var(--or)}
+        tr:hover td {
+            background: rgba(255, 255, 255, 0.02);
+        }
 
-/* ── GENDER ──────────────────────────────────────────────── */
-.gstrip{display:flex;border-radius:100px;overflow:hidden;height:24px;margin-bottom:11px}
-.gsb{display:flex;align-items:center;justify-content:center;background:rgba(56,189,248,.26);font-size:10px;font-weight:700;color:var(--bl);transition:flex .6s}
-.gsg{display:flex;align-items:center;justify-content:center;background:rgba(249,168,212,.2);font-size:10px;font-weight:700;color:var(--pk);transition:flex .6s}
-.gavgbox{border-radius:9px;padding:11px 13px;display:flex;justify-content:space-between;align-items:center;border:1px solid var(--b1);margin-bottom:7px}
-.gb-b{background:rgba(56,189,248,.05);border-color:rgba(56,189,248,.13)}
-.gb-g{background:rgba(249,168,212,.04);border-color:rgba(249,168,212,.11)}
-.gb-n{background:var(--g1)}
-.gavglbl{font-size:10px;font-weight:700;margin-bottom:3px}
-.gavgval{font-family:'Syne',sans-serif;font-size:19px;font-weight:800;color:var(--t1)}
+        .rank-col {
+            width: 60px;
+            font-weight: 700;
+            color: var(--primary);
+        }
 
-/* ── ZONE ────────────────────────────────────────────────── */
-.zrow{display:flex;align-items:center;gap:9px;margin-bottom:9px}
-.zlbl{font-size:11px;color:var(--t2);font-weight:500;min-width:68px}
-.zbg{flex:1;background:rgba(255,255,255,.05);border-radius:100px;height:7px;overflow:hidden}
-.zfill{height:100%;border-radius:100px}
-.zval{font-size:10px;color:var(--t3);font-family:'DM Mono',monospace;min-width:48px;text-align:right}
-.zsub{font-size:10px;color:var(--t4);margin:-5px 0 8px 77px}
+        .score-col {
+            font-weight: 600;
+            text-align: right;
+        }
 
-/* ── GRADE DIST BARS ─────────────────────────────────────── */
-.gdrow{display:flex;align-items:center;gap:7px;margin-bottom:7px}
-.gdlbl{font-family:'DM Mono',monospace;font-size:11px;color:var(--t3);min-width:22px;text-align:center}
-.gdbg{flex:1;background:rgba(255,255,255,.05);border-radius:100px;height:9px;overflow:hidden}
-.gdfill{height:100%;border-radius:100px;transition:width .5s ease}
-.gdcnt{font-size:11px;color:var(--t3);font-family:'DM Mono',monospace;min-width:28px;text-align:right}
+        /* CHART WRAPPERS */
+        .chart-box {
+            background: var(--bg-panel);
+            border-radius: 10px;
+            padding: 14px;
+            position: relative;
+            height: 350px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
 
-/* ── HEATMAP ─────────────────────────────────────────────── */
-.hmgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(86px,1fr));gap:7px}
-.hmcell{border-radius:9px;padding:11px 7px;text-align:center;border:1px solid rgba(255,255,255,.04);transition:transform .15s;cursor:default}
-.hmcell:hover{transform:scale(1.05)}
-.hmsub{font-size:9px;color:var(--t3);margin-bottom:4px;font-weight:500}
-.hmmean{font-family:'Syne',sans-serif;font-size:14px;font-weight:800}
-.hmgrade{font-size:9px;color:var(--t3);margin-top:2px}
+        /* CONTROLS */
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 14px;
+        }
 
-/* ── EMPTY ───────────────────────────────────────────────── */
-.empty{padding:28px;text-align:center;color:var(--t3);display:flex;flex-direction:column;align-items:center;gap:7px}
-.empty i{font-size:30px;opacity:.3}
-.empty p{font-size:12px}
+        select {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            padding: 8px 12px;
+            border-radius: 6px;
+            outline: none;
+            font-family: inherit;
+        }
 
-/* ── ANIM ────────────────────────────────────────────────── */
-@keyframes fu{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
-.fu{animation:fu .4s ease both}
-.f1{animation-delay:.04s}.f2{animation-delay:.08s}.f3{animation-delay:.12s}
-.f4{animation-delay:.16s}.f5{animation-delay:.20s}
+        select:focus {
+            border-color: var(--primary);
+        }
 
-/* ── SCROLLBAR ───────────────────────────────────────────── */
-::-webkit-scrollbar{width:4px}
-::-webkit-scrollbar-thumb{background:var(--b2);border-radius:2px}
-.sy{overflow-y:auto}
-.sy::-webkit-scrollbar{width:3px}
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 3000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.3s;
+        }
 
-/* ── RESPONSIVE ──────────────────────────────────────────── */
-@media(max-width:1280px){.kpi-grid{grid-template-columns:repeat(3,1fr)}.g64,.g46{grid-template-columns:1fr}}
-@media(max-width:900px){.g2,.g3{grid-template-columns:1fr}.kpi-grid{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:600px){.kpi-grid{grid-template-columns:1fr 1fr}}
-</style>
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--primary);
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 10px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @media(max-width: 900px) {
+            .viz-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .chart-box {
+                height: 300px;
+            }
+        }
+    </style>
 </head>
+
 <body>
 
-<div class="scroll-bar" id="scrollBar"></div>
+    <!-- LOADING -->
+    <div class="loading-overlay" id="loader">
+        <div class="spinner"></div>
+        <div>Loading Analytics...</div>
+    </div>
 
-<!-- LOADER -->
-<div class="loader" id="loader">
-  <div class="spinner"></div>
-  <div class="load-txt">Fetching analytics from Firebase…</div>
-</div>
+    <div class="main-content">
 
-<!-- Sidebar + top header injected by layout.js -->
-<div class="main-content">
+        <div class="dashboard">
+            <h1 class="page-title">Analytics Dashboard</h1>
 
-  <!-- ══ KPI CARDS ════════════════════════════════════════ -->
-  <div class="kpi-grid">
-    <div class="kpi fu f1" style="--ka:var(--or);--kb:var(--og)">
-      <div class="kpi-glow"></div>
-      <div class="kpi-icon"><i class='bx bxs-school'></i></div>
-      <div class="kpi-val" id="kpiSchools">—</div>
-      <div class="kpi-lbl">Schools</div>
-      <div class="kpi-delta d-fl" id="kpiSchoolsD">All zones</div>
-    </div>
-    <div class="kpi fu f2" style="--ka:var(--gr);--kb:var(--ge)">
-      <div class="kpi-glow"></div>
-      <div class="kpi-icon"><i class='bx bx-trending-up'></i></div>
-      <div class="kpi-val" id="kpiMean">—</div>
-      <div class="kpi-lbl">Sub-County Average Mean</div>
-      <div class="kpi-delta d-fl" id="kpiMeanD">Loading…</div>
-    </div>
-    <div class="kpi fu f3" style="--ka:var(--bl);--kb:var(--be)">
-      <div class="kpi-glow"></div>
-      <div class="kpi-icon"><i class='bx bxs-user-detail'></i></div>
-      <div class="kpi-val" id="kpiCands">—</div>
-      <div class="kpi-lbl">Total Candidates</div>
-      <div class="kpi-delta d-fl" id="kpiCandsD">Loading…</div>
-    </div>
-    <div class="kpi fu f4" style="--ka:var(--am);--kb:var(--ae)">
-      <div class="kpi-glow"></div>
-      <div class="kpi-icon"><i class='bx bxs-trophy'></i></div>
-      <div class="kpi-val" id="kpiTop" style="font-size:13px;padding-top:5px">—</div>
-      <div class="kpi-lbl">Top Performer</div>
-      <div class="kpi-delta d-fl" id="kpiTopD">—</div>
-    </div>
-    <div class="kpi fu f5" style="--ka:var(--pu);--kb:var(--pe)">
-      <div class="kpi-glow"></div>
-      <div class="kpi-icon"><i class='bx bxs-graduation'></i></div>
-      <div class="kpi-val" id="kpiImp" style="font-size:13px;padding-top:5px">—</div>
-      <div class="kpi-lbl">Most Improved</div>
-      <div class="kpi-delta d-up" id="kpiImpD">+0.0000</div>
-    </div>
-  </div>
+            <!-- OVERALL PERFORMANCE -->
+            <div class="section-card">
+                <div class="section-header" style="display:flex; justify-content:space-between; align-items:center;">
+                    <span>Overall Performance Ranking</span>
+                    <button class="btn-secondary" style="padding:6px 12px; font-size:13px;"
+                        onclick="exportTableToExcel('overallTable', 'Overall_Performance')">
+                        <i class='bx bxs-download'></i> Export Excel
+                    </button>
+                </div>
 
-  <!-- ══ SECTION 1 — OVERALL RANKINGS ═══════════════════════ -->
-  <div class="sh fu">
-    <div class="sh-l">
-      <div class="sh-ico"><i class='bx bxs-bar-chart-alt-2'></i></div>
-      <div><h2>Overall Performance Ranking</h2><p>All schools — current examination year</p></div>
-    </div>
-    <div class="sh-r">
-      <select class="ctrl" id="rankSort" onchange="renderRank()">
-        <option value="mean">By Mean Score</option>
-        <option value="cands">By Entry</option>
-        <option value="dev">By Deviation</option>
-      </select>
-      <button class="btn btn-g btn-s" onclick="xls('tblRank','Overall_Rankings')"><i class='bx bxs-download'></i> Excel</button>
-    </div>
-  </div>
+                <!-- STATS SUMMARY (New) -->
+                <div class="viz-grid" style="margin-bottom:20px; grid-template-columns: repeat(3, 1fr);">
+                    <div class="meta"
+                        style="background:var(--bg-panel); padding:15px; border-radius:8px; text-align:center;">
+                        <div style="font-size:13px; color:var(--text-label)">Registered Schools</div>
+                        <div style="font-size:24px; font-weight:700;" id="statTotalSchools">0</div>
+                    </div>
+                    <div class="meta"
+                        style="background:var(--bg-panel); padding:15px; border-radius:8px; text-align:center;">
+                        <div style="font-size:13px; color:var(--text-label)">Top Performer</div>
+                        <div style="font-size:18px; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;"
+                            id="statTopSchool">-</div>
+                    </div>
+                    <div class="meta"
+                        style="background:var(--bg-panel); padding:15px; border-radius:8px; text-align:center;">
+                        <div style="font-size:13px; color:var(--text-label)">Average Mean</div>
+                        <div style="font-size:24px; font-weight:700;" id="statAvgMean">0.00</div>
+                    </div>
+                </div>
 
-  <div class="g64 fu">
-    <div class="pnl">
-      <div class="pt">Rankings Table <span class="ptag">Sortable</span></div>
-      <div class="pb">
-        <div class="dt sy" style="max-height:380px">
-          <table class="dtbl" id="tblRank">
-            <thead><tr><th>#</th><th>Institution</th><th>Zone</th><th>Cat</th><th>Entry</th><th>Mean</th><th>Grade</th><th>Dev</th><th>↑↓</th></tr></thead>
-            <tbody id="tbRank"><tr><td colspan="9"><div class="empty"><i class='bx bx-loader-alt'></i><p>Loading…</p></div></td></tr></tbody>
-          </table>
+                <div class="viz-grid">
+                    <!-- Table -->
+                    <div>
+                        <div class="data-table-wrap">
+                            <table id="overallTable">
+                                <thead>
+                                    <tr>
+                                        <!-- Will be filled by JS -->
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <!-- Chart -->
+                    <div class="chart-box">
+                        <canvas id="overallChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- GENDER COMPARISON -->
+            <div class="section-card">
+                <div class="section-header">Gender Analysis</div>
+                <div class="viz-grid">
+                    <!-- Boys -->
+                    <div>
+                        <div
+                            style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                            <h4 style="color:#a3d6ff">Top Boys Schools</h4>
+                            <button class="btn-secondary" style="padding:4px 8px; font-size:11px;"
+                                onclick="exportTableToExcel('boysTable', 'Boys_Performance')">Export</button>
+                        </div>
+                        <div class="data-table-wrap" style="max-height: 250px; overflow-y:auto;">
+                            <table id="boysTable">
+                                <thead></thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <!-- Girls -->
+                    <div>
+                        <div
+                            style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                            <h4 style="color:#ffb3d9">Top Girls Schools</h4>
+                            <button class="btn-secondary" style="padding:4px 8px; font-size:11px;"
+                                onclick="exportTableToExcel('girlsTable', 'Girls_Performance')">Export</button>
+                        </div>
+                        <div class="data-table-wrap" style="max-height: 250px; overflow-y:auto;">
+                            <table id="girlsTable">
+                                <thead></thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SUBJECT PERFORMANCE -->
+            <div class="section-card">
+                <div class="section-header" style="display:flex; justify-content:space-between; align-items:center;">
+                    <span>Subject Rankings</span>
+                    <button class="btn-secondary" style="padding:6px 12px; font-size:13px;"
+                        onclick="exportTableToExcel('subjectTable', 'Subject_Performance')">
+                        <i class='bx bxs-download'></i> Export Excel
+                    </button>
+                </div>
+                <div class="controls">
+                    <select id="subjectSelect">
+                        <option value="" disabled selected>Select Subject...</option>
+                        <option value="101">English</option>
+                        <option value="102">Kiswahili</option>
+                        <option value="121">Mathematics</option>
+                        <option value="231">Biology</option>
+                        <option value="232">Physics</option>
+                        <option value="233">Chemistry</option>
+                        <option value="311">History</option>
+                        <option value="312">Geography</option>
+                        <option value="313">C.R.E</option>
+                        <option value="441">Home Science</option>
+                        <option value="442">Art & Design</option>
+                        <option value="443">Agriculture</option>
+                        <option value="444">Woodwork</option>
+                        <option value="445">Metalwork</option>
+                        <option value="446">Building & Const.</option>
+                        <option value="451">Computer Studies</option>
+                        <option value="565">Business Studies</option>
+                        <option value="501">French</option>
+                        <option value="502">German</option>
+                    </select>
+                </div>
+                <div class="viz-grid">
+                    <div class="data-table-wrap">
+                        <table id="subjectTable">
+                            <thead></thead>
+                            <tbody id="subjectTableBody">
+                                <tr>
+                                    <td colspan="6" style="text-align:center; color:#888;">Select a subject to view
+                                        rankings
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="chart-box">
+                        <canvas id="subjectChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
         </div>
-      </div>
-    </div>
-    <div class="pnl">
-      <div class="pt">Top 10 — Mean Score <span class="ptag">Bar</span></div>
-      <div class="pb" style="height:340px;position:relative"><canvas id="chartOverallBar"></canvas></div>
-    </div>
-  </div>
 
-  <!-- ══ SECTION 2 — GRADE DISTRIBUTION ═════════════════════ -->
-  <div class="sh fu">
-    <div class="sh-l">
-      <div class="sh-ico" style="background:var(--be)"><i class='bx bxs-pie-chart-alt-2' style="color:var(--bl)"></i></div>
-      <div><h2>County-Wide Grade Distribution</h2><p>Aggregate grade counts across all registered schools</p></div>
-    </div>
-  </div>
+    </div> <!-- end main-content -->
 
-  <div class="g2 fu">
-    <div class="pnl">
-      <div class="pt">Grade Distribution Bars <span class="ptag">A → E</span></div>
-      <div class="pb" style="padding-top:14px" id="gradeDistPanel">
-        <div class="empty"><i class='bx bx-loader-alt'></i></div>
-      </div>
-    </div>
-    <div class="pnl">
-      <div class="pt">Performance Band Split <span class="ptag">Doughnut</span></div>
-      <div class="pb" style="height:310px;position:relative"><canvas id="chartDonut"></canvas></div>
-    </div>
-  </div>
+    <!-- SheetJS for Excel Export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
-  <!-- ══ SECTION 3 — GENDER ANALYSIS ════════════════════════ -->
-  <div class="sh fu">
-    <div class="sh-l">
-      <div class="sh-ico" style="background:rgba(249,168,212,.1)"><i class='bx bx-male-female' style="color:var(--pk)"></i></div>
-      <div><h2>Gender Analysis</h2><p>Boys vs Girls performance across all schools</p></div>
-    </div>
-    <div class="sh-r">
-      <button class="btn btn-g btn-s" onclick="xls('tblBoys','Boys_Performance')"><i class='bx bxs-download'></i> Boys</button>
-      <button class="btn btn-g btn-s" onclick="xls('tblGirls','Girls_Performance')"><i class='bx bxs-download'></i> Girls</button>
-    </div>
-  </div>
+    <!-- Firebase Config -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 
-  <div class="g3 fu">
-    <div class="pnl">
-      <div class="pt">Gender Overview</div>
-      <div class="pb">
-        <div class="gstrip"><div class="gsb" id="gsb" style="flex:5">♂ Boys</div><div class="gsg" id="gsg" style="flex:5">♀ Girls</div></div>
-        <div class="gavgbox gb-b">
-          <div><div class="gavglbl" style="color:var(--bl)">♂ BOYS COUNTY AVG</div><div class="gavgval" id="boysAvg">—</div></div>
-          <i class='bx bx-male-sign' style="font-size:24px;color:var(--bl);opacity:.4"></i>
-        </div>
-        <div class="gavgbox gb-g">
-          <div><div class="gavglbl" style="color:var(--pk)">♀ GIRLS COUNTY AVG</div><div class="gavgval" id="girlsAvg">—</div></div>
-          <i class='bx bx-female-sign' style="font-size:24px;color:var(--pk);opacity:.4"></i>
-        </div>
-        <div class="gavgbox gb-n">
-          <div><div class="gavglbl" style="color:var(--t3)">GENDER GAP</div><div style="font-family:'DM Mono',monospace;font-size:14px;font-weight:700;color:var(--am)" id="genderGap">—</div></div>
-          <i class='bx bxs-bar-chart-alt-2' style="font-size:20px;color:var(--am);opacity:.4"></i>
-        </div>
-      </div>
-    </div>
-    <div class="pnl">
-      <div class="pt"><div style="display:flex;align-items:center;gap:5px"><i class='bx bx-male-sign' style="color:var(--bl)"></i>Top Boys Schools</div></div>
-      <div class="pb" style="padding-top:0">
-        <div class="dt sy" style="max-height:270px">
-          <table class="dtbl" id="tblBoys">
-            <thead><tr><th>#</th><th>School</th><th>Entry</th><th>Mean</th><th>Grade</th><th>Dev</th></tr></thead>
-            <tbody id="tbBoys"><tr><td colspan="6"><div class="empty"><i class='bx bx-loader-alt'></i></div></td></tr></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-    <div class="pnl">
-      <div class="pt"><div style="display:flex;align-items:center;gap:5px"><i class='bx bx-female-sign' style="color:var(--pk)"></i>Top Girls Schools</div></div>
-      <div class="pb" style="padding-top:0">
-        <div class="dt sy" style="max-height:270px">
-          <table class="dtbl" id="tblGirls">
-            <thead><tr><th>#</th><th>School</th><th>Entry</th><th>Mean</th><th>Grade</th><th>Dev</th></tr></thead>
-            <tbody id="tbGirls"><tr><td colspan="6"><div class="empty"><i class='bx bx-loader-alt'></i></div></td></tr></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  </div>
+    <script src="auth.js"></script>
+    <script src="layout.js"></script>
 
-  <div class="pnl fr fu">
-    <div class="pt">Boys vs Girls — Mean Score Comparison <span class="ptag">Grouped Bar</span></div>
-    <div class="pb" style="height:255px;position:relative"><canvas id="chartGender"></canvas></div>
-  </div>
+    <script>
+        // Export Function
+        function exportTableToExcel(tableId, name) {
+            const table = document.getElementById(tableId);
+            if (!table) return;
+            const wb = XLSX.utils.table_to_book(table, { strip: true });
+            XLSX.writeFile(wb, `${name}.xlsx`);
+        }
 
-  <!-- ══ SECTION 4 — ZONE + DEVIATION ════════════════════════ -->
-  <div class="sh fu">
-    <div class="sh-l">
-      <div class="sh-ico" style="background:var(--pe)"><i class='bx bxs-map' style="color:var(--pu)"></i></div>
-      <div><h2>Zone Breakdown &amp; Deviation Analysis</h2><p>Performance by zone and year-on-year deviation from 2024</p></div>
-    </div>
-  </div>
+        // CONFIG
+        // db and auth from auth.js
 
-  <div class="g46 fu">
-    <div class="pnl">
-      <div class="pt">Zone Performance</div>
-      <div class="pb" id="zonePanel"><div class="empty"><i class='bx bx-loader-alt'></i><p>Loading…</p></div></div>
-    </div>
-    <div class="pnl">
-      <div class="pt">Deviation from 2024 Mean <span class="ptag">Waterfall</span></div>
-      <div class="pb" style="height:300px;position:relative"><canvas id="chartDeviation"></canvas></div>
-    </div>
-  </div>
+        let overallData = [];
+        let boysData = [];
+        let girlsData = [];
+        let subjectsData = {};
+        let institutionsMap = {}; // knec -> { category, zone, type, ... }
 
-  <!-- ══ SECTION 5 — SUBJECT HEATMAP + DETAIL ════════════════ -->
-  <div class="sh fu">
-    <div class="sh-l">
-      <div class="sh-ico" style="background:var(--ge)"><i class='bx bxs-book' style="color:var(--gr)"></i></div>
-      <div><h2>Subject Performance</h2><p>County-wide subject overview + school-by-school rankings</p></div>
-    </div>
-    <div class="sh-r">
-      <select class="ctrl" id="subjSel" onchange="renderSubjectDetail()">
-        <option value="">— Select Subject —</option>
-        <option value="101">English</option><option value="102">Kiswahili</option>
-        <option value="121">Mathematics</option><option value="231">Biology</option>
-        <option value="232">Physics</option><option value="233">Chemistry</option>
-        <option value="311">History &amp; Govt</option><option value="312">Geography</option>
-        <option value="313">C.R.E</option><option value="441">Home Science</option>
-        <option value="442">Art &amp; Design</option><option value="443">Agriculture</option>
-        <option value="444">Building &amp; Const.</option><option value="446">Woodwork</option>
-        <option value="451">Computer Studies</option><option value="501">French</option>
-        <option value="502">German</option><option value="565">Business Studies</option>
-      </select>
-      <button class="btn btn-g btn-s" onclick="xls('tblSubject','Subject_Rankings')"><i class='bx bxs-download'></i> Excel</button>
-    </div>
-  </div>
+        // INIT
+        async function init() {
+            try {
+                // Fetch all concurrently
+                const [ovSnap, boysSnap, girlsSnap, subjSnap, instSnap] = await Promise.all([
+                    db.ref('overallPerformance').once('value'),
+                    db.ref('boysPerformance').once('value'),
+                    db.ref('girlsPerformance').once('value'),
+                    db.ref('subjectsPerformance').once('value'),
+                    db.ref('institutions').once('value')
+                ]);
 
-  <div class="pnl fr fu">
-    <div class="pt">Subject Mean Overview — County Average <span class="ptag">Heatmap</span></div>
-    <div class="pb"><div class="hmgrid" id="hmGrid"><div class="empty" style="grid-column:1/-1"><i class='bx bx-loader-alt'></i><p>Loading…</p></div></div></div>
-  </div>
+                // 1. Process Institutions Map
+                if (instSnap.exists()) {
+                    const raw = instSnap.val();
+                    // institutions is a list/object. We map by knecCode or KNEC (fallback)
+                    Object.values(raw).forEach(inst => {
+                        const code = inst.knecCode || inst.KNEC;
+                        if (code) institutionsMap[code] = inst;
+                    });
+                }
 
-  <div class="g64 fu" id="subjDetailWrap" style="display:none">
-    <div class="pnl">
-      <div class="pt" id="subjTblTitle">Subject Rankings</div>
-      <div class="pb" style="padding-top:0">
-        <div class="dt sy" style="max-height:370px">
-          <table class="dtbl" id="tblSubject">
-            <thead><tr><th>#</th><th>School</th><th>Entry</th><th>Mean</th><th>Grade</th><th>Dev</th></tr></thead>
-            <tbody id="tbSubject"><tr><td colspan="6"><div class="empty"><p>Select a subject</p></div></td></tr></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-    <div class="pnl">
-      <div class="pt" id="subjChartTitle">Subject Chart <span class="ptag">Bar</span></div>
-      <div class="pb" style="height:350px;position:relative"><canvas id="chartSubject"></canvas></div>
-    </div>
-  </div>
+                // 2. Process Overall
+                if (ovSnap.exists()) {
+                    const raw = ovSnap.val();
+                    overallData = Object.values(raw).map(augmentWithInst).sort((a, b) => b.currentMean - a.currentMean);
+                }
 
-  <!-- ══ SECTION 6 — CATEGORY RADAR + SCATTER ═══════════════ -->
-  <div class="sh fu">
-    <div class="sh-l">
-      <div class="sh-ico" style="background:var(--ae)"><i class='bx bxs-analyse' style="color:var(--am)"></i></div>
-      <div><h2>Category Analysis &amp; Entry vs Performance</h2><p>School category radar and candidates-to-mean scatter plot</p></div>
-    </div>
-  </div>
+                // 3. Process Boys
+                if (boysSnap.exists()) {
+                    const raw = boysSnap.val();
+                    boysData = Object.values(raw).map(augmentWithInst).sort((a, b) => b.currentMean - a.currentMean);
+                }
 
-  <div class="g2 fu">
-    <div class="pnl">
-      <div class="pt">Performance by School Category <span class="ptag">Radar</span></div>
-      <div class="pb" style="height:295px;position:relative"><canvas id="chartRadar"></canvas></div>
-    </div>
-    <div class="pnl">
-      <div class="pt">Entry vs Mean — All Schools <span class="ptag">Scatter</span></div>
-      <div class="pb" style="height:295px;position:relative"><canvas id="chartScatter"></canvas></div>
-    </div>
-  </div>
+                // 4. Process Girls
+                if (girlsSnap.exists()) {
+                    const raw = girlsSnap.val();
+                    girlsData = Object.values(raw).map(augmentWithInst).sort((a, b) => b.currentMean - a.currentMean);
+                }
 
-  <!-- ══ SECTION 7 — 3-YEAR TREND ════════════════════════════ -->
-  <div class="sh fu">
-    <div class="sh-l">
-      <div class="sh-ico" style="background:var(--re)"><i class='bx bx-line-chart' style="color:var(--rd)"></i></div>
-      <div><h2>3-Year Mean Trend</h2><p>Historical progression for top 6 schools (2022 → current year)</p></div>
-    </div>
-  </div>
+                // 5. Process Subjects
+                if (subjSnap.exists()) {
+                    subjectsData = subjSnap.val();
+                }
 
-  <div class="pnl fr fu">
-    <div class="pt">Mean Score Trend — Top 6 Schools <span class="ptag">Line</span></div>
-    <div class="pb" style="height:275px;position:relative"><canvas id="chartTrend"></canvas></div>
-  </div>
+                updateStats();
+                renderOverall();
+                renderBoys();
+                renderGirls();
 
-  <!-- ══ SECTION 8 — FULL GRADE TABLE ════════════════════════ -->
-  <div class="sh fu">
-    <div class="sh-l">
-      <div class="sh-ico"><i class='bx bxs-spreadsheet'></i></div>
-      <div><h2>Full Grade Distribution Table</h2><p>Complete A–Z grade counts per school (Overall performance)</p></div>
-    </div>
-    <div class="sh-r">
-      <button class="btn btn-p btn-s" onclick="xls('tblFull','Full_Grade_Distribution')"><i class='bx bxs-download'></i> Export Excel</button>
-    </div>
-  </div>
+            } catch (err) {
+                console.error("Data load error:", err);
+                alert("Error loading data from Firebase. Check console.");
+            } finally {
+                document.getElementById('loader').style.opacity = '0';
+                setTimeout(() => document.getElementById('loader').style.display = 'none', 300);
+            }
+        }
 
-  <div class="pnl fr fu">
-    <div class="pb" style="padding-top:14px">
-      <div class="dt sy" style="max-height:400px">
-        <table class="dtbl" id="tblFull">
-          <thead><tr>
-            <th>#</th><th>Institution</th><th>Entry</th><th>Mean</th><th>Grade</th>
-            <th class="gct">A</th><th class="gct">A-</th><th class="gct">B+</th><th class="gct">B</th>
-            <th class="gct">B-</th><th class="gct">C+</th><th class="gct">C</th><th class="gct">C-</th>
-            <th class="gct">D+</th><th class="gct">D</th><th class="gct">D-</th><th class="gct">E</th>
-          </tr></thead>
-          <tbody id="tbFull"><tr><td colspan="17"><div class="empty"><i class='bx bx-loader-alt'></i><p>Loading…</p></div></td></tr></tbody>
-        </table>
-      </div>
-    </div>
-  </div>
+        // Augment data object with institution details if match found
+        function augmentWithInst(item) {
+            if (!item) return item;
+            // ensure item.knec is a string for matching
+            const key = String(item.knec || '').trim();
 
-  <div style="height:20px"></div>
-</div><!-- /main-content -->
+            let match = null;
+            if (key && institutionsMap[key]) {
+                match = institutionsMap[key];
+            }
 
-<!-- Firebase -->
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="auth.js"></script>
-<script src="layout.js"></script>
+            // If no match by KNEC, we could try matching by Name roughly? 
+            // But let's trust KNEC. 
 
-<script>
-/* ── CHART.JS GLOBAL DEFAULTS ─────────────────────────── */
-Chart.defaults.color = '#6b7fa0';
-Chart.defaults.borderColor = 'rgba(255,255,255,.05)';
-Chart.defaults.font.family = "'DM Sans',system-ui,sans-serif";
-Chart.defaults.plugins.legend.labels.usePointStyle = true;
-Chart.defaults.plugins.legend.labels.pointStyleWidth = 8;
-Chart.defaults.plugins.legend.labels.padding = 14;
-Chart.defaults.plugins.tooltip.backgroundColor = 'rgba(13,16,23,.97)';
-Chart.defaults.plugins.tooltip.borderColor = 'rgba(255,152,0,.28)';
-Chart.defaults.plugins.tooltip.borderWidth = 1;
-Chart.defaults.plugins.tooltip.titleColor = '#f0f4ff';
-Chart.defaults.plugins.tooltip.bodyColor = '#b8c5e0';
-Chart.defaults.plugins.tooltip.padding = 10;
-Chart.defaults.plugins.tooltip.cornerRadius = 8;
+            if (match) {
+                item.category = match.category;
+                item.zone = match.zone;
+                item.type = match.type;
+                // Fallback for institution name if missing in performance record
+                // This fixes the issue where institution is saved as empty/nil in performance but exists in inst db
+                if (!item.institution || item.institution === 'Unknown' || item.institution.trim() === '') {
+                    item.institution = match.institution || match.Institution;
+                }
+            }
+            return item;
+        }
 
-/* ── COLOUR PALETTE ───────────────────────────────────── */
-const CO = '#ff9800', CG = '#25d366', CB = '#38bdf8',
-      CR = '#f87171', CA = '#fbbf24', CP = '#a78bfa', CPK = '#f9a8d4';
-const PALETTE = [CO, CG, CB, CA, CP, CR];
+        function updateStats() {
+            // Total Schools Registered (in institutions DB or overall DB?) -> Use Overall DB count
+            const total = overallData.length;
+            document.getElementById('statTotalSchools').textContent = total;
 
-/* ── GRADE CONSTANTS ──────────────────────────────────── */
-const GCOLS  = ['A','A-','B+','B','B-','C+','C','C-','D+','D','D-','E'];
-const GKEYS  = {
-  'A':'gA','A-':'gAminus','B+':'gBplus','B':'gB','B-':'gBminus',
-  'C+':'gCplus','C':'gC','C-':'gCminus','D+':'gDplus','D':'gD','D-':'gDminus',
-  'E':'gE','X':'gX','Y':'gY','Z':'gZ'
-};
-const GCOL_MAP = {
-  'A':CG,'A-':'#4ade80','B+':CB,'B':'#60c8f0','B-':'#93dcf9',
-  'C+':CA,'C':'#fcd34d','C-':'#fde68a','D+':CO,'D':'#fb923c','D-':'#fca5a5','E':CR
-};
-const SNAMES = {
-  101:'English',102:'Kiswahili',121:'Mathematics',231:'Biology',232:'Physics',
-  233:'Chemistry',311:'History',312:'Geography',313:'CRE',441:'Home Science',
-  442:'Art & Design',443:'Agriculture',444:'Building',446:'Woodwork',
-  449:'Drawing',451:'Computer',501:'French',502:'German',511:'Music',565:'Business'
-};
+            // Top School
+            if (total > 0) {
+                document.getElementById('statTopSchool').textContent = overallData[0].institution || 'Unknown';
+            }
 
-/* ── DATA ─────────────────────────────────────────────── */
-let OV = [], BD = [], GD = [], SD = {}, IM = {};
+            // Avg Mean of all entered schools
+            if (total > 0) {
+                const sum = overallData.reduce((acc, c) => acc + (Number(c.currentMean) || 0), 0);
+                document.getElementById('statAvgMean').textContent = (sum / total).toFixed(4);
+            }
+        }
 
-/* ── HELPERS ──────────────────────────────────────────── */
-const n   = v => { const x = parseFloat(v); return isNaN(x) ? 0 : x; };
-const kc  = id => { const c = Chart.getChart(id); if (c) c.destroy(); };
-const mdl = i  => i===0?'🥇':i===1?'🥈':i===2?'🥉':'';
-const xls = (id, name) => {
-  const t = document.getElementById(id);
-  if (!t) return;
-  XLSX.writeFile(XLSX.utils.table_to_book(t, {strip:true}), `${name}.xlsx`);
-};
+        // Helper to get grade count safely
+        function getGrade(item, gradeKey, isSubject = false) {
+            // Overall/Boys/Girls use keys like 'gA', 'gAminus'
+            // Subjects use keys like 'A', 'A-'
+            if (!item || !item.grades) return 0;
 
-function gmean(m) {
-  if(m>=11.5)return'A'; if(m>=10.5)return'A-'; if(m>=9.5)return'B+';
-  if(m>=8.5)return'B';  if(m>=7.5)return'B-';  if(m>=6.5)return'C+';
-  if(m>=5.5)return'C';  if(m>=4.5)return'C-';  if(m>=3.5)return'D+';
-  if(m>=2.5)return'D';  if(m>=1.5)return'D-';  return'E';
-}
-function gcls(g) {
-  if(!g)return'ge'; const f=g[0];
-  return f==='A'?'ga':f==='B'?'gb':f==='C'?'gc':f==='D'?'gd':'ge';
-}
-function mcol(m) {
-  return m>=8?CG:m>=7?CB:m>=6?CA:m>=5?CO:CR;
-}
-function hcol(m) {
-  if(m>=8) return{bg:'rgba(37,211,102,.12)',c:CG};
-  if(m>=7) return{bg:'rgba(56,189,248,.12)',c:CB};
-  if(m>=6) return{bg:'rgba(251,191,36,.10)',c:CA};
-  if(m>=5) return{bg:'rgba(255,152,0,.10)', c:CO};
-  return          {bg:'rgba(248,113,113,.1)',c:CR};
-}
-function aug(d) {
-  if(!d) return d;
-  const k = String(d.knec||'').trim();
-  const m = IM[k];
-  if(m){
-    d.category = d.category || m.category;
-    d.zone     = d.zone     || m.zone;
-    d.type     = d.type     || m.type;
-    if(!d.institution||d.institution.trim()==='')
-      d.institution = m.institution || m.Institution || '';
-  }
-  return d;
-}
-function gv(d, g) {
-  if(!d||!d.grades) return 0;
-  return n(d.grades[GKEYS[g]] || 0);
-}
+            let key = gradeKey;
+            if (!isSubject) {
+                // Map 'A' -> 'gA', 'A-' -> 'gAminus'
+                const map = {
+                    'A': 'gA', 'A-': 'gAminus',
+                    'B+': 'gBplus', 'B': 'gB', 'B-': 'gBminus',
+                    'C+': 'gCplus', 'C': 'gC', 'C-': 'gCminus',
+                    'D+': 'gDplus', 'D': 'gD', 'D-': 'gDminus',
+                    'E': 'gE'
+                };
+                key = map[gradeKey] || gradeKey;
+            }
+            return item.grades[key] || 0;
+        }
 
-/* ── SCROLL INDICATOR ─────────────────────────────────── */
-document.addEventListener('DOMContentLoaded', () => {
-  const mc = document.querySelector('.main-content');
-  if(mc) mc.addEventListener('scroll', () => {
-    const p = mc.scrollTop / (mc.scrollHeight - mc.clientHeight);
-    document.getElementById('scrollBar').style.transform = `scaleX(${p})`;
-  });
-});
+        const gradeCols = ['A', 'A-', 'B+', 'B', 'B-', 'C+', 'C', 'C-', 'D+', 'D', 'D-', 'E'];
 
-/* ── FIREBASE INIT ────────────────────────────────────── */
-async function init() {
-  try {
-    const [os, bs, gs, ss, is] = await Promise.all([
-      db.ref('overallPerformance').once('value'),
-      db.ref('boysPerformance').once('value'),
-      db.ref('girlsPerformance').once('value'),
-      db.ref('subjectsPerformance').once('value'),
-      db.ref('institutions').once('value'),
-    ]);
+        function buildGradeHeaders() {
+            return gradeCols.map(g => `<th style="font-size:11px; padding:4px;">${g}</th>`).join('');
+        }
 
-    if(is.exists()) Object.values(is.val()).forEach(inst => {
-      const c = inst.knecCode || inst.KNEC;
-      if(c) IM[c] = inst;
-    });
+        // UPDATE TABLE HEADERS DYNAMICALLY or STATICALLY
+        // Let's replace the HTML content of the tables in the render functions or just update the HTML block above.
+        // We will do it in JavaScript to ensure consistency.
 
-    if(os.exists()) OV = Object.values(os.val()).map(aug).sort((a,b)=>n(b.currentMean)-n(a.currentMean));
-    if(bs.exists()) BD = Object.values(bs.val()).map(aug).filter(x=>n(x.entry)>0).sort((a,b)=>n(b.currentMean)-n(a.currentMean));
-    if(gs.exists()) GD = Object.values(gs.val()).map(aug).filter(x=>n(x.entry)>0).sort((a,b)=>n(b.currentMean)-n(a.currentMean));
-    if(ss.exists()) SD = ss.val();
+        function setTableHeaders(tableId, extraCols = '') {
+            const table = document.getElementById(tableId);
+            const thead = table.querySelector('thead');
+            thead.innerHTML = `
+                <tr>
+                    <th class="rank-col">#</th>
+                    <th>Institution</th>
+                    ${extraCols}
+                    <th class="score-col">Entry</th>
+                    <th class="score-col">Mean</th>
+                    ${buildGradeHeaders()}
+                </tr>
+            `;
+        }
 
-    doKPIs(); renderRank(); chartOverallBar(); renderGradeDist(); chartDonut();
-    doGender(); chartGender(); doZone(); chartDeviation();
-    doHeatmap(); doCategory(); chartScatter(); chartTrend(); doFullTable();
+        // --- RENDER OVERALL ---
+        let overallChartInst = null;
+        function renderOverall() {
+            setTableHeaders('overallTable', '<th style="font-size:12px;">Cat</th>');
 
-  } catch(e) {
-    console.error(e);
-    document.querySelector('.main-content').insertAdjacentHTML('afterbegin',
-      `<div style="background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.2);border-radius:12px;padding:14px 18px;color:#f87171;font-size:13px;margin-bottom:20px">⚠️ Error loading data: ${e.message}</div>`);
-  } finally {
-    const L = document.getElementById('loader');
-    L.style.opacity = '0';
-    setTimeout(()=>L.style.display='none', 400);
-  }
-}
+            const tbody = document.querySelector('#overallTable tbody');
+            tbody.innerHTML = '';
 
-/* ══════════════════════════════════════════════════════ */
-/*  KPI CARDS                                            */
-/* ══════════════════════════════════════════════════════ */
-function doKPIs() {
-  const tot  = OV.length;
-  const tc   = OV.reduce((a,c)=>a+n(c.entry),0);
-  const avg  = tot>0 ? OV.reduce((a,c)=>a+n(c.currentMean),0)/tot : 0;
-  const aprev= tot>0 ? OV.reduce((a,c)=>a+n(c.previousMeans?.lastYear||0),0)/tot : 0;
-  const adev = avg - aprev;
+            // Sort by Mean Desc
+            const data = overallData.sort((a, b) => b.currentMean - a.currentMean);
 
-  set('kpiSchools', tot);
-  set('kpiSchoolsD', `${Object.keys(IM).length} in database`, 'd-fl');
-  set('kpiMean', avg.toFixed(4));
-  setEl('kpiMeanD', (adev>=0?'+':'')+adev.toFixed(4)+' vs 2024', 'kpi-delta '+(adev>0?'d-up':adev<0?'d-dn':'d-fl'));
-  set('kpiCands', tc.toLocaleString());
-  set('kpiCandsD', tot>0?`Avg ${Math.round(tc/tot)}/school`:'—', 'd-fl');
+            data.forEach((item, index) => {
+                const tr = document.createElement('tr');
+                const gradeCells = gradeCols.map(g => `<td style="font-size:11px; padding:4px;">${getGrade(item, g, false)}</td>`).join('');
 
-  if(tot>0){
-    const top = OV[0];
-    document.getElementById('kpiTop').textContent  = top.institution||top.knec||'—';
-    document.getElementById('kpiTopD').textContent = n(top.currentMean).toFixed(4)+' ('+gmean(n(top.currentMean))+')';
-    document.getElementById('kpiTopD').className   = 'kpi-delta d-up';
+                tr.innerHTML = `
+                    <td class="rank-col">${index + 1}</td>
+                    <td>
+                        <div style="font-weight:600">${item.institution || 'Unknown'}</div>
+                    </td>
+                    <td style="font-size:12px; color:#aaa;">${item.category || '-'}</td>
+                    <td class="score-col">${item.entry}</td>
+                    <td class="score-col">${Number(item.currentMean).toFixed(4)}</td>
+                    ${gradeCells}
+                `;
+                tbody.appendChild(tr);
+            });
 
-    const sorted = [...OV].filter(d=>d.previousMeans?.lastYear)
-      .sort((a,b)=>(n(b.currentMean)-n(b.previousMeans.lastYear))-(n(a.currentMean)-n(a.previousMeans.lastYear)));
-    if(sorted.length>0){
-      const imp = sorted[0];
-      const id  = n(imp.currentMean)-n(imp.previousMeans.lastYear);
-      document.getElementById('kpiImp').textContent  = imp.institution||imp.knec||'—';
-      document.getElementById('kpiImpD').textContent = (id>=0?'+':'')+id.toFixed(4);
-      document.getElementById('kpiImpD').className   = 'kpi-delta '+(id>0?'d-up':'d-dn');
-    }
-  }
-}
-function set(id, val, cls='d-fl') {
-  const el=document.getElementById(id); if(el) el.textContent=val;
-}
-function setEl(id,val,cls){
-  const el=document.getElementById(id); if(!el)return; el.textContent=val; el.className=cls;
-}
+            if (data.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="18" style="text-align:center;color:#888;">No Data Available</td></tr>`;
+                return;
+            }
 
-/* ══════════════════════════════════════════════════════ */
-/*  SECTION 1 — RANKINGS TABLE                          */
-/* ══════════════════════════════════════════════════════ */
-function renderRank() {
-  const sort = document.getElementById('rankSort').value;
-  let data   = [...OV];
-  if(sort==='cands') data.sort((a,b)=>n(b.entry)-n(a.entry));
-  if(sort==='dev')   data.sort((a,b)=>(n(b.currentMean)-n(b.previousMeans?.lastYear||0))-(n(a.currentMean)-n(a.previousMeans?.lastYear||0)));
+            // Chart (Top 10)
+            const top10 = data.slice(0, 10);
+            const ctx = document.getElementById('overallChart').getContext('2d');
+            if (overallChartInst) overallChartInst.destroy();
+            overallChartInst = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: top10.map(d => (d.institution || 'Unknown').substring(0, 15)),
+                    datasets: [{
+                        label: 'Current Mean',
+                        data: top10.map(d => d.currentMean),
+                        backgroundColor: 'rgba(255, 152, 0, 0.7)',
+                        borderColor: 'rgba(255, 152, 0, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.1)' }, ticks: { color: '#ddd' } },
+                        x: { grid: { display: false }, ticks: { color: '#ccc', font: { size: 10 } } }
+                    }
+                }
+            });
+        }
 
-  const tb = document.getElementById('tbRank');
-  if(data.length===0){
-    tb.innerHTML=`<tr><td colspan="9"><div class="empty"><i class='bx bxs-data'></i><p>No performance data available yet.</p></div></td></tr>`;
-    return;
-  }
-  tb.innerHTML = data.map((d,i) => {
-    const m  = n(d.currentMean);
-    const g  = d.meanGrade||gmean(m);
-    const dv = m - n(d.previousMeans?.lastYear||0);
-    const ds = (dv>0?'+':'')+dv.toFixed(4);
-    const dc = dv>0?'dup':dv<0?'ddn':'dfl';
-    const ly = n(d.previousMeans?.lastYear||0);
-    const ti = ly>0?(m>ly?'<span style="color:var(--gr)">↑</span>':m<ly?'<span style="color:var(--rd)">↓</span>':'<span style="color:var(--t4)">─</span>'):'<span style="color:var(--t4)">—</span>';
-    return `<tr>
-      <td><span class="rn ${i<3?'rntop':''}">${mdl(i)||'#'+(i+1)}</span></td>
-      <td><div class="iname">${d.institution||d.knec||'—'}</div><div class="isub">${d.type||''}</div></td>
-      <td><span style="font-size:10px;color:var(--t3)">${d.zone||'—'}</span></td>
-      <td><span style="font-size:10px;color:var(--t3)">${d.category||'—'}</span></td>
-      <td>${n(d.entry).toLocaleString()}</td>
-      <td><span class="mv" style="color:${mcol(m)}">${m.toFixed(4)}</span></td>
-      <td><span class="gp ${gcls(g)}">${g}</span></td>
-      <td><span class="${dc}">${ds}</span></td>
-      <td>${ti}</td>
-    </tr>`;
-  }).join('');
-}
+        // --- RENDER BOYS ---
+        function renderBoys() {
+            setTableHeaders('boysTable');
+            const tbody = document.querySelector('#boysTable tbody');
+            tbody.innerHTML = '';
 
-function chartOverallBar() {
-  kc('chartOverallBar');
-  const t10  = OV.slice(0,10);
-  const lbls = t10.map(d=>(d.institution||d.knec||'').split(' ').slice(0,2).join(' '));
-  const vals = t10.map(d=>n(d.currentMean));
-  new Chart(document.getElementById('chartOverallBar'), {
-    type:'bar',
-    data:{labels:lbls,datasets:[{label:'Mean',data:vals,backgroundColor:vals.map(v=>mcol(v)+'cc'),borderRadius:6,borderSkipped:false}]},
-    options:{responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{display:false}},
-      scales:{
-        y:{beginAtZero:false,min:Math.max(0,Math.min(...vals)-.5),grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#6b7fa0',font:{size:10}}},
-        x:{grid:{display:false},ticks:{color:'#6b7fa0',font:{size:10},maxRotation:35}}
-      }}
-  });
-}
+            // Filter 0 entry and sort
+            const data = boysData
+                .filter(item => item.entry > 0)
+                .sort((a, b) => b.currentMean - a.currentMean);
 
-/* ══════════════════════════════════════════════════════ */
-/*  SECTION 2 — GRADE DISTRIBUTION                       */
-/* ══════════════════════════════════════════════════════ */
-function renderGradeDist() {
-  const tots = {}; GCOLS.forEach(g=>tots[g]=0);
-  OV.forEach(d=>{ if(!d.grades)return; GCOLS.forEach(g=>tots[g]+=n(d.grades[GKEYS[g]]||0)); });
-  const mx  = Math.max(...Object.values(tots),1);
-  const pnl = document.getElementById('gradeDistPanel');
-  pnl.innerHTML = GCOLS.map(g=>{
-    const pct = ((tots[g]/mx)*100).toFixed(1);
-    return `<div class="gdrow">
-      <div class="gdlbl">${g}</div>
-      <div class="gdbg"><div class="gdfill" style="width:${pct}%;background:${GCOL_MAP[g]||'#888'}"></div></div>
-      <div class="gdcnt">${tots[g]}</div>
-    </div>`;
-  }).join('');
-}
+            data.forEach((item, index) => {
+                const tr = document.createElement('tr');
+                const gradeCells = gradeCols.map(g => `<td style="font-size:11px; padding:4px;">${getGrade(item, g, false)}</td>`).join('');
 
-function chartDonut() {
-  kc('chartDonut');
-  const bands=[
-    {label:'A & A-  (≥10.5)',color:'rgba(37,211,102,.85)'},
-    {label:'B+ – B  (8.5–10.4)',color:'rgba(56,189,248,.85)'},
-    {label:'B- – C+ (6.5–8.4)',color:'rgba(251,191,36,.80)'},
-    {label:'C – C-  (4.5–6.4)',color:'rgba(255,152,0,.80)'},
-    {label:'D+ & below',color:'rgba(248,113,113,.80)'},
-  ];
-  const counts=[0,0,0,0,0];
-  OV.forEach(d=>{
-    const m=n(d.currentMean);
-    if(m>=10.5)counts[0]++; else if(m>=8.5)counts[1]++;
-    else if(m>=6.5)counts[2]++; else if(m>=4.5)counts[3]++; else counts[4]++;
-  });
-  new Chart(document.getElementById('chartDonut'),{
-    type:'doughnut',
-    data:{labels:bands.map(b=>b.label),datasets:[{data:counts,backgroundColor:bands.map(b=>b.color),borderWidth:2,borderColor:'rgba(13,16,23,1)',hoverOffset:6}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{size:11},boxWidth:10}}}}
-  });
-}
+                tr.innerHTML = `
+                    <td class="rank-col">${index + 1}</td>
+                    <td>${item.institution || 'Unknown'}</td>
+                    <td class="score-col">${item.entry}</td>
+                    <td class="score-col">${Number(item.currentMean).toFixed(4)}</td>
+                    ${gradeCells}
+                `;
+                tbody.appendChild(tr);
+            });
+            if (data.length === 0) tbody.innerHTML = '<tr><td colspan="17" style="text-align:center;color:#888">No Data (Note: Schools with 0 entry are hidden)</td></tr>';
+        }
 
-/* ══════════════════════════════════════════════════════ */
-/*  SECTION 3 — GENDER                                   */
-/* ══════════════════════════════════════════════════════ */
-function doGender() {
-  const ba = BD.length>0?BD.reduce((a,c)=>a+n(c.currentMean),0)/BD.length:0;
-  const ga = GD.length>0?GD.reduce((a,c)=>a+n(c.currentMean),0)/GD.length:0;
-  document.getElementById('boysAvg').textContent  = ba.toFixed(4);
-  document.getElementById('girlsAvg').textContent = ga.toFixed(4);
-  const gap = ba-ga;
-  document.getElementById('genderGap').textContent = (gap>=0?'+':'')+gap.toFixed(4)+' (Boys '+(gap>=0?'ahead':'behind')+')';
-  const tot=ba+ga;
-  if(tot>0){
-    const bEl=document.getElementById('gsb'), gEl=document.getElementById('gsg');
-    bEl.style.flex=((ba/tot)*10).toFixed(1); bEl.textContent=`♂ ${ba.toFixed(2)}`;
-    gEl.style.flex=((ga/tot)*10).toFixed(1); gEl.textContent=`♀ ${ga.toFixed(2)}`;
-  }
-  renderGenderTbl('tbBoys', BD);
-  renderGenderTbl('tbGirls', GD);
-}
+        // --- RENDER GIRLS ---
+        function renderGirls() {
+            setTableHeaders('girlsTable');
+            const tbody = document.querySelector('#girlsTable tbody');
+            tbody.innerHTML = '';
 
-function renderGenderTbl(tbId, data) {
-  const tb=document.getElementById(tbId);
-  if(data.length===0){ tb.innerHTML=`<tr><td colspan="6"><div class="empty"><i class='bx bxs-data'></i><p>No data</p></div></td></tr>`; return; }
-  tb.innerHTML=data.map((d,i)=>{
-    const m=n(d.currentMean), g=d.meanGrade||gmean(m);
-    const dv=m-n(d.previousMeans?.lastYear||0);
-    return `<tr>
-      <td><span class="rn ${i<3?'rntop':''}">${mdl(i)||'#'+(i+1)}</span></td>
-      <td><div class="iname">${d.institution||d.knec||'—'}</div></td>
-      <td>${n(d.entry)}</td>
-      <td><span class="mv" style="color:${mcol(m)}">${m.toFixed(4)}</span></td>
-      <td><span class="gp ${gcls(g)}">${g}</span></td>
-      <td><span class="${dv>0?'dup':dv<0?'ddn':'dfl'}">${(dv>=0?'+':'')+dv.toFixed(4)}</span></td>
-    </tr>`;
-  }).join('');
-}
+            // Filter 0 entry and sort
+            const data = girlsData
+                .filter(item => item.entry > 0)
+                .sort((a, b) => b.currentMean - a.currentMean);
 
-function chartGender() {
-  kc('chartGender');
-  const schools=[...new Set([...BD,...GD].map(d=>d.institution).filter(Boolean))].slice(0,12);
-  const bv=schools.map(s=>{const d=BD.find(x=>x.institution===s);return d?n(d.currentMean):null});
-  const gv=schools.map(s=>{const d=GD.find(x=>x.institution===s);return d?n(d.currentMean):null});
-  new Chart(document.getElementById('chartGender'),{
-    type:'bar',
-    data:{labels:schools.map(s=>s.split(' ').slice(0,2).join(' ')),
-      datasets:[
-        {label:'Boys',data:bv,backgroundColor:'rgba(56,189,248,.70)',borderRadius:4,borderSkipped:false},
-        {label:'Girls',data:gv,backgroundColor:'rgba(249,168,212,.60)',borderRadius:4,borderSkipped:false}
-      ]},
-    options:{responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{display:true,position:'top'}},
-      scales:{
-        y:{beginAtZero:false,grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#6b7fa0',font:{size:10}}},
-        x:{grid:{display:false},ticks:{color:'#6b7fa0',font:{size:10},maxRotation:35}}
-      }}
-  });
-}
+            data.forEach((item, index) => {
+                const tr = document.createElement('tr');
+                const gradeCells = gradeCols.map(g => `<td style="font-size:11px; padding:4px;">${getGrade(item, g, false)}</td>`).join('');
 
-/* ══════════════════════════════════════════════════════ */
-/*  SECTION 4 — ZONE + DEVIATION                         */
-/* ══════════════════════════════════════════════════════ */
-function doZone() {
-  const zones={};
-  OV.forEach(d=>{ const z=d.zone||'Unknown'; if(!zones[z])zones[z]={t:0,c:0}; zones[z].t+=n(d.currentMean); zones[z].c++; });
-  const entries=Object.entries(zones);
-  const pnl=document.getElementById('zonePanel');
-  if(entries.length===0){ pnl.innerHTML=`<div class="empty"><i class='bx bxs-map'></i><p>No zone data. Fill institution details to populate.</p></div>`; return; }
-  const mx=Math.max(...entries.map(([,v])=>v.t/v.c),1);
-  pnl.innerHTML=`<div style="font-size:10px;color:var(--t3);margin-bottom:11px">Average mean score per zone</div>`+
-    entries.map(([z,v],i)=>{
-      const avg=v.t/v.c, pct=((avg/mx)*100).toFixed(0), col=PALETTE[i%PALETTE.length];
-      return `<div class="zrow"><div class="zlbl">${z}</div><div class="zbg"><div class="zfill" style="width:${pct}%;background:${col};opacity:.82"></div></div><div class="zval">${avg.toFixed(4)}</div></div>
-              <div class="zsub">${v.c} school${v.c!==1?'s':''}</div>`;
-    }).join('');
-}
+                tr.innerHTML = `
+                    <td class="rank-col">${index + 1}</td>
+                    <td>${item.institution || 'Unknown'}</td>
+                    <td class="score-col">${item.entry}</td>
+                    <td class="score-col">${Number(item.currentMean).toFixed(4)}</td>
+                    ${gradeCells}
+                `;
+                tbody.appendChild(tr);
+            });
+            if (data.length === 0) tbody.innerHTML = '<tr><td colspan="17" style="text-align:center;color:#888">No Data (Note: Schools with 0 entry are hidden)</td></tr>';
+        }
 
-function chartDeviation() {
-  kc('chartDeviation');
-  const data=OV.filter(d=>d.previousMeans?.lastYear).slice(0,14);
-  const lbls=data.map(d=>(d.institution||d.knec||'').split(' ').slice(0,2).join(' '));
-  const devs=data.map(d=>n(d.currentMean)-n(d.previousMeans.lastYear));
-  new Chart(document.getElementById('chartDeviation'),{
-    type:'bar',
-    data:{labels:lbls,datasets:[{label:'Deviation',data:devs,backgroundColor:devs.map(v=>v>=0?'rgba(37,211,102,.75)':'rgba(248,113,113,.75)'),borderRadius:4,borderSkipped:false}]},
-    options:{responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`Dev: ${c.raw>=0?'+':''}${c.raw.toFixed(4)}`}}},
-      scales:{
-        y:{grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#6b7fa0',font:{size:10}}},
-        x:{grid:{display:false},ticks:{color:'#6b7fa0',font:{size:10},maxRotation:35}}
-      }}
-  });
-}
+        // --- SUBJECT FILTER ---
+        let subjectChartInst = null;
+        document.getElementById('subjectSelect').addEventListener('change', (e) => {
+            const code = e.target.value;
+            renderSubject(code);
+        });
 
-/* ══════════════════════════════════════════════════════ */
-/*  SECTION 5 — SUBJECT HEATMAP + DETAIL                 */
-/* ══════════════════════════════════════════════════════ */
-function doHeatmap() {
-  const means={};
-  Object.values(SD).forEach(sc=>{
-    Object.entries(sc).forEach(([code,rec])=>{
-      if(!means[code])means[code]={t:0,c:0};
-      means[code].t+=n(rec.currentMean); means[code].c++;
-    });
-  });
-  const hm=document.getElementById('hmGrid');
-  if(Object.keys(means).length===0){
-    hm.innerHTML=`<div class="empty" style="grid-column:1/-1"><i class='bx bxs-book'></i><p>No subject data yet. Enter data via Subjects page.</p></div>`;
-    return;
-  }
-  hm.innerHTML=Object.entries(means).map(([code,{t,c}])=>{
-    const avg=t/c, {bg,c:col}=hcol(avg);
-    return `<div class="hmcell" style="background:${bg}">
-      <div class="hmsub">${SNAMES[code]||code}</div>
-      <div class="hmmean" style="color:${col}">${avg.toFixed(2)}</div>
-      <div class="hmgrade">${gmean(avg)}</div>
-    </div>`;
-  }).join('');
-}
+        function renderSubject(code) {
+            if (!code) return;
 
-function renderSubjectDetail() {
-  const code=document.getElementById('subjSel').value;
-  if(!code)return;
-  const name=SNAMES[code]||code;
-  let items=[];
-  Object.values(SD).forEach(sc=>{ if(sc[code])items.push(aug({...sc[code]})); });
-  items.forEach(it=>{ if(!it.entry||it.entry===0){ let e=0; if(it.grades)Object.values(it.grades).forEach(v=>e+=n(v)); it.entry=e; } });
-  items.sort((a,b)=>n(b.currentMean)-n(a.currentMean));
+            setTableHeaders('subjectTable'); // Update headers
 
-  document.getElementById('subjDetailWrap').style.display='grid';
-  document.getElementById('subjTblTitle').innerHTML  = `📚 ${name} — School Rankings`;
-  document.getElementById('subjChartTitle').innerHTML = `${name} <span class="ptag">Bar</span>`;
+            let items = [];
 
-  const tb=document.getElementById('tbSubject');
-  if(items.length===0){ tb.innerHTML=`<tr><td colspan="6"><div class="empty"><i class='bx bxs-book'></i><p>No data for ${name} yet.</p></div></td></tr>`; return; }
-  tb.innerHTML=items.map((d,i)=>{
-    const m=n(d.currentMean), g=d.meanGrade||gmean(m);
-    const dv=m-n(d.previousMeans?.lastYear||0);
-    return `<tr>
-      <td><span class="rn ${i<3?'rntop':''}">${mdl(i)||'#'+(i+1)}</span></td>
-      <td><div class="iname">${d.institution||d.knec||'—'}</div></td>
-      <td>${n(d.entry)}</td>
-      <td><span class="mv" style="color:${mcol(m)}">${m.toFixed(4)}</span></td>
-      <td><span class="gp ${gcls(g)}">${g}</span></td>
-      <td><span class="${dv>0?'dup':dv<0?'ddn':'dfl'}">${(dv>=0?'+':'')+dv.toFixed(4)}</span></td>
-    </tr>`;
-  }).join('');
+            // Parse subjectsData
+            // subjectsData structure: { "schoolDocId": { "subjectCode": { data... } } }
+            // OR if subjects.html saves as: db.ref(...).set(data), then it is:
+            // subjectsPerformance / docId / subjectCode / { ... }
 
-  kc('chartSubject');
-  const t10=items.slice(0,10);
-  new Chart(document.getElementById('chartSubject'),{
-    type:'bar',
-    data:{labels:t10.map(d=>(d.institution||d.knec||'').split(' ').slice(0,2).join(' ')),
-      datasets:[{label:'Mean',data:t10.map(d=>n(d.currentMean)),backgroundColor:t10.map(d=>mcol(n(d.currentMean))+'cc'),borderRadius:5,borderSkipped:false}]},
-    options:{responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{display:false}},
-      scales:{
-        y:{beginAtZero:false,grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#6b7fa0',font:{size:10}}},
-        x:{grid:{display:false},ticks:{color:'#6b7fa0',font:{size:10},maxRotation:35}}
-      }}
-  });
-}
+            // So subjectsData keys are docIds.
+            Object.keys(subjectsData).forEach(docId => {
+                const schoolSubjects = subjectsData[docId];
+                if (schoolSubjects && schoolSubjects[code]) {
+                    // This IS the record
+                    const record = schoolSubjects[code];
+                    items.push(augmentWithInst(record));
+                }
+            });
 
-/* ══════════════════════════════════════════════════════ */
-/*  SECTION 6 — CATEGORY RADAR + SCATTER                 */
-/* ══════════════════════════════════════════════════════ */
-function doCategory() {
-  kc('chartRadar');
-  const cats={};
-  OV.forEach(d=>{ const c=d.category||'UNKNOWN'; if(!cats[c])cats[c]={t:0,c:0}; cats[c].t+=n(d.currentMean); cats[c].c++; });
-  const lbls=Object.keys(cats), vals=lbls.map(l=>cats[l].t/cats[l].c);
-  if(lbls.length===0)return;
-  new Chart(document.getElementById('chartRadar'),{
-    type:'radar',
-    data:{labels:lbls,datasets:[{label:'Avg Mean',data:vals,backgroundColor:'rgba(255,152,0,.12)',borderColor:CO,pointBackgroundColor:CO,pointRadius:4,borderWidth:2}]},
-    options:{responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{display:false}},
-      scales:{r:{grid:{color:'rgba(255,255,255,.06)'},pointLabels:{color:'#6b7fa0',font:{size:11}},ticks:{color:'#6b7fa0',font:{size:9},backdropColor:'transparent'},angleLines:{color:'rgba(255,255,255,.06)'}}}}
-  });
-}
+            // Sort desc by Mean
+            items.sort((a, b) => b.currentMean - a.currentMean);
 
-function chartScatter() {
-  kc('chartScatter');
-  const pts=OV.map(d=>({x:n(d.entry),y:n(d.currentMean),label:d.institution||d.knec}));
-  if(pts.length===0)return;
-  new Chart(document.getElementById('chartScatter'),{
-    type:'scatter',
-    data:{datasets:[{label:'Schools',data:pts,backgroundColor:'rgba(167,139,250,.72)',pointRadius:5,pointHoverRadius:7}]},
-    options:{responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.raw.label}: ${c.raw.y.toFixed(4)} (${c.raw.x} cands)`}}},
-      scales:{
-        x:{title:{display:true,text:'Candidates',color:'#6b7fa0',font:{size:10}},grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#6b7fa0',font:{size:10}}},
-        y:{title:{display:true,text:'Mean Score',color:'#6b7fa0',font:{size:10}},grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#6b7fa0',font:{size:10}}}
-      }}
-  });
-}
+            // Table
+            const tbody = document.getElementById('subjectTableBody');
+            tbody.innerHTML = '';
 
-/* ══════════════════════════════════════════════════════ */
-/*  SECTION 7 — 3-YEAR TREND                             */
-/* ══════════════════════════════════════════════════════ */
-function chartTrend() {
-  kc('chartTrend');
-  const top6=OV.slice(0,6);
-  const yr=new Date().getFullYear();
-  const datasets=top6.map((d,i)=>{
-    const pm=d.previousMeans||{};
-    return{label:(d.institution||d.knec||'S'+(i+1)).split(' ').slice(0,2).join(' '),
-      data:[n(pm.threeYearsAgo)||null,n(pm.twoYearsAgo)||null,n(pm.lastYear)||null,n(d.currentMean)],
-      borderColor:PALETTE[i],backgroundColor:PALETTE[i]+'20',
-      tension:.4,fill:false,pointRadius:[3,3,3,5],pointBackgroundColor:PALETTE[i],borderWidth:2};
-  });
-  new Chart(document.getElementById('chartTrend'),{
-    type:'line',
-    data:{labels:[String(yr-3),String(yr-2),String(yr-1),String(yr)],datasets},
-    options:{responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{display:true,position:'top',labels:{font:{size:11},boxWidth:8}}},
-      scales:{
-        y:{grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#6b7fa0',font:{size:10}}},
-        x:{grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#6b7fa0',font:{size:11}}}
-      }}
-  });
-}
+            if (items.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="17" style="text-align:center;color:#888;">No data found for this subject.</td></tr>`;
+                if (subjectChartInst) subjectChartInst.destroy();
+                return;
+            }
 
-/* ══════════════════════════════════════════════════════ */
-/*  SECTION 8 — FULL GRADE TABLE                         */
-/* ══════════════════════════════════════════════════════ */
-function doFullTable() {
-  const tb=document.getElementById('tbFull');
-  if(OV.length===0){ tb.innerHTML=`<tr><td colspan="17"><div class="empty"><i class='bx bxs-data'></i><p>No data available.</p></div></td></tr>`; return; }
-  tb.innerHTML=OV.map((d,i)=>{
-    const m=n(d.currentMean), g=d.meanGrade||gmean(m);
-    const gcells=GCOLS.map(gr=>`<td class="gct">${gv(d,gr)}</td>`).join('');
-    return `<tr>
-      <td><span class="rn ${i<3?'rntop':''}">${mdl(i)||'#'+(i+1)}</span></td>
-      <td><div class="iname">${d.institution||d.knec||'—'}</div><div class="isub">${d.category||''}</div></td>
-      <td>${n(d.entry).toLocaleString()}</td>
-      <td><span class="mv" style="color:${mcol(m)}">${m.toFixed(4)}</span></td>
-      <td><span class="gp ${gcls(g)}">${g}</span></td>
-      ${gcells}
-    </tr>`;
-  }).join('');
-}
+            // Calc Entry for Subject if missing?
+            // subjects.html has `candidatesEntry` calculated but doesn't explicitly save "entry" field in the root of data object?
+            // Let's check subjects.html saveStructure.
+            // It saves `grades: {}`. It does NOT seem to save a separate 'entry' field in the root object in the save code I read.
+            // Wait, in `calc()` it updates `candidatesEntryEl`.
+            // In safeCurrentSubject():
+            // data = { subjectCode, ..., grades, currentMean, ... }
+            // IT DOES NOT SAVE 'entry' count explicitly! 
+            // We must calculate it from grades for the report.
 
-/* ══════════════════════════════════════════════════════ */
-/*  BOOT                                                 */
-/* ══════════════════════════════════════════════════════ */
-auth.onAuthStateChanged(user => {
-  if(user){ init(); }
-  else{ console.warn('Not authenticated — auth.js handles redirect.'); }
-});
+            items.forEach(item => {
+                // Determine entry from grades
+                let entry = 0;
+                if (item.grades) {
+                    Object.values(item.grades).forEach(v => entry += (Number(v) || 0));
+                }
+                item.entry = entry;
+            });
 
-// Safety timeout
-setTimeout(()=>{
-  const L=document.getElementById('loader');
-  if(L&&L.style.display!=='none'){
-    L.style.opacity='0';
-    setTimeout(()=>L.style.display='none',300);
-    const lt=L.querySelector('.load-txt');
-    if(lt)lt.textContent='Timed out — check Firebase rules.';
-  }
-},14000);
-</script>
+            items.forEach((item, idx) => {
+                const tr = document.createElement('tr');
+                // For subjects, keys are 'A', 'B' etc. so isSubject=true
+                const gradeCells = gradeCols.map(g => `<td style="font-size:11px; padding:4px;">${getGrade(item, g, true)}</td>`).join('');
+
+                tr.innerHTML = `
+                    <td class="rank-col">${idx + 1}</td>
+                    <td>${item.institution || item.Institution || 'Unknown'}</td>
+                    <td class="score-col">${item.entry}</td>
+                    <td class="score-col">${Number(item.currentMean).toFixed(4)}</td>
+                    ${gradeCells}
+                `;
+                tbody.appendChild(tr);
+            });
+
+            // Chart
+            const top10 = items.slice(0, 10);
+            const ctx = document.getElementById('subjectChart').getContext('2d');
+
+            if (subjectChartInst) subjectChartInst.destroy();
+
+            subjectChartInst = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: top10.map(d => (d.institution || 'Unk').substring(0, 12)),
+                    datasets: [{
+                        label: 'Subject Mean',
+                        data: top10.map(d => d.currentMean),
+                        backgroundColor: 'rgba(54, 162, 235, 0.7)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.1)' }, ticks: { color: '#ddd' } },
+                        x: { grid: { display: false }, ticks: { color: '#ccc', font: { size: 10 } } }
+                    }
+                }
+            });
+        }
+
+        // Wait for Auth before init to prevent permission errors
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                console.log("Auth confirmed, starting init...");
+                init();
+            } else {
+                console.warn("No user found in analytics, waiting for redirect...");
+            }
+        });
+
+        // Safety timeout for loader (10s)
+        setTimeout(() => {
+            const loader = document.getElementById('loader');
+            if (loader && loader.style.display !== 'none') {
+                loader.innerHTML += '<div style="color:red;margin-top:10px;">Taking longer than expected... Check console for errors.</div>';
+                // Optional: Force hide
+                // loader.style.display = 'none'; 
+            }
+        }, 10000);
+
+    </script>
 </body>
+
 </html>
